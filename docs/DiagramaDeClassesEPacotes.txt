@@ -1,0 +1,377 @@
+@startuml DiagramaPackages_SistemaAluguelCarros
+
+skinparam classAttributeIconSize 0
+skinparam classFontStyle bold
+skinparam classFontSize 11
+skinparam classBackgroundColor #DEEAF1
+skinparam classBorderColor #2E75B6
+skinparam classHeaderBackgroundColor #2E75B6
+skinparam classHeaderFontColor #FFFFFF
+skinparam arrowColor #1F4E79
+skinparam arrowThickness 1.5
+skinparam shadowing false
+
+skinparam packageBackgroundColor #F4F9FD
+skinparam packageBorderColor #2E75B6
+skinparam packageFontStyle bold
+skinparam packageFontSize 12
+skinparam packageFontColor #1F4E79
+
+skinparam stereotypeCBackgroundColor #ADD8E6
+
+top to bottom direction
+
+package "br.pucminas.aluguelcarros" {
+
+  ' ─── CAMADA 1: ENTRADA ───────────────────
+  package "controller" #E8F4FD {
+    class ClienteController {
+      + cadastrar(dto : ClienteRequestDTO) : ClienteResponseDTO
+      + buscarPorId(id : Long) : ClienteResponseDTO
+      + atualizar(id : Long, dto : ClienteRequestDTO) : ClienteResponseDTO
+      + deletar(id : Long) : void
+    }
+    class PedidoController {
+      + criar(dto : PedidoRequestDTO) : PedidoResponseDTO
+      + listar(clienteId : Long) : List<PedidoResponseDTO>
+      + modificar(id : Long, dto : PedidoRequestDTO) : PedidoResponseDTO
+      + cancelar(id : Long) : void
+    }
+    class AgenteController {
+      + avaliar(pedidoId : Long, dto : ParecerRequestDTO) : ParecerResponseDTO
+      + associarContrato(pedidoId : Long, dto : ContratoRequestDTO) : ContratoResponseDTO
+    }
+    class AutomovelController {
+      + cadastrar(dto : AutomovelRequestDTO) : AutomovelResponseDTO
+      + listarDisponiveis() : List<AutomovelResponseDTO>
+    }
+    class AuthController {
+      + login(dto : LoginRequestDTO) : TokenResponseDTO
+      + logout(token : String) : void
+    }
+  }
+
+  ' ─── CAMADA 2: ORQUESTRAÇÃO ──────────────
+  package "facade" #EAF7EA {
+    class ClienteFacade {
+      + cadastrar(dto : ClienteRequestDTO) : ClienteResponseDTO
+      + buscar(id : Long) : ClienteResponseDTO
+      + atualizar(id : Long, dto : ClienteRequestDTO) : ClienteResponseDTO
+      + remover(id : Long) : void
+    }
+    class PedidoFacade {
+      + criar(dto : PedidoRequestDTO) : PedidoResponseDTO
+      + listar(clienteId : Long) : List<PedidoResponseDTO>
+      + modificar(id : Long, dto : PedidoRequestDTO) : PedidoResponseDTO
+      + cancelar(id : Long) : void
+      + avaliar(pedidoId : Long, dto : ParecerRequestDTO) : ParecerResponseDTO
+    }
+    class ContratoFacade {
+      + executar(pedidoId : Long) : ContratoResponseDTO
+      + associarCredito(dto : ContratoRequestDTO) : ContratoResponseDTO
+    }
+  }
+
+  ' ─── CAMADA 3: NEGÓCIO ───────────────────
+  package "service" #FEF9E7 {
+    class ClienteService {
+      + cadastrar(cliente : Cliente) : Cliente
+      + buscarPorId(id : Long) : Cliente
+      + atualizar(cliente : Cliente) : Cliente
+      + deletar(id : Long) : void
+    }
+    class PedidoService {
+      + criar(pedido : Pedido) : Pedido
+      + buscarPorCliente(clienteId : Long) : List<Pedido>
+      + modificar(pedido : Pedido) : Pedido
+      + cancelar(id : Long) : void
+      + avaliar(pedidoId : Long, parecer : Parecer) : Parecer
+    }
+    class ContratoService {
+      + executar(contrato : Contrato) : Contrato
+      + associarCredito(cc : ContratoCredito) : ContratoCredito
+    }
+    class AutomovelService {
+      + cadastrar(automovel : Automovel) : Automovel
+      + listarDisponiveis() : List<Automovel>
+      + atualizarStatus(id : Long, status : StatusAutomovel) : void
+    }
+    class AuthService {
+      + autenticar(login : String, senha : String) : String
+      + validarToken(token : String) : boolean
+    }
+  }
+
+  ' ─── CAMADA 4: DOMÍNIO ───────────────────
+  package "model" #F0EBF8 {
+    abstract class Usuario {
+      - id : Long
+      - login : String
+      - senha : String
+    }
+    class Cliente {
+      - rg : String
+      - cpf : String
+      - nome : String
+      - endereco : String
+      - profissao : String
+    }
+    abstract class Agente {
+      - razaoSocial : String
+      - cnpj : String
+    }
+    class Empresa {
+      - ramoDeAtividade : String
+    }
+    class Banco {
+      - codigoBancario : String
+    }
+    class EntidadeEmpregadora {
+      - nomeEmpresa : String
+      - cnpj : String
+      - rendimento : Double
+    }
+    class Automovel {
+      - id : Long
+      - matricula : String
+      - ano : Integer
+      - marca : String
+      - modelo : String
+      - placa : String
+      - status : StatusAutomovel
+    }
+    class Pedido {
+      - id : Long
+      - numeroProtocolo : String
+      - dataInicio : LocalDate
+      - dataFim : LocalDate
+      - status : StatusPedido
+      - dataCriacao : LocalDateTime
+    }
+    class Parecer {
+      - id : Long
+      - descricao : String
+      - resultado : ResultadoParecer
+      - dataEmissao : LocalDateTime
+      - agenteId : Long
+    }
+    class Contrato {
+      - id : Long
+      - dataAssinatura : LocalDate
+      - tipoPropriedade : TipoPropriedade
+    }
+    class ContratoCredito {
+      - id : Long
+      - valorFinanciado : Double
+      - taxaJuros : Double
+      - prazoMeses : Integer
+    }
+    enum StatusAutomovel {
+      DISPONIVEL
+      ALUGADO
+      VINCULADO
+    }
+    enum StatusPedido {
+      EM_ANALISE
+      APROVADO
+      REJEITADO
+      CANCELADO
+    }
+    enum ResultadoParecer {
+      APROVADO
+      REJEITADO
+    }
+    enum TipoPropriedade {
+      CLIENTE
+      EMPRESA
+      BANCO
+    }
+  }
+
+  ' ─── SUPORTE: DTO, REPOSITORY, EXCEPTION, CONFIG ───
+  together {
+    package "dto" #FDE8EC {
+      class ClienteRequestDTO {
+        + rg : String
+        + cpf : String
+        + nome : String
+        + endereco : String
+        + profissao : String
+        + senha : String
+        + entidadesEmpregadoras : List<EntidadeEmpregadoraDTO>
+      }
+      class ClienteResponseDTO {
+        + id : Long
+        + nome : String
+        + cpf : String
+      }
+      class PedidoRequestDTO {
+        + automovelId : Long
+        + dataInicio : LocalDate
+        + dataFim : LocalDate
+      }
+      class PedidoResponseDTO {
+        + id : Long
+        + numeroProtocolo : String
+        + automovelId : Long
+        + status : StatusPedido
+      }
+      class ParecerRequestDTO {
+        + resultado : ResultadoParecer
+        + descricao : String
+      }
+      class ParecerResponseDTO {
+        + id : Long
+        + resultado : ResultadoParecer
+        + descricao : String
+      }
+      class ContratoRequestDTO {
+        + pedidoId : Long
+        + tipoPropriedade : TipoPropriedade
+        + valorFinanciado : Double
+        + taxaJuros : Double
+        + prazoMeses : Integer
+      }
+      class ContratoResponseDTO {
+        + id : Long
+        + dataAssinatura : LocalDate
+        + tipoPropriedade : TipoPropriedade
+      }
+      class AutomovelRequestDTO {
+        + matricula : String
+        + ano : Integer
+        + marca : String
+        + modelo : String
+        + placa : String
+      }
+      class AutomovelResponseDTO {
+        + id : Long
+        + marca : String
+        + modelo : String
+        + placa : String
+        + status : StatusAutomovel
+      }
+      class LoginRequestDTO {
+        + login : String
+        + senha : String
+      }
+      class TokenResponseDTO {
+        + token : String
+        + expiresIn : Long
+      }
+      class EntidadeEmpregadoraDTO {
+        + nomeEmpresa : String
+        + cnpj : String
+        + rendimento : Double
+      }
+    }
+
+    package "repository" #E8F5E9 {
+      interface ClienteRepository {
+        + save(cliente : Cliente) : Cliente
+        + findById(id : Long) : Optional<Cliente>
+        + findByCpf(cpf : String) : Optional<Cliente>
+        + deleteById(id : Long) : void
+      }
+      interface PedidoRepository {
+        + save(pedido : Pedido) : Pedido
+        + findById(id : Long) : Optional<Pedido>
+        + findByClienteId(clienteId : Long) : List<Pedido>
+        + findByStatus(status : StatusPedido) : List<Pedido>
+      }
+      interface AutomovelRepository {
+        + save(automovel : Automovel) : Automovel
+        + findById(id : Long) : Optional<Automovel>
+        + findByStatus(status : StatusAutomovel) : List<Automovel>
+      }
+      interface ContratoRepository {
+        + save(contrato : Contrato) : Contrato
+        + findByPedidoId(pedidoId : Long) : Optional<Contrato>
+      }
+    }
+  }
+
+  together {
+    package "exception" #FFF3E0 {
+      class EntidadeNaoEncontradaException {
+        - mensagem : String
+      }
+      class RegraDeNegocioException {
+        - mensagem : String
+      }
+      class GlobalExceptionHandler {
+        + handleNaoEncontrado(ex : EntidadeNaoEncontradaException) : HttpResponse
+        + handleRegraDeNegocio(ex : RegraDeNegocioException) : HttpResponse
+      }
+    }
+
+    package "config" #ECF0F1 {
+      class SecurityConfig {
+        + rotasPublicas() : List<String>
+      }
+      class JwtConfig {
+        - secret : String
+        - expirationMs : Long
+        + gerarToken(usuario : Usuario) : String
+        + validarToken(token : String) : boolean
+      }
+    }
+  }
+}
+
+' ═══════════════════════════════════════════════
+'  HERANÇA
+' ═══════════════════════════════════════════════
+
+Usuario <|-- Cliente
+Usuario <|-- Agente
+Agente  <|-- Empresa
+Agente  <|-- Banco
+
+' ═══════════════════════════════════════════════
+'  ASSOCIAÇÕES (model)
+' ═══════════════════════════════════════════════
+
+Cliente         "1"    *--    "0..3"  EntidadeEmpregadora   : possui >
+Cliente         "1"    --     "0..*"  Pedido                : cria >
+Pedido          "1"    --     "1"     Automovel             : refere-se a >
+Pedido          "*"    --     "1"     Agente                : avaliado por >
+Pedido          "1"    --     "0..1"  Parecer               : gera >
+Pedido          "1"    --     "0..1"  Contrato              : origina >
+Contrato        "0..1" --     "1"     Automovel             : vincula >
+Contrato        "0..1" --     "0..1"  ContratoCredito       : associado a >
+ContratoCredito "*"    --     "1"     Banco                 : concedido por >
+
+Automovel       ..>            StatusAutomovel
+Pedido          ..>            StatusPedido
+Parecer         ..>            ResultadoParecer
+Contrato        ..>            TipoPropriedade
+
+' ═══════════════════════════════════════════════
+'  DEPENDÊNCIAS ENTRE CAMADAS
+' ═══════════════════════════════════════════════
+
+ClienteController   ..>  ClienteFacade
+PedidoController    ..>  PedidoFacade
+AgenteController    ..>  PedidoFacade
+AgenteController    ..>  ContratoFacade
+AutomovelController ..>  AutomovelService
+AuthController      ..>  AuthService
+
+ClienteFacade       ..>  ClienteService
+PedidoFacade        ..>  PedidoService
+PedidoFacade        ..>  AutomovelService
+ContratoFacade      ..>  ContratoService
+
+ClienteService      ..>  ClienteRepository
+PedidoService       ..>  PedidoRepository
+AutomovelService    ..>  AutomovelRepository
+ContratoService     ..>  ContratoRepository
+
+ClienteService      ..>  EntidadeNaoEncontradaException
+PedidoService       ..>  RegraDeNegocioException
+
+AuthService         ..>  JwtConfig
+SecurityConfig      ..>  JwtConfig
+
+@enduml

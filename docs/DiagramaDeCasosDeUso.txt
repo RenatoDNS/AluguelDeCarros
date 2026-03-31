@@ -1,0 +1,121 @@
+@startuml CasosDeUso_SistemaAluguelCarros
+
+left to right direction
+
+' ═══════════════════════════════════════════════
+'  SKINPARAMS — mesma identidade visual do diagrama de pacotes
+' ═══════════════════════════════════════════════
+
+skinparam actorStyle awesome
+skinparam shadowing false
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontSize 12
+
+skinparam usecase {
+  BackgroundColor    #DEEAF1
+  BorderColor        #2E75B6
+  FontSize           12
+  FontColor          #1F4E79
+  BorderThickness    1.5
+}
+
+skinparam actor {
+  BackgroundColor    #DEEAF1
+  BorderColor        #2E75B6
+  FontSize           12
+  FontColor          #1F4E79
+  FontStyle          bold
+}
+
+skinparam rectangle {
+  BackgroundColor    #F4F9FD
+  BorderColor        #2E75B6
+  FontStyle          bold
+  FontSize           13
+  FontColor          #1F4E79
+  BorderThickness    1.5
+}
+
+skinparam arrow {
+  Color              #1F4E79
+  Thickness          1.5
+}
+
+skinparam linetype ortho
+
+title Sistema de Aluguel de Carros — Diagrama de Casos de Uso
+
+' ═══════════════════════════════════════════════
+'  ATORES
+' ═══════════════════════════════════════════════
+
+actor "Cliente" as cliente
+actor "Agente"  as agente
+actor "Empresa" as empresa
+actor "Banco"   as banco
+
+' Generalizações
+empresa --|> agente
+banco   --|> agente
+
+' ═══════════════════════════════════════════════
+'  SISTEMA
+' ═══════════════════════════════════════════════
+
+rectangle "br.pucminas.aluguelcarros" {
+
+  ' --- Autenticação & Cadastro ---
+  usecase "Fazer Login"            as UC01
+  usecase "Autenticar Usuário"     as UC02
+  usecase "Cadastrar no Sistema"   as UC03
+
+  ' --- Pedidos do Cliente ---
+  usecase "Introduzir Pedido\nde Aluguel"  as UC04
+  usecase "Consultar Pedido\nde Aluguel"   as UC05
+  usecase "Modificar Pedido\nde Aluguel"   as UC06
+  usecase "Cancelar Pedido\nde Aluguel"    as UC07
+
+  ' --- Análise pelo Agente ---
+  usecase "Analisar Pedido\nFinanceiramente" as UC08
+  usecase "Avaliar Pedido"                   as UC09
+
+  ' --- Contrato ---
+  usecase "Executar Contrato"             as UC10
+  usecase "Registrar Automóvel"           as UC11
+  usecase "Associar Contrato\nde Crédito" as UC12
+
+}
+
+' ═══════════════════════════════════════════════
+'  ASSOCIAÇÕES ATOR → CASO DE USO
+' ═══════════════════════════════════════════════
+
+cliente --> UC01
+cliente --> UC03
+cliente --> UC04
+cliente --> UC05
+cliente --> UC06
+cliente --> UC07
+
+agente  --> UC01
+agente  --> UC06
+agente  --> UC09
+
+banco   --> UC12
+
+' ═══════════════════════════════════════════════
+'  INCLUDE
+' ═══════════════════════════════════════════════
+
+UC01 .> UC02 : <<include>>
+UC09 .> UC08 : <<include>>
+
+' ═══════════════════════════════════════════════
+'  EXTEND
+' ═══════════════════════════════════════════════
+
+UC10 .> UC09 : <<extend>>
+UC11 .> UC10 : <<extend>>
+UC12 .> UC10 : <<extend>>
+
+@enduml
