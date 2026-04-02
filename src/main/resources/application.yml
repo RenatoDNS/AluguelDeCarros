@@ -1,6 +1,9 @@
 micronaut:
   application:
     name: aluguelcarros
+  server:
+    context-path: /api/aluguelcarros/v1
+    port: 8080
 
 datasources:
   default:
