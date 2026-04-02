@@ -1,0 +1,20 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Build",
+      "type": "shell",
+      "command": "mvn clean install -DskipTests",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "Build com Testes",
+      "type": "shell",
+      "command": "mvn clean install",
+      "group": "build"
+    }
+  ]
+}

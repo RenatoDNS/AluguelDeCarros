@@ -1,0 +1,33 @@
+micronaut:
+  application:
+    name: aluguelcarros
+
+datasources:
+  default:
+    # H2 em memória
+    url: jdbc:h2:mem:aluguelcarros;DB_CLOSE_DELAY=-1;MODE=LEGACY
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ""
+
+    # H2 persistente em arquivo
+    # url: jdbc:h2:file:./data/aluguelcarros;DB_CLOSE_DELAY=-1;MODE=LEGACY
+    # driver-class-name: org.h2.Driver
+    # username: sa
+    # password:
+
+jpa:
+  default:
+    entity-scan:
+      packages: br.pucminas.aluguelcarros.model
+    properties:
+      hibernate:
+        hbm2ddl:
+          auto: update
+        show_sql: false
+
+jwt:
+  # TODO: mover para variável de ambiente
+  secret: teste-secret-key-isso-ira-mudar
+  expiration-ms: 3600000
+  # 3600000 = 1 hora

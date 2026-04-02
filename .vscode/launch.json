@@ -1,0 +1,13 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Application",
+            "request": "launch",
+            "mainClass": "br.pucminas.aluguelcarros.Application",
+            "projectName": "aluguelcarros",
+            "preLaunchTask": "Build"
+        }
+    ]
+}
