@@ -42,7 +42,6 @@ public class JwtAuthenticationFilter implements HttpServerFilter {
     }
 
     private boolean isPublic(HttpRequest<?> request) {
-        String key = request.getMethod().name() + " " + request.getPath();
-        return securityConfig.rotasPublicas().contains(key);
+        return securityConfig.rotaPublica(request.getMethod().name(), request.getPath());
     }
 }
