@@ -4,6 +4,17 @@ micronaut:
   server:
     context-path: /api/aluguelcarros/v1
     port: 8080
+  router:
+    static-resources:
+      swagger-ui:
+        paths: classpath:META-INF/swagger/views/swagger-ui
+        mapping: /swagger-ui/**
+
+openapi:
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui
+    spec-url: /swagger.yml
 
 datasources:
   default:

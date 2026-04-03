@@ -171,6 +171,13 @@
       <scope>test</scope>
     </dependency>
 
+    <!-- ── Swagger UI ─────────────────────────────────────────── -->
+    <dependency>
+      <groupId>io.micronaut.openapi</groupId>
+      <artifactId>micronaut-openapi</artifactId>
+      <scope>compile</scope>
+    </dependency>
+
   </dependencies>
 
   <!-- ══════════════════════════════════════════════════════════
