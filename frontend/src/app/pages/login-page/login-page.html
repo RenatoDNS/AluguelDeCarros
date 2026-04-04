@@ -1,0 +1,95 @@
+<main class="flex min-h-screen items-center justify-center px-4 py-8">
+  <section
+    class="login-shell grid w-full max-w-6xl overflow-hidden rounded-[2rem] border border-white/70 bg-white/85 backdrop-blur md:grid-cols-[1.1fr_0.9fr]"
+  >
+    <div
+      class="login-hero relative hidden min-h-[40rem] overflow-hidden p-10 text-white md:flex md:flex-col md:justify-between"
+    >
+      <div class="login-hero-overlay absolute inset-0"></div>
+      <div class="relative">
+        <p class="font-display text-sm uppercase tracking-[0.35em] text-white/70">
+          Sistema corporativo
+        </p>
+        <h1 class="mt-6 max-w-md font-display text-5xl font-semibold leading-none">
+          Aluguel de Carros
+        </h1>
+        <p class="mt-6 max-w-sm text-base leading-7 text-white/82">
+          Acesse a plataforma para autenticar sua equipe e iniciar a operação do dashboard.
+        </p>
+      </div>
+
+      <div
+        class="relative rounded-[1.75rem] border border-white/15 bg-white/10 p-6 backdrop-blur-sm"
+      >
+        <p class="text-sm font-medium uppercase tracking-[0.3em] text-white/65">Segurança</p>
+        <p class="mt-3 text-2xl font-semibold">JWT em sessão</p>
+        <p class="mt-2 text-sm leading-6 text-white/78">
+          O token de autenticação fica armazenado em sessionStorage, preservando a sessão apenas
+          durante o uso da aba.
+        </p>
+      </div>
+    </div>
+
+    <div class="bg-white/80 p-6 sm:p-10 md:p-14">
+      <div class="mx-auto flex max-w-md flex-col justify-center md:min-h-[40rem]">
+        <div class="mb-10">
+          <p class="text-sm font-semibold uppercase tracking-[0.35em] text-primary-600">Entrar</p>
+          <h2 class="mt-4 font-display text-4xl font-semibold text-slate-950">Aluguel de Carros</h2>
+          <p class="mt-3 text-sm leading-6 text-slate-600">
+            Use seu CPF e senha para acessar o dashboard do sistema.
+          </p>
+        </div>
+
+        <form class="space-y-6" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+          <div class="space-y-2">
+            <label class="text-sm font-semibold text-slate-800" for="cpf">CPF</label>
+            <input
+              id="cpf"
+              type="text"
+              inputmode="numeric"
+              autocomplete="username"
+              maxlength="11"
+              formControlName="cpf"
+              placeholder="Informe 11 dígitos"
+              class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-base text-slate-950 outline-none transition focus:border-primary-500 focus:ring-4 focus:ring-primary-100"
+            />
+            @if (cpfInvalid()) {
+              <p class="text-sm text-primary-700">O CPF deve conter exatamente 11 caracteres.</p>
+            }
+          </div>
+
+          <div class="space-y-2">
+            <label class="text-sm font-semibold text-slate-800" for="password">Senha</label>
+            <input
+              id="password"
+              type="password"
+              autocomplete="current-password"
+              formControlName="password"
+              placeholder="Sua senha"
+              class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-base text-slate-950 outline-none transition focus:border-primary-500 focus:ring-4 focus:ring-primary-100"
+            />
+            @if (passwordInvalid()) {
+              <p class="text-sm text-primary-700">A senha é obrigatória.</p>
+            }
+          </div>
+
+          @if (errorMessage()) {
+            <div
+              class="rounded-2xl border border-primary-200 bg-primary-50 px-4 py-3 text-sm text-primary-800"
+            >
+              {{ errorMessage() }}
+            </div>
+          }
+
+          <button
+            type="submit"
+            class="login-submit inline-flex w-full items-center justify-center rounded-2xl px-4 py-3 text-sm font-semibold text-white transition hover:brightness-105 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary-200 disabled:cursor-not-allowed disabled:opacity-60"
+            [disabled]="loading()"
+          >
+            {{ loading() ? 'Entrando...' : 'Acessar dashboard' }}
+          </button>
+        </form>
+      </div>
+    </div>
+  </section>
+</main>

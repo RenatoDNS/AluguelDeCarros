@@ -1,0 +1,25 @@
+<main class="min-h-screen px-4 py-6 sm:px-6 lg:px-8">
+  <section class="mx-auto max-w-6xl">
+    <header
+      class="dashboard-shell flex flex-col gap-4 rounded-[2rem] border border-white/70 bg-white/85 px-6 py-5 backdrop-blur sm:flex-row sm:items-center sm:justify-between"
+    >
+      <div>
+        <p class="text-sm font-semibold uppercase tracking-[0.28em] text-primary-600">
+          Dashboard
+        </p>
+        <h1 class="mt-2 font-display text-3xl font-semibold text-slate-950">
+          Aluguel de Carros
+        </h1>
+        <p class="mt-2 text-sm text-slate-600">Sessão autenticada com sucesso.</p>
+      </div>
+
+      <button
+        type="button"
+        class="inline-flex items-center justify-center rounded-2xl border border-primary-200 bg-primary-50 px-4 py-3 text-sm font-semibold text-primary-800 transition hover:border-primary-300 hover:bg-primary-100 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary-200"
+        (click)="logout()"
+      >
+        Logout
+      </button>
+    </header>
+  </section>
+</main>

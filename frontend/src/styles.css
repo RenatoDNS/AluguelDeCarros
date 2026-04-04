@@ -1,0 +1,58 @@
+@import 'tailwindcss';
+
+@theme {
+  --font-display: 'Outfit', 'Segoe UI', sans-serif;
+  --font-sans: 'Manrope', 'Segoe UI', sans-serif;
+
+  --color-primary-50: #fff1f1;
+  --color-primary-100: #ffe0e0;
+  --color-primary-200: #ffc6c6;
+  --color-primary-300: #ff9b9b;
+  --color-primary-400: #ff6767;
+  --color-primary-500: #ef3d3d;
+  --color-primary-600: #d92d2d;
+  --color-primary-700: #b72121;
+  --color-primary-800: #861919;
+  --color-primary-900: #591010;
+
+  --color-secondary-50: #fff7ed;
+  --color-secondary-100: #ffedd4;
+  --color-secondary-200: #ffd6a8;
+  --color-secondary-300: #ffb86f;
+  --color-secondary-400: #ff9234;
+  --color-secondary-500: #ff770a;
+  --color-secondary-600: #f25f00;
+  --color-secondary-700: #c84302;
+  --color-secondary-800: #9f340b;
+  --color-secondary-900: #7f2d0c;
+
+  --color-surface: #fffaf7;
+  --color-surface-soft: #fff6f3;
+  --color-surface-muted: #fffdfa;
+  --color-surface-warm: #fff7f1;
+  --color-ink: #231717;
+}
+
+html {
+  color-scheme: light;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--font-sans);
+  color: var(--color-ink);
+  background:
+    radial-gradient(circle at top left, color-mix(in srgb, var(--color-primary-500) 16%, transparent) 0%, transparent 30%),
+    radial-gradient(circle at top right, color-mix(in srgb, var(--color-secondary-500) 12%, transparent) 0%, transparent 22%),
+    linear-gradient(
+      180deg,
+      var(--color-surface-soft) 0%,
+      var(--color-surface-muted) 52%,
+      var(--color-surface-warm) 100%
+    );
+}
+
+* {
+  box-sizing: border-box;
+}
