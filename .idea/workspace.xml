@@ -5,49 +5,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6b71a0eb-5c93-4282-a834-ce6bb0e55b3c" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/backend/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.mvn/wrapper/maven-wrapper.jar" beforeDir="false" afterPath="$PROJECT_DIR$/backend/.mvn/wrapper/maven-wrapper.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.mvn/wrapper/maven-wrapper.properties" beforeDir="false" afterPath="$PROJECT_DIR$/backend/.mvn/wrapper/maven-wrapper.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.vscode/launch.json" beforeDir="false" afterPath="$PROJECT_DIR$/backend/.vscode/launch.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.vscode/tasks.json" beforeDir="false" afterPath="$PROJECT_DIR$/backend/.vscode/tasks.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/aot-jar.properties" beforeDir="false" afterPath="$PROJECT_DIR$/backend/aot-jar.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/micronaut-cli.yml" beforeDir="false" afterPath="$PROJECT_DIR$/backend/micronaut-cli.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mvnw" beforeDir="false" afterPath="$PROJECT_DIR$/backend/mvnw" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mvnw.bat" beforeDir="false" afterPath="$PROJECT_DIR$/backend/mvnw.bat" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/backend/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/br/pucminas/aluguelcarros/Application.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/br/pucminas/aluguelcarros/Application.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/br/pucminas/aluguelcarros/config/JwtAuthenticationFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/br/pucminas/aluguelcarros/config/JwtAuthenticationFilter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/br/pucminas/aluguelcarros/config/JwtConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/br/pucminas/aluguelcarros/config/JwtConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/br/pucminas/aluguelcarros/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/br/pucminas/aluguelcarros/config/SecurityConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/br/pucminas/aluguelcarros/controller/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/br/pucminas/aluguelcarros/controller/AuthController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/br/pucminas/aluguelcarros/controller/ClienteController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/br/pucminas/aluguelcarros/controller/ClienteController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/br/pucminas/aluguelcarros/controller/OpenApiController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/br/pucminas/aluguelcarros/controller/OpenApiController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/br/pucminas/aluguelcarros/controller/SwaggerController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/br/pucminas/aluguelcarros/controller/SwaggerController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/br/pucminas/aluguelcarros/dto/ClienteRequestDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/br/pucminas/aluguelcarros/dto/ClienteRequestDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/br/pucminas/aluguelcarros/dto/ClienteResponseDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/br/pucminas/aluguelcarros/dto/ClienteResponseDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/br/pucminas/aluguelcarros/dto/EntidadeEmpregadoraDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/br/pucminas/aluguelcarros/dto/EntidadeEmpregadoraDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/br/pucminas/aluguelcarros/dto/LoginRequestDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/br/pucminas/aluguelcarros/dto/LoginRequestDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/br/pucminas/aluguelcarros/dto/TokenResponseDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/br/pucminas/aluguelcarros/dto/TokenResponseDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/br/pucminas/aluguelcarros/exception/EntidadeNaoEncontradaException.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/br/pucminas/aluguelcarros/exception/EntidadeNaoEncontradaException.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/br/pucminas/aluguelcarros/exception/GlobalExceptionHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/br/pucminas/aluguelcarros/exception/GlobalExceptionHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/br/pucminas/aluguelcarros/exception/RegraDeNegocioException.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/br/pucminas/aluguelcarros/exception/RegraDeNegocioException.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/br/pucminas/aluguelcarros/facade/ClienteFacade.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/br/pucminas/aluguelcarros/facade/ClienteFacade.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/br/pucminas/aluguelcarros/model/Agente.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/br/pucminas/aluguelcarros/model/Agente.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/br/pucminas/aluguelcarros/model/Banco.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/br/pucminas/aluguelcarros/model/Banco.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/br/pucminas/aluguelcarros/model/Cliente.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/br/pucminas/aluguelcarros/model/Cliente.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/br/pucminas/aluguelcarros/model/Empresa.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/br/pucminas/aluguelcarros/model/Empresa.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/br/pucminas/aluguelcarros/model/EntidadeEmpregadora.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/br/pucminas/aluguelcarros/model/EntidadeEmpregadora.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/br/pucminas/aluguelcarros/model/Usuario.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/br/pucminas/aluguelcarros/model/Usuario.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/br/pucminas/aluguelcarros/repository/ClienteRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/br/pucminas/aluguelcarros/repository/ClienteRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/br/pucminas/aluguelcarros/service/AuthService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/br/pucminas/aluguelcarros/service/AuthService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/br/pucminas/aluguelcarros/service/ClienteService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/br/pucminas/aluguelcarros/service/ClienteService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/META-INF/resources/webjars/swagger-ui/5.17.14/swagger-initializer.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/resources/META-INF/resources/webjars/swagger-ui/5.17.14/swagger-initializer.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/resources/application.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/logback.xml" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/resources/logback.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/swagger.yml" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/resources/swagger.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/br/pucminas/AluguelcarrosTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/test/java/br/pucminas/AluguelcarrosTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README_template.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/br/pucminas/aluguelcarros/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/br/pucminas/aluguelcarros/config/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/br/pucminas/aluguelcarros/controller/OpenApiController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/br/pucminas/aluguelcarros/controller/SwaggerController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/br/pucminas/aluguelcarros/controller/SwaggerController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/resources/META-INF/resources/webjars/swagger-ui/5.17.14/swagger-initializer.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/resources/swagger-ui/swagger-initializer.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/resources/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/README.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -149,7 +116,7 @@
       <workItem from="1775085463040" duration="10053000" />
       <workItem from="1775171266411" duration="70000" />
       <workItem from="1775409790028" duration="718000" />
-      <workItem from="1775410523352" duration="895000" />
+      <workItem from="1775410523352" duration="5474000" />
     </task>
     <servers />
   </component>

@@ -1,6 +1,6 @@
-window.onload = function() {
+window.onload = function () {
   window.ui = SwaggerUIBundle({
-    url: "/api/aluguelcarros/v1/swagger.yml",
+    url: "/api/aluguelcarros/v1/swagger-ui/swagger.yml",
     dom_id: "#swagger-ui",
     deepLinking: true,
     presets: [

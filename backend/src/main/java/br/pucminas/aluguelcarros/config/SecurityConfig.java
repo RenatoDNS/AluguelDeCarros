@@ -11,10 +11,7 @@ public class SecurityConfig {
         return List.of(
                 "POST /clientes",
                 "POST /auth/login",
-                "GET /swagger-ui",
-                "GET /swagger-ui/",
-                "GET /swagger-ui/index.html",
-                "GET /swagger.yml"
+                "GET /swagger-ui"
         );
     }
 
@@ -23,7 +20,6 @@ public class SecurityConfig {
         if (rotasPublicas().contains(method + " " + normalizedPath)) {
             return true;
         }
-        return normalizedPath.contains("/swagger-ui")
-                || normalizedPath.endsWith("/swagger.yml");
+        return normalizedPath.contains("/swagger-ui");
     }
 }
