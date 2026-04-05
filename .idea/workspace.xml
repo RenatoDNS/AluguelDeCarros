@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="6b71a0eb-5c93-4282-a834-ce6bb0e55b3c" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/backend/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.mvn/wrapper/maven-wrapper.jar" beforeDir="false" afterPath="$PROJECT_DIR$/backend/.mvn/wrapper/maven-wrapper.jar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.mvn/wrapper/maven-wrapper.properties" beforeDir="false" afterPath="$PROJECT_DIR$/backend/.mvn/wrapper/maven-wrapper.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.vscode/launch.json" beforeDir="false" afterPath="$PROJECT_DIR$/backend/.vscode/launch.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.vscode/tasks.json" beforeDir="false" afterPath="$PROJECT_DIR$/backend/.vscode/tasks.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/aot-jar.properties" beforeDir="false" afterPath="$PROJECT_DIR$/backend/aot-jar.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/micronaut-cli.yml" beforeDir="false" afterPath="$PROJECT_DIR$/backend/micronaut-cli.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mvnw" beforeDir="false" afterPath="$PROJECT_DIR$/backend/mvnw" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mvnw.bat" beforeDir="false" afterPath="$PROJECT_DIR$/backend/mvnw.bat" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/backend/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/br/pucminas/aluguelcarros/Application.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/br/pucminas/aluguelcarros/Application.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/br/pucminas/aluguelcarros/config/JwtAuthenticationFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/br/pucminas/aluguelcarros/config/JwtAuthenticationFilter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/br/pucminas/aluguelcarros/config/JwtConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/br/pucminas/aluguelcarros/config/JwtConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/br/pucminas/aluguelcarros/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/br/pucminas/aluguelcarros/config/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/br/pucminas/aluguelcarros/controller/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/br/pucminas/aluguelcarros/controller/AuthController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/br/pucminas/aluguelcarros/controller/ClienteController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/br/pucminas/aluguelcarros/controller/ClienteController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/br/pucminas/aluguelcarros/controller/OpenApiController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/br/pucminas/aluguelcarros/controller/OpenApiController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/br/pucminas/aluguelcarros/controller/SwaggerController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/br/pucminas/aluguelcarros/controller/SwaggerController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/br/pucminas/aluguelcarros/dto/ClienteRequestDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/br/pucminas/aluguelcarros/dto/ClienteRequestDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/br/pucminas/aluguelcarros/dto/ClienteResponseDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/br/pucminas/aluguelcarros/dto/ClienteResponseDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/br/pucminas/aluguelcarros/dto/EntidadeEmpregadoraDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/br/pucminas/aluguelcarros/dto/EntidadeEmpregadoraDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/br/pucminas/aluguelcarros/dto/LoginRequestDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/br/pucminas/aluguelcarros/dto/LoginRequestDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/br/pucminas/aluguelcarros/dto/TokenResponseDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/br/pucminas/aluguelcarros/dto/TokenResponseDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/br/pucminas/aluguelcarros/exception/EntidadeNaoEncontradaException.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/br/pucminas/aluguelcarros/exception/EntidadeNaoEncontradaException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/br/pucminas/aluguelcarros/exception/GlobalExceptionHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/br/pucminas/aluguelcarros/exception/GlobalExceptionHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/br/pucminas/aluguelcarros/exception/RegraDeNegocioException.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/br/pucminas/aluguelcarros/exception/RegraDeNegocioException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/br/pucminas/aluguelcarros/facade/ClienteFacade.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/br/pucminas/aluguelcarros/facade/ClienteFacade.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/br/pucminas/aluguelcarros/model/Agente.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/br/pucminas/aluguelcarros/model/Agente.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/br/pucminas/aluguelcarros/model/Banco.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/br/pucminas/aluguelcarros/model/Banco.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/br/pucminas/aluguelcarros/model/Cliente.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/br/pucminas/aluguelcarros/model/Cliente.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/br/pucminas/aluguelcarros/model/Empresa.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/br/pucminas/aluguelcarros/model/Empresa.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/br/pucminas/aluguelcarros/model/EntidadeEmpregadora.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/br/pucminas/aluguelcarros/model/EntidadeEmpregadora.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/br/pucminas/aluguelcarros/model/Usuario.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/br/pucminas/aluguelcarros/model/Usuario.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/br/pucminas/aluguelcarros/repository/ClienteRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/br/pucminas/aluguelcarros/repository/ClienteRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/br/pucminas/aluguelcarros/service/AuthService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/br/pucminas/aluguelcarros/service/AuthService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/br/pucminas/aluguelcarros/service/ClienteService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/br/pucminas/aluguelcarros/service/ClienteService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/META-INF/resources/webjars/swagger-ui/5.17.14/swagger-initializer.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/resources/META-INF/resources/webjars/swagger-ui/5.17.14/swagger-initializer.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/resources/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/logback.xml" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/resources/logback.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/swagger.yml" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/resources/swagger.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/br/pucminas/AluguelcarrosTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/test/java/br/pucminas/AluguelcarrosTest.java" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="CopilotPersistence">
+    <persistenceIdMap>
+      <entry key="_C:/Users/Renato/Documents/Dev/GitHub/AluguelDeCarros" value="3BdGTbNBRLWcZLgAFg2VewM9gJO" />
+    </persistenceIdMap>
+  </component>
+  <component name="CopilotUserSelectedModel">
+    <selectedModels>
+      <entry key="chat-panel" value="Claude Haiku 4.5" />
+      <entry key="agent-panel" value="Claude Haiku 4.5" />
+    </selectedModels>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;RenatoDNS&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/RenatoDNS/AluguelDeCarros.git&quot;,
+    &quot;accountId&quot;: &quot;543f1167-25bf-49ed-b09c-4a3ffa80ba39&quot;
+  }
+}</component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="mavenHomeTypeForPersistence" value="WRAPPER" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 2,
+  &quot;fromUser&quot;: false
+}</component>
+  <component name="ProjectId" id="3BdGTbNBRLWcZLgAFg2VewM9gJO" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Micronaut.Application.executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "codeWithMe.voiceChat.enabledByDefault": "false",
+    "git-widget-placeholder": "main",
+    "last_opened_file_path": "C:/Users/Renato/Documents/Dev/GitHub/AluguelDeCarros",
+    "settings.editor.selected.configurable": "preferences.general"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\Renato\Documents\Dev\GitHub\AluguelDeCarros\docs" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\Renato\Documents\Dev\GitHub\AluguelDeCarros\backend" />
+      <recent name="C:\Users\Renato\Documents\Dev\GitHub\AluguelDeCarros\docs" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="Application" type="MicronautRunConfigurationType" factoryName="Micronaut">
+      <option name="MAIN_CLASS_NAME" value="br.pucminas.aluguelcarros.Application" />
+      <module name="aluguelcarros" />
+      <option name="alternativeJrePath" />
+      <option name="alternativeJrePathEnabled" value="false" />
+      <option name="mainClass" value="br.pucminas.aluguelcarros.Application" />
+      <option name="passParentEnvs" value="true" />
+      <option name="programParameters" />
+      <option name="vmParameters" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="6b71a0eb-5c93-4282-a834-ce6bb0e55b3c" name="Changes" comment="" />
+      <created>1774811544595</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1774811544595</updated>
+      <workItem from="1774811547147" duration="48000" />
+      <workItem from="1774811609816" duration="2285000" />
+      <workItem from="1774813917212" duration="305000" />
+      <workItem from="1774814234981" duration="1122000" />
+      <workItem from="1774815459885" duration="1609000" />
+      <workItem from="1774984390853" duration="88000" />
+      <workItem from="1775085463040" duration="10053000" />
+      <workItem from="1775171266411" duration="70000" />
+      <workItem from="1775409790028" duration="718000" />
+      <workItem from="1775410523352" duration="895000" />
+    </task>
+    <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
+  </component>
+  <component name="github-copilot-workspace">
+    <instructionFileLocations>
+      <option value=".github/instructions" />
+    </instructionFileLocations>
+    <promptFileLocations>
+      <option value=".github/prompts" />
+    </promptFileLocations>
+  </component>
+</project>

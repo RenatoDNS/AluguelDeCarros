@@ -19,9 +19,9 @@
 
 ## 🚧 Status do Projeto
 
-[![Versão](https://img.shields.io/badge/versão-0.1-blue)](./pom.xml)
-[![Java](https://img.shields.io/badge/Java-21-437291?logo=openjdk&logoColor=white)](./pom.xml)
-[![Micronaut](https://img.shields.io/badge/Micronaut-4.10-007ec6)](./pom.xml)
+[![Versão](https://img.shields.io/badge/versão-0.1-blue)](backend/pom.xml)
+[![Java](https://img.shields.io/badge/Java-21-437291?logo=openjdk&logoColor=white)](backend/pom.xml)
+[![Micronaut](https://img.shields.io/badge/Micronaut-4.10-007ec6)](backend/pom.xml)
 [![Licença](https://img.shields.io/badge/licença-MIT-green)](./LICENSE)
 
 ---
@@ -50,7 +50,7 @@
 
 | Recurso | URL / caminho |
 |--------|----------------|
-| **OpenAPI (YAML)** | [`src/main/resources/swagger.yml`](./src/main/resources/swagger.yml) |
+| **OpenAPI (YAML)** | [`src/main/resources/swagger.yml`](backend/src/main/resources/swagger.yml) |
 | **Diagramas (UML)** | [`docs/`](./docs/) — casos de uso e classes/pacotes (`.svg` / `.txt`) |
 
 ---
