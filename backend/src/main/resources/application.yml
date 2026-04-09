@@ -10,6 +10,12 @@ micronaut:
         paths: [classpath:swagger-ui, classpath:META-INF/resources/webjars/swagger-ui/5.17.14]
         mapping: /swagger-ui/**
 
+h2:
+  console:
+    enabled: true
+    settings:
+      web-allow-others: true
+
 datasources:
   default:
     # H2 em memória

@@ -4,26 +4,37 @@ import br.pucminas.aluguelcarros.model.Usuario;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import io.micronaut.context.annotation.ConfigurationProperties;
+import io.micronaut.context.annotation.Value;
+import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
-import lombok.Getter;
-import lombok.Setter;
 
 import javax.crypto.SecretKey;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
 @Singleton
-@ConfigurationProperties("jwt")
-@Getter
-@Setter
 public class JwtConfig {
 
-    private String secret;
-    private Long expirationMs;
+    private final String secret;
+    private final Long expirationMs;
+
+    @Inject
+    public JwtConfig(
+            @Value("${jwt.secret:}") String secret,
+            @Value("${jwt.expiration-ms:3600000}") Long expirationMs
+    ) {
+        this.secret = secret;
+        this.expirationMs = expirationMs;
+    }
+
+    public Long getExpirationMs() {
+        return expirationMs;
+    }
 
     public String gerarToken(Usuario usuario) {
-        SecretKey key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+        SecretKey key = getSigningKey();
         Date now = new Date();
         Date exp = new Date(now.getTime() + expirationMs);
         return Jwts.builder()
@@ -40,7 +51,7 @@ public class JwtConfig {
             return false;
         }
         try {
-            SecretKey key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+            SecretKey key = getSigningKey();
             Claims claims = Jwts.parser()
                     .verifyWith(key)
                     .build()
@@ -49,6 +60,20 @@ public class JwtConfig {
             return claims.getExpiration().after(new Date());
         } catch (Exception e) {
             return false;
+        }
+    }
+
+    private SecretKey getSigningKey() {
+        String secretNormalizado = secret == null ? "" : secret.trim();
+        if (secretNormalizado.isEmpty()) {
+            throw new IllegalStateException("JWT secret nao configurado.");
+        }
+        try {
+            byte[] hash = MessageDigest.getInstance("SHA-256")
+                    .digest(secretNormalizado.getBytes(StandardCharsets.UTF_8));
+            return Keys.hmacShaKeyFor(hash);
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException("Algoritmo de hash indisponivel para JWT.", e);
         }
     }
 }

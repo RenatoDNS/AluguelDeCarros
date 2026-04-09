@@ -10,6 +10,7 @@ import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Singleton
@@ -53,7 +54,10 @@ public class ClienteFacade {
         cliente.setProfissao(dto.getProfissao());
         cliente.setSenha(dto.getSenha());
         List<EntidadeEmpregadora> lista = new ArrayList<>();
-        for (EntidadeEmpregadoraDTO ed : dto.getEntidadesEmpregadoras()) {
+        List<EntidadeEmpregadoraDTO> entidades = dto.getEntidadesEmpregadoras() == null
+                ? Collections.emptyList()
+                : dto.getEntidadesEmpregadoras();
+        for (EntidadeEmpregadoraDTO ed : entidades) {
             EntidadeEmpregadora e = new EntidadeEmpregadora();
             e.setNomeEmpresa(ed.getNomeEmpresa());
             e.setCnpj(ed.getCnpj());

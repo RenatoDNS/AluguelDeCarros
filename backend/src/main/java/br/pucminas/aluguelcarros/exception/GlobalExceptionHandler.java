@@ -12,20 +12,20 @@ import java.util.Map;
 @Singleton
 public class GlobalExceptionHandler {
 
-    @Error(global = true)
+    @Error(global = true, exception = EntidadeNaoEncontradaException.class)
     @Produces
     public HttpResponse<Map<String, String>> handleNaoEncontrado(
-            EntidadeNaoEncontradaException ex,
-            HttpRequest<?> request) {
+            HttpRequest<?> request,
+            EntidadeNaoEncontradaException ex) {
         return HttpResponse.status(HttpStatus.NOT_FOUND)
                 .body(Map.of("mensagem", ex.getMensagem()));
     }
 
-    @Error(global = true)
+    @Error(global = true, exception = RegraDeNegocioException.class)
     @Produces
     public HttpResponse<Map<String, String>> handleRegraDeNegocio(
-            RegraDeNegocioException ex,
-            HttpRequest<?> request) {
+            HttpRequest<?> request,
+            RegraDeNegocioException ex) {
         return HttpResponse.status(HttpStatus.UNPROCESSABLE_ENTITY)
                 .body(Map.of("mensagem", ex.getMensagem()));
     }
