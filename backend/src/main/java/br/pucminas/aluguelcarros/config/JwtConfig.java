@@ -23,7 +23,7 @@ public class JwtConfig {
     @Inject
     public JwtConfig(
             @Value("${jwt.secret:}") String secret,
-            @Value("${jwt.expiration-ms:3600000}") Long expirationMs
+            @Value("${jwt.expiration-ms:}") Long expirationMs
     ) {
         this.secret = secret;
         this.expirationMs = expirationMs;

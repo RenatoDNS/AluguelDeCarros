@@ -27,6 +27,9 @@ public class SecurityConfig {
 
     public boolean rotaPublica(String method, String path) {
         String normalizedMethod = method == null ? "" : method.trim().toUpperCase(Locale.ROOT);
+        if ("OPTIONS".equals(normalizedMethod)) {
+            return true;
+        }
         String normalizedPath = normalizePath(path);
         return rotasPublicas().contains(normalizedMethod + " " + normalizedPath)
                 || normalizedPath.startsWith("/swagger-ui");

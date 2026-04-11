@@ -31,7 +31,7 @@ public class AuthController {
     @Post("/login")
     public HttpResponse<?> login(@Body @Valid LoginRequestDTO dto) {
         try {
-            String token = authService.autenticar(dto.getLogin(), dto.getSenha());
+            String token = authService.autenticar(dto.login(), dto.senha());
             return HttpResponse.ok(new TokenResponseDTO(token, jwtConfig.getExpirationMs()));
         } catch (IllegalArgumentException e) {
             return HttpResponse.status(HttpStatus.UNAUTHORIZED)

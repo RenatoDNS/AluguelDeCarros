@@ -47,21 +47,21 @@ public class ClienteFacade {
 
     private static Cliente fromDto(ClienteRequestDTO dto) {
         Cliente cliente = new Cliente();
-        cliente.setRg(dto.getRg());
-        cliente.setCpf(dto.getCpf());
-        cliente.setNome(dto.getNome());
-        cliente.setEndereco(dto.getEndereco());
-        cliente.setProfissao(dto.getProfissao());
-        cliente.setSenha(dto.getSenha());
+        cliente.setRg(dto.rg());
+        cliente.setCpf(dto.cpf());
+        cliente.setNome(dto.nome());
+        cliente.setEndereco(dto.endereco());
+        cliente.setProfissao(dto.profissao());
+        cliente.setSenha(dto.senha());
         List<EntidadeEmpregadora> lista = new ArrayList<>();
-        List<EntidadeEmpregadoraDTO> entidades = dto.getEntidadesEmpregadoras() == null
+        List<EntidadeEmpregadoraDTO> entidades = dto.entidadesEmpregadoras() == null
                 ? Collections.emptyList()
-                : dto.getEntidadesEmpregadoras();
+                : dto.entidadesEmpregadoras();
         for (EntidadeEmpregadoraDTO ed : entidades) {
             EntidadeEmpregadora e = new EntidadeEmpregadora();
-            e.setNomeEmpresa(ed.getNomeEmpresa());
-            e.setCnpj(ed.getCnpj());
-            e.setRendimento(ed.getRendimento());
+            e.setNomeEmpresa(ed.nomeEmpresa());
+            e.setCnpj(ed.cnpj());
+            e.setRendimento(ed.rendimento());
             lista.add(e);
         }
         cliente.setEntidadesEmpregadoras(lista);
