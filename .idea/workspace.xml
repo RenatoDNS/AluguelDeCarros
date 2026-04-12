@@ -4,18 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6b71a0eb-5c93-4282-a834-ce6bb0e55b3c" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/backend/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README_template.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/br/pucminas/aluguelcarros/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/br/pucminas/aluguelcarros/config/SecurityConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/br/pucminas/aluguelcarros/controller/OpenApiController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/br/pucminas/aluguelcarros/controller/SwaggerController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/br/pucminas/aluguelcarros/controller/SwaggerController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/resources/META-INF/resources/webjars/swagger-ui/5.17.14/swagger-initializer.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/resources/swagger-ui/swagger-initializer.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/resources/application.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/README.md" afterDir="false" />
-    </list>
+    <list default="true" id="6b71a0eb-5c93-4282-a834-ce6bb0e55b3c" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -116,7 +105,7 @@
       <workItem from="1775085463040" duration="10053000" />
       <workItem from="1775171266411" duration="70000" />
       <workItem from="1775409790028" duration="718000" />
-      <workItem from="1775410523352" duration="5474000" />
+      <workItem from="1775410523352" duration="5577000" />
     </task>
     <servers />
   </component>
