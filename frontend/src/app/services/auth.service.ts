@@ -78,10 +78,6 @@ export class AuthService {
     return this.userTypeState() === userType;
   }
 
-  getDashboardRoute() {
-    return this.isClient() ? '/dashboard/descobrir' : '/dashboard';
-  }
-
   logout() {
     sessionStorage.removeItem(TOKEN_STORAGE_KEY);
     sessionStorage.removeItem(USER_TYPE_STORAGE_KEY);
