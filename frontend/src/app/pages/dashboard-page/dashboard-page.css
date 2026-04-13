@@ -3,5 +3,14 @@
 }
 
 .dashboard-shell {
-  box-shadow: 0 24px 80px -36px color-mix(in srgb, var(--color-primary-900) 35%, transparent);
+  box-shadow: 0 24px 80px -36px color-mix(in srgb, var(--color-primary-900) 24%, transparent);
+}
+
+.nav-link-active {
+  background: color-mix(in srgb, var(--color-primary-100) 88%, white);
+  color: var(--color-primary-700);
+}
+
+.role-badge {
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-primary-200) 80%, transparent);
 }

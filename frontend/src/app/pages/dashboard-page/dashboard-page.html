@@ -1,25 +1,55 @@
-<main class="min-h-screen px-4 py-6 sm:px-6 lg:px-8">
-  <section class="mx-auto max-w-6xl">
+<main class="min-h-screen px-4 pt-28 pb-6 sm:px-6 sm:pt-32 lg:px-8">
+  <section class="mx-auto max-w-6xl space-y-6">
     <header
-      class="dashboard-shell flex flex-col gap-4 rounded-[2rem] border border-white/70 bg-white/85 px-6 py-5 backdrop-blur sm:flex-row sm:items-center sm:justify-between"
+      class="dashboard-shell fixed inset-x-4 top-4 z-50 mx-auto flex max-w-6xl flex-col gap-4 rounded-[1.5rem] border border-white/70 bg-white/85 px-5 py-4 backdrop-blur lg:inset-x-6 lg:top-6 lg:flex-row lg:items-center lg:justify-between xl:inset-x-8"
     >
-      <div>
-        <p class="text-sm font-semibold uppercase tracking-[0.28em] text-primary-600">
-          Dashboard
-        </p>
-        <h1 class="mt-2 font-display text-3xl font-semibold text-slate-950">
-          Aluguel de Carros
-        </h1>
-        <p class="mt-2 text-sm text-slate-600">Sessão autenticada com sucesso.</p>
+      <div class="flex items-center gap-4">
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-[0.28em] text-primary-600">
+            Dashboard
+          </p>
+          <h1 class="mt-1 font-display text-2xl font-semibold text-slate-950">Aluguel de Carros</h1>
+        </div>
+
+        <span
+          class="role-badge inline-flex items-center rounded-full border border-primary-200 bg-primary-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-primary-700"
+        >
+          {{ userType() ?? 'auth' }}
+        </span>
       </div>
 
-      <button
-        type="button"
-        class="inline-flex items-center justify-center rounded-2xl border border-primary-200 bg-primary-50 px-4 py-3 text-sm font-semibold text-primary-800 transition hover:border-primary-300 hover:bg-primary-100 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary-200"
-        (click)="logout()"
-      >
-        Logout
-      </button>
+      <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
+        <nav class="flex flex-wrap items-center gap-2" aria-label="Navegação do dashboard">
+          <a
+            routerLink="/dashboard"
+            [routerLinkActive]="['nav-link-active']"
+            [routerLinkActiveOptions]="{ exact: true }"
+            class="nav-link inline-flex items-center rounded-full px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-primary-50 hover:text-primary-700"
+          >
+            Início
+          </a>
+
+          @if (showDescobrir()) {
+            <a
+              routerLink="/dashboard/descobrir"
+              routerLinkActive="nav-link-active"
+              class="nav-link inline-flex items-center rounded-full px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-primary-50 hover:text-primary-700"
+            >
+              Descobrir
+            </a>
+          }
+        </nav>
+
+        <button
+          type="button"
+          class="inline-flex items-center justify-center rounded-full border border-primary-200 bg-primary-50 px-4 py-2 text-sm font-semibold text-primary-800 transition hover:border-primary-300 hover:bg-primary-100 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary-200"
+          (click)="logout()"
+        >
+          Logout
+        </button>
+      </div>
     </header>
+
+    <router-outlet />
   </section>
 </main>

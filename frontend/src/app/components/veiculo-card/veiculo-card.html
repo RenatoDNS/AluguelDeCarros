@@ -1,0 +1,34 @@
+<article class="vehicle-card rounded-[1.75rem] border border-white/70 bg-white/90 p-6">
+  <p class="text-xs font-semibold uppercase tracking-[0.3em] text-primary-600">
+    {{ veiculo().matricula }}
+  </p>
+  <h2 class="mt-3 text-2xl font-semibold text-slate-950">
+    {{ veiculo().marca }} {{ veiculo().modelo }}
+  </h2>
+
+  <dl class="mt-5 grid gap-4 text-sm text-slate-600 sm:grid-cols-2">
+    <div>
+      <dt class="font-semibold text-slate-800">Placa</dt>
+      <dd class="mt-1">{{ veiculo().placa }}</dd>
+    </div>
+    <div>
+      <dt class="font-semibold text-slate-800">Marca</dt>
+      <dd class="mt-1">{{ veiculo().marca }}</dd>
+    </div>
+    <div>
+      <dt class="font-semibold text-slate-800">Modelo</dt>
+      <dd class="mt-1">{{ veiculo().modelo }}</dd>
+    </div>
+    <div>
+      <dt class="font-semibold text-slate-800">Ano</dt>
+      <dd class="mt-1">{{ veiculo().ano }}</dd>
+    </div>
+  </dl>
+
+  <button
+    type="button"
+    class="mt-6 inline-flex w-full items-center justify-center rounded-2xl bg-primary-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-primary-700 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary-200"
+  >
+    Alugar
+  </button>
+</article>

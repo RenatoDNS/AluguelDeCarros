@@ -35,7 +35,7 @@ export class LoginPageComponent {
 
   constructor() {
     if (this.authService.isAuthenticated()) {
-      void this.router.navigate(['/dashboard']);
+      void this.router.navigateByUrl(this.authService.getDashboardRoute());
     }
   }
 
@@ -55,7 +55,7 @@ export class LoginPageComponent {
       .pipe(finalize(() => this.loading.set(false)))
       .subscribe({
         next: () => {
-          this.router.navigate(['/dashboard']);
+          void this.router.navigateByUrl(this.authService.getDashboardRoute());
         },
         error: () => {
           this.errorMessage.set('Falha ao autenticar. Verifique o CPF e a senha informados.');
