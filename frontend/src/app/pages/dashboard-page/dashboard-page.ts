@@ -15,7 +15,7 @@ export class DashboardPageComponent {
   private readonly router = inject(Router);
 
   readonly userType = this.authService.userType;
-  readonly showDescobrir = computed(() => this.authService.isClient());
+  readonly showDescobrir = computed(() => this.authService.isCliente());
 
   logout() {
     this.authService.logout();

@@ -5,7 +5,7 @@ import { map, of, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 
 type LoginPayload = {
-  cpf: string;
+  login: string;
   password: string;
 };
 
@@ -14,13 +14,51 @@ type LoginRequest = {
   senha: string;
 };
 
+export type UserType = 'cliente' | 'empresa' | 'banco';
+
+export type EntidadeEmpregadoraPayload = {
+  nomeEmpresa: string;
+  cnpj: string;
+  rendimento: number;
+};
+
+export type ClienteRegisterPayload = {
+  userType: 'cliente';
+  rg: string;
+  cpf: string;
+  nome: string;
+  endereco: string;
+  profissao: string;
+  password: string;
+  entidadesEmpregadoras: EntidadeEmpregadoraPayload[];
+};
+
+export type EmpresaRegisterPayload = {
+  userType: 'empresa';
+  razaoSocial: string;
+  cnpj: string;
+  ramoDeAtividade: string;
+  password: string;
+};
+
+export type BancoRegisterPayload = {
+  userType: 'banco';
+  razaoSocial: string;
+  cnpj: string;
+  codigoBancario: string;
+  password: string;
+};
+
+export type RegisterPayload =
+  | ClienteRegisterPayload
+  | EmpresaRegisterPayload
+  | BancoRegisterPayload;
+
 type LoginResponse = {
   token: string;
   expiresIn: number;
   userType: UserType;
 };
-
-export type UserType = 'client' | 'agent';
 
 const TOKEN_STORAGE_KEY = 'auth_token';
 const USER_TYPE_STORAGE_KEY = 'auth_user_type';
@@ -36,12 +74,11 @@ export class AuthService {
   readonly token = computed(() => this.tokenState());
   readonly userType = computed(() => this.userTypeState());
   readonly isAuthenticated = computed(() => Boolean(this.tokenState()));
-  readonly isClient = computed(() => this.userTypeState() === 'client');
-  readonly isAgent = computed(() => this.userTypeState() === 'agent');
+  readonly isCliente = computed(() => this.userTypeState() === 'cliente');
 
   login(payload: LoginPayload) {
     const body: LoginRequest = {
-      login: payload.cpf,
+      login: payload.login,
       senha: payload.password,
     };
 
@@ -56,9 +93,9 @@ export class AuthService {
     // );
 
     const response: LoginResponse = {
-      token: 'mock-token-client',
+      token: 'mock-token-cliente',
       expiresIn: 3600,
-      userType: 'client',
+      userType: 'cliente',
     };
 
     void body;
@@ -72,6 +109,14 @@ export class AuthService {
       }),
       map(() => void 0),
     );
+  }
+
+  register(payload: RegisterPayload) {
+    // return this.http.post(`${environment.apiUrl}/auth/register`, payload).pipe(map(() => void 0));
+
+    void payload;
+
+    return of(null).pipe(map(() => void 0));
   }
 
   hasUserType(userType: UserType) {

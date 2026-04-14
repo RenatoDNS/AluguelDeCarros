@@ -6,7 +6,7 @@ import { roleGuard } from './guards/role.guard';
 export const routes: Routes = [
   {
     path: 'login',
-    loadComponent: () => import('./pages/login-page/login-page').then((m) => m.LoginPageComponent),
+    loadComponent: () => import('./pages/auth-page/auth-page').then((m) => m.AuthPageComponent),
   },
   {
     path: 'dashboard',
@@ -25,7 +25,7 @@ export const routes: Routes = [
       {
         path: 'descobrir',
         canActivate: [roleGuard],
-        data: { userType: 'client' },
+        data: { userType: 'cliente' },
         loadComponent: () =>
           import('./pages/descobrir-page/descobrir-page').then((m) => m.DescobrirPageComponent),
       },
