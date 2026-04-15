@@ -1,0 +1,75 @@
+@startuml DiagramaDeImplantacao_SistemaAluguelCarros
+
+left to right direction
+
+skinparam shadowing false
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontSize 12
+skinparam nodesep 80
+skinparam ranksep 80
+
+skinparam node {
+  BackgroundColor    #F4F9FD
+  BorderColor        #2E75B6
+  FontColor          #1F4E79
+  FontStyle          bold
+  BorderThickness    1.5
+}
+
+skinparam artifact {
+  BackgroundColor    #DEEAF1
+  BorderColor        #2E75B6
+  FontColor          #1F4E79
+  FontSize           12
+}
+
+skinparam database {
+  BackgroundColor    #FDE8EC
+  BorderColor        #2E75B6
+  FontColor          #1F4E79
+  BorderThickness    1.5
+}
+
+skinparam rectangle {
+  BackgroundColor    #F4F9FD
+  BorderColor        #2E75B6
+  FontColor          #1F4E79
+  BorderThickness    1.5
+}
+
+skinparam arrow {
+  Color              #1F4E79
+  Thickness          1.5
+}
+
+title Sistema de Aluguel de Carros - Diagrama de Implantacao
+
+actor "Usuario" as usuario
+
+node "Cliente" as cliente {
+  artifact "Browser\n(Frontend Angular)" as appAngular
+}
+
+node "Servidor Backend\nlocalhost:8080" as backend {
+  artifact "API REST Micronaut\nJava 21 + Netty" as api
+  artifact "Filtro JWT\nBearer token" as jwt
+  artifact "Swagger UI + OpenAPI\n/swagger-ui e /swagger.yml" as swagger
+}
+
+database "Banco H2\nem arquivo local\n./data/aluguelcarros" as h2
+
+api -[hidden]down-> jwt
+jwt -[hidden]down-> swagger
+
+usuario --> appAngular : Uso da aplicacao
+appAngular --> api : HTTP/REST + JSON\nAuthorization: Bearer JWT
+api --> jwt : Validacao de token
+api --> h2 : JDBC (Hibernate/JPA)
+api --> swagger : Exposicao da documentacao
+
+note top of backend
+Context path da API:
+/api/aluguelcarros/v1
+end note
+
+@enduml
