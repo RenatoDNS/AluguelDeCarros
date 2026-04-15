@@ -13,12 +13,12 @@ import { NgxMaskDirective } from 'ngx-mask';
 import { finalize } from 'rxjs';
 
 import {
-  AuthService,
   type BancoRegisterPayload,
   type ClienteRegisterPayload,
   type EmpresaRegisterPayload,
   type EntidadeEmpregadoraPayload,
-} from '../../services/auth.service';
+} from '../../models/auth';
+import { AuthService } from '../../services/auth.service';
 
 type AuthMode = 'login' | 'register';
 type RegisterUserType = 'cliente' | 'empresa' | 'banco';
@@ -108,7 +108,6 @@ function parseCurrencyValue(value: unknown) {
 
 @Component({
   selector: 'app-auth-page',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [ReactiveFormsModule, NgxMaskDirective],
   templateUrl: './auth-page.html',
   styleUrl: './auth-page.css',
@@ -144,21 +143,21 @@ export class AuthPageComponent {
     nome: ['', [Validators.required]],
     endereco: ['', [Validators.required]],
     profissao: ['', [Validators.required]],
-    password: ['', [Validators.required]],
+    senha: ['', [Validators.required]],
   });
 
   readonly empresaRegisterForm = this.formBuilder.nonNullable.group({
     razaoSocial: ['', [Validators.required]],
     cnpj: ['', [Validators.required, exactAlphaNumericValidator(14)]],
     ramoDeAtividade: ['', [Validators.required]],
-    password: ['', [Validators.required]],
+    senha: ['', [Validators.required]],
   });
 
   readonly bancoRegisterForm = this.formBuilder.nonNullable.group({
     razaoSocial: ['', [Validators.required]],
     cnpj: ['', [Validators.required, exactAlphaNumericValidator(14)]],
     codigoBancario: ['', [Validators.required]],
-    password: ['', [Validators.required]],
+    senha: ['', [Validators.required]],
   });
 
   readonly entidadeEmpregadoraForm = this.formBuilder.nonNullable.group({
@@ -302,17 +301,16 @@ export class AuthPageComponent {
           return null;
         }
 
-        const { rg, cpf, nome, endereco, profissao, password } =
+        const { rg, cpf, nome, endereco, profissao, senha } =
           this.clienteRegisterForm.getRawValue();
 
         return {
-          userType: 'cliente',
           rg: digitsOnly(rg),
           cpf: digitsOnly(cpf),
           nome,
           endereco,
           profissao,
-          password,
+          senha,
           entidadesEmpregadoras: this.entidadesEmpregadoras(),
         };
       }
@@ -322,15 +320,14 @@ export class AuthPageComponent {
           return null;
         }
 
-        const { razaoSocial, cnpj, ramoDeAtividade, password } =
+        const { razaoSocial, cnpj, ramoDeAtividade, senha } =
           this.empresaRegisterForm.getRawValue();
 
         return {
-          userType: 'empresa',
           razaoSocial,
           cnpj: alphaNumericOnly(cnpj),
           ramoDeAtividade,
-          password,
+          senha,
         };
       }
       case 'banco': {
@@ -339,15 +336,13 @@ export class AuthPageComponent {
           return null;
         }
 
-        const { razaoSocial, cnpj, codigoBancario, password } =
-          this.bancoRegisterForm.getRawValue();
+        const { razaoSocial, cnpj, codigoBancario, senha } = this.bancoRegisterForm.getRawValue();
 
         return {
-          userType: 'banco',
           razaoSocial,
           cnpj: alphaNumericOnly(cnpj),
           codigoBancario,
-          password,
+          senha,
         };
       }
     }
@@ -362,7 +357,7 @@ export class AuthPageComponent {
           nome: '',
           endereco: '',
           profissao: '',
-          password: '',
+          senha: '',
         });
         this.entidadesEmpregadoras.set([]);
         break;
@@ -371,7 +366,7 @@ export class AuthPageComponent {
           razaoSocial: '',
           cnpj: '',
           ramoDeAtividade: '',
-          password: '',
+          senha: '',
         });
         break;
       case 'banco':
@@ -379,7 +374,7 @@ export class AuthPageComponent {
           razaoSocial: '',
           cnpj: '',
           codigoBancario: '',
-          password: '',
+          senha: '',
         });
         break;
     }

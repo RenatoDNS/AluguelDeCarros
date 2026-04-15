@@ -29,6 +29,15 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./pages/descobrir-page/descobrir-page').then((m) => m.DescobrirPageComponent),
       },
+      {
+        path: 'meus-pedidos',
+        canActivate: [roleGuard],
+        data: { userType: 'cliente' },
+        loadComponent: () =>
+          import('./pages/meus-pedidos-page/meus-pedidos-page').then(
+            (m) => m.MeusPedidosPageComponent,
+          ),
+      },
     ],
   },
   {

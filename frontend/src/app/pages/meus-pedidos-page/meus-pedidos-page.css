@@ -1,0 +1,7 @@
+:host {
+  display: block;
+}
+
+.pedido-card {
+  box-shadow: 0 24px 80px -36px color-mix(in srgb, var(--color-primary-900) 20%, transparent);
+}

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 
 import { Veiculo } from '../../models/veiculo';
 
@@ -10,4 +10,9 @@ import { Veiculo } from '../../models/veiculo';
 })
 export class VeiculoCardComponent {
   readonly veiculo = input.required<Veiculo>();
+  readonly alugar = output<Veiculo>();
+
+  requestAluguel() {
+    this.alugar.emit(this.veiculo());
+  }
 }

@@ -23,6 +23,16 @@
   );
 }
 
+.dashboard-sedan-wrapper {
+  position: relative;
+}
+
+.dashboard-sedan {
+  display: block;
+  width: min(100%, 52rem);
+  object-fit: contain;
+}
+
 .avatar {
   background: linear-gradient(
     135deg,

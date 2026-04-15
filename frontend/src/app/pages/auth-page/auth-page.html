@@ -59,7 +59,9 @@
             @if (isLoginMode()) {
               <form class="space-y-6" [formGroup]="loginForm" (ngSubmit)="submitLogin()" novalidate>
                 <div class="space-y-2">
-                  <label class="text-sm font-semibold text-slate-800" for="login">CPF ou CNPJ</label>
+                  <label class="text-sm font-semibold text-slate-800" for="login"
+                    >CPF ou CNPJ</label
+                  >
                   <input
                     id="login"
                     type="text"
@@ -71,7 +73,9 @@
                     class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-base text-slate-950 outline-none transition focus:border-primary-500 focus:ring-4 focus:ring-primary-100"
                   />
                   @if (isInvalid(loginForm.controls.login)) {
-                    <p class="text-sm text-primary-700">Informe um CPF com 11 dígitos ou um CNPJ com 14 dígitos.</p>
+                    <p class="text-sm text-primary-700">
+                      Informe um CPF com 11 dígitos ou um CNPJ com 14 dígitos.
+                    </p>
                   }
                 </div>
 
@@ -153,12 +157,14 @@
                 </button>
               </div>
 
-              <form class="space-y-6" (ngSubmit)="submitRegister()" novalidate>
+              <form class="space-y-6" (submit)="$event.preventDefault(); submitRegister()" novalidate>
                 @if (registerUserType() === 'cliente') {
                   <div [formGroup]="clienteRegisterForm" class="space-y-4">
                     <div class="grid gap-4 sm:grid-cols-2">
                       <div class="space-y-2">
-                        <label class="text-sm font-semibold text-slate-800" for="cliente-rg">RG</label>
+                        <label class="text-sm font-semibold text-slate-800" for="cliente-rg"
+                          >RG</label
+                        >
                         <input
                           id="cliente-rg"
                           type="text"
@@ -174,7 +180,9 @@
                       </div>
 
                       <div class="space-y-2">
-                        <label class="text-sm font-semibold text-slate-800" for="cliente-cpf">CPF</label>
+                        <label class="text-sm font-semibold text-slate-800" for="cliente-cpf"
+                          >CPF</label
+                        >
                         <input
                           id="cliente-cpf"
                           type="text"
@@ -185,13 +193,17 @@
                           class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-base text-slate-950 outline-none transition focus:border-primary-500 focus:ring-4 focus:ring-primary-100"
                         />
                         @if (isInvalid(clienteRegisterForm.controls.cpf)) {
-                          <p class="text-sm text-primary-700">O CPF deve conter exatamente 11 dígitos.</p>
+                          <p class="text-sm text-primary-700">
+                            O CPF deve conter exatamente 11 dígitos.
+                          </p>
                         }
                       </div>
                     </div>
 
                     <div class="space-y-2">
-                      <label class="text-sm font-semibold text-slate-800" for="cliente-nome">Nome</label>
+                      <label class="text-sm font-semibold text-slate-800" for="cliente-nome"
+                        >Nome</label
+                      >
                       <input
                         id="cliente-nome"
                         type="text"
@@ -205,7 +217,9 @@
                     </div>
 
                     <div class="space-y-2">
-                      <label class="text-sm font-semibold text-slate-800" for="cliente-endereco">Endereço</label>
+                      <label class="text-sm font-semibold text-slate-800" for="cliente-endereco"
+                        >Endereço</label
+                      >
                       <input
                         id="cliente-endereco"
                         type="text"
@@ -219,7 +233,9 @@
                     </div>
 
                     <div class="space-y-2">
-                      <label class="text-sm font-semibold text-slate-800" for="cliente-profissao">Profissão</label>
+                      <label class="text-sm font-semibold text-slate-800" for="cliente-profissao"
+                        >Profissão</label
+                      >
                       <input
                         id="cliente-profissao"
                         type="text"
@@ -240,7 +256,10 @@
                             Máximo de {{ maxEntidadesEmpregadoras }} entidades empregadoras.
                           </p>
                           <p class="mt-1 text-xs font-medium text-primary-700">
-                            {{ entidadesEmpregadoras().length }}/{{ maxEntidadesEmpregadoras }} cadastradas
+                            {{ entidadesEmpregadoras().length }}/{{
+                              maxEntidadesEmpregadoras
+                            }}
+                            cadastradas
                           </p>
                         </div>
                         <button
@@ -255,11 +274,16 @@
 
                       @if (entidadesEmpregadoras().length) {
                         <div class="mt-4 space-y-3">
-                          @for (entidade of entidadesEmpregadoras(); track entidade.cnpj + '-' + $index) {
+                          @for (
+                            entidade of entidadesEmpregadoras();
+                            track entidade.cnpj + '-' + $index
+                          ) {
                             <div class="rounded-2xl border border-slate-200 bg-white px-4 py-3">
                               <div class="flex items-start justify-between gap-4">
                                 <div class="space-y-1 text-sm text-slate-700">
-                                  <p class="font-semibold text-slate-950">{{ entidade.nomeEmpresa }}</p>
+                                  <p class="font-semibold text-slate-950">
+                                    {{ entidade.nomeEmpresa }}
+                                  </p>
                                   <p>CNPJ: {{ entidade.cnpj }}</p>
                                   <p>Rendimento: R$ {{ entidade.rendimento }}</p>
                                 </div>
@@ -275,7 +299,9 @@
                           }
                         </div>
                       } @else {
-                        <p class="mt-4 text-sm text-slate-600">Nenhuma entidade empregadora adicionada.</p>
+                        <p class="mt-4 text-sm text-slate-600">
+                          Nenhuma entidade empregadora adicionada.
+                        </p>
                       }
                     </div>
 
@@ -286,11 +312,11 @@
                       <input
                         id="cliente-password"
                         type="password"
-                        formControlName="password"
+                        formControlName="senha"
                         placeholder="Sua senha"
                         class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-base text-slate-950 outline-none transition focus:border-primary-500 focus:ring-4 focus:ring-primary-100"
                       />
-                      @if (isInvalid(clienteRegisterForm.controls.password)) {
+                      @if (isInvalid(clienteRegisterForm.controls.senha)) {
                         <p class="text-sm text-primary-700">A senha é obrigatória.</p>
                       }
                     </div>
@@ -300,7 +326,10 @@
                 @if (registerUserType() === 'empresa') {
                   <div [formGroup]="empresaRegisterForm" class="space-y-4">
                     <div class="space-y-2">
-                      <label class="text-sm font-semibold text-slate-800" for="empresa-razao-social">
+                      <label
+                        class="text-sm font-semibold text-slate-800"
+                        for="empresa-razao-social"
+                      >
                         Razão social
                       </label>
                       <input
@@ -316,7 +345,9 @@
                     </div>
 
                     <div class="space-y-2">
-                      <label class="text-sm font-semibold text-slate-800" for="empresa-cnpj">CNPJ</label>
+                      <label class="text-sm font-semibold text-slate-800" for="empresa-cnpj"
+                        >CNPJ</label
+                      >
                       <input
                         id="empresa-cnpj"
                         type="text"
@@ -327,7 +358,9 @@
                         class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-base uppercase text-slate-950 outline-none transition focus:border-primary-500 focus:ring-4 focus:ring-primary-100"
                       />
                       @if (isInvalid(empresaRegisterForm.controls.cnpj)) {
-                        <p class="text-sm text-primary-700">O CNPJ deve conter exatamente 14 letras ou números.</p>
+                        <p class="text-sm text-primary-700">
+                          O CNPJ deve conter exatamente 14 letras ou números.
+                        </p>
                       }
                     </div>
 
@@ -354,11 +387,11 @@
                       <input
                         id="empresa-password"
                         type="password"
-                        formControlName="password"
+                        formControlName="senha"
                         placeholder="Sua senha"
                         class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-base text-slate-950 outline-none transition focus:border-primary-500 focus:ring-4 focus:ring-primary-100"
                       />
-                      @if (isInvalid(empresaRegisterForm.controls.password)) {
+                      @if (isInvalid(empresaRegisterForm.controls.senha)) {
                         <p class="text-sm text-primary-700">A senha é obrigatória.</p>
                       }
                     </div>
@@ -384,7 +417,9 @@
                     </div>
 
                     <div class="space-y-2">
-                      <label class="text-sm font-semibold text-slate-800" for="banco-cnpj">CNPJ</label>
+                      <label class="text-sm font-semibold text-slate-800" for="banco-cnpj"
+                        >CNPJ</label
+                      >
                       <input
                         id="banco-cnpj"
                         type="text"
@@ -395,7 +430,9 @@
                         class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-base uppercase text-slate-950 outline-none transition focus:border-primary-500 focus:ring-4 focus:ring-primary-100"
                       />
                       @if (isInvalid(bancoRegisterForm.controls.cnpj)) {
-                        <p class="text-sm text-primary-700">O CNPJ deve conter exatamente 14 letras ou números.</p>
+                        <p class="text-sm text-primary-700">
+                          O CNPJ deve conter exatamente 14 letras ou números.
+                        </p>
                       }
                     </div>
 
@@ -422,11 +459,11 @@
                       <input
                         id="banco-password"
                         type="password"
-                        formControlName="password"
+                        formControlName="senha"
                         placeholder="Sua senha"
                         class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-base text-slate-950 outline-none transition focus:border-primary-500 focus:ring-4 focus:ring-primary-100"
                       />
-                      @if (isInvalid(bancoRegisterForm.controls.password)) {
+                      @if (isInvalid(bancoRegisterForm.controls.senha)) {
                         <p class="text-sm text-primary-700">A senha é obrigatória.</p>
                       }
                     </div>
@@ -477,8 +514,12 @@
       <div class="dialog-panel w-full max-w-lg rounded-[1.75rem] bg-white p-6 shadow-2xl">
         <div class="flex items-start justify-between gap-4">
           <div>
-            <p class="text-sm font-semibold uppercase tracking-[0.28em] text-primary-600">Cliente</p>
-            <h3 class="mt-2 text-2xl font-semibold text-slate-950">Adicionar entidade empregadora</h3>
+            <p class="text-sm font-semibold uppercase tracking-[0.28em] text-primary-600">
+              Cliente
+            </p>
+            <h3 class="mt-2 text-2xl font-semibold text-slate-950">
+              Adicionar entidade empregadora
+            </h3>
           </div>
           <button
             type="button"
@@ -491,7 +532,9 @@
 
         <form class="mt-6 space-y-4" [formGroup]="entidadeEmpregadoraForm" novalidate>
           <div class="space-y-2">
-            <label class="text-sm font-semibold text-slate-800" for="entidade-nome">Nome da empresa</label>
+            <label class="text-sm font-semibold text-slate-800" for="entidade-nome"
+              >Nome da empresa</label
+            >
             <input
               id="entidade-nome"
               type="text"
@@ -516,7 +559,9 @@
               class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-base uppercase text-slate-950 outline-none transition focus:border-primary-500 focus:ring-4 focus:ring-primary-100"
             />
             @if (isInvalid(entidadeEmpregadoraForm.controls.cnpj)) {
-              <p class="text-sm text-primary-700">O CNPJ deve conter exatamente 14 letras ou números.</p>
+              <p class="text-sm text-primary-700">
+                O CNPJ deve conter exatamente 14 letras ou números.
+              </p>
             }
           </div>
 

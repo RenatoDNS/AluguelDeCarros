@@ -8,8 +8,93 @@
   </div>
 
   <div class="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-    @for (veiculo of veiculos(); track veiculo.matricula) {
-      <app-veiculo-card [veiculo]="veiculo" />
+    @for (veiculo of veiculos(); track veiculo.id) {
+      <app-veiculo-card [veiculo]="veiculo" (alugar)="openAluguelDialog($event)" />
     }
   </div>
+
+  @if (dialogOpen() && selectedVeiculo(); as veiculo) {
+    <div class="dialog-backdrop fixed inset-0 z-50 flex items-center justify-center px-4 py-6">
+      <div class="dialog-panel w-full max-w-md rounded-[1.75rem] bg-white p-6 shadow-2xl">
+        <div class="flex items-start justify-between gap-4">
+          <div>
+            <p class="text-sm font-semibold uppercase tracking-[0.28em] text-primary-600">Alugar</p>
+            <h2 class="mt-2 text-2xl font-semibold text-slate-950">
+              {{ veiculo.marca }} {{ veiculo.modelo }}
+            </h2>
+          </div>
+          <button
+            type="button"
+            class="rounded-full px-3 py-1 text-sm font-semibold text-slate-500 transition hover:bg-slate-100 hover:text-slate-800"
+            (click)="closeAluguelDialog()"
+          >
+            Fechar
+          </button>
+        </div>
+
+        <form class="mt-6 space-y-4" [formGroup]="aluguelForm" novalidate>
+          @if (isInicioStep()) {
+            <div class="space-y-2">
+              <label class="text-sm font-semibold text-slate-800" for="data-inicio">
+                Selecione a data de início
+              </label>
+              <input
+                id="data-inicio"
+                type="date"
+                formControlName="dataInicio"
+                class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-base text-slate-950 outline-none transition focus:border-primary-500 focus:ring-4 focus:ring-primary-100"
+              />
+            </div>
+
+            <button
+              type="button"
+              class="login-submit inline-flex w-full items-center justify-center rounded-2xl px-4 py-3 text-sm font-semibold text-white transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-60"
+              (click)="nextStep()"
+              [disabled]="loading()"
+            >
+              Próximo →
+            </button>
+          } @else {
+            <div class="space-y-2">
+              <label class="text-sm font-semibold text-slate-800" for="data-fim">
+                Selecione a data de fim:
+              </label>
+              <input
+                id="data-fim"
+                type="date"
+                formControlName="dataFim"
+                [min]="minDataFim()"
+                class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-base text-slate-950 outline-none transition focus:border-primary-500 focus:ring-4 focus:ring-primary-100"
+              />
+            </div>
+
+            <button
+              type="button"
+              class="login-submit inline-flex w-full items-center justify-center rounded-2xl px-4 py-3 text-sm font-semibold text-white transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-60"
+              (click)="submitPedido()"
+              [disabled]="loading()"
+            >
+              {{ loading() ? 'Enviando...' : 'Fazer Pedido' }}
+            </button>
+          }
+
+          @if (errorMessage()) {
+            <div
+              class="rounded-2xl border border-primary-200 bg-primary-50 px-4 py-3 text-sm text-primary-800"
+            >
+              {{ errorMessage() }}
+            </div>
+          }
+
+          @if (successMessage()) {
+            <div
+              class="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800"
+            >
+              {{ successMessage() }}
+            </div>
+          }
+        </form>
+      </div>
+    </div>
+  }
 </section>
