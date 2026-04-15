@@ -1,4 +1,4 @@
-package br.pucminas.aluguelcarros.dto;
+package br.pucminas.aluguelcarros.dto.request;
 
 import io.micronaut.serde.annotation.Serdeable;
 import jakarta.validation.Valid;
@@ -16,6 +16,8 @@ public record ClienteRequestDTO(
         @NotBlank String endereco,
         @NotBlank String profissao,
         @NotBlank String senha,
-        @NotEmpty @Size(min = 1, max = 3) @Valid List<EntidadeEmpregadoraDTO> entidadesEmpregadoras
+        @NotEmpty @Size(min = 1, max = 3) @Valid List<EntidadeEmpregadoraRequestDTO> entidadesEmpregadoras
 ) {
 }
+
+

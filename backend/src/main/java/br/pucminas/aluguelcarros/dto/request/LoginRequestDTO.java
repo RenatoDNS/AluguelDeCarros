@@ -1,4 +1,4 @@
-package br.pucminas.aluguelcarros.dto;
+package br.pucminas.aluguelcarros.dto.request;
 
 import io.micronaut.serde.annotation.Serdeable;
 import jakarta.validation.constraints.NotBlank;
@@ -9,3 +9,4 @@ public record LoginRequestDTO(
         @NotBlank String senha
 ) {
 }
+

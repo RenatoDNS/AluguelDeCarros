@@ -25,6 +25,8 @@ public class ClienteService {
 
     @Transactional
     public Cliente cadastrar(Cliente cliente) {
+        cliente.setCpf(normalizarCpf(cliente.getCpf()));
+        cliente.setRg(normalizarTexto(cliente.getRg()));
         validarEmpregadoras(cliente.getEntidadesEmpregadoras());
         if (clienteRepository.findByCpf(cliente.getCpf()).isPresent()) {
             throw new RegraDeNegocioException("CPF já cadastrado.");
@@ -35,17 +37,27 @@ public class ClienteService {
         cliente.setLogin(cliente.getCpf());
         cliente.setSenha(hashSenha(cliente.getSenha()));
         vincularEmpregadoras(cliente);
-        return clienteRepository.save(cliente);
+        return inicializarRelacionamentos(clienteRepository.save(cliente));
     }
 
     @Transactional
     public Cliente buscarPorId(Long id) {
-        return clienteRepository.findById(id)
+        Cliente cliente = clienteRepository.findById(id)
                 .orElseThrow(() -> new EntidadeNaoEncontradaException("Cliente não encontrado."));
+        return inicializarRelacionamentos(cliente);
+    }
+
+    @Transactional
+    public List<Cliente> listar() {
+        List<Cliente> clientes = new ArrayList<>();
+        clienteRepository.findAll().forEach(cliente -> clientes.add(inicializarRelacionamentos(cliente)));
+        return clientes;
     }
 
     @Transactional
     public Cliente atualizar(Cliente cliente) {
+        cliente.setCpf(normalizarCpf(cliente.getCpf()));
+        cliente.setRg(normalizarTexto(cliente.getRg()));
         validarEmpregadoras(cliente.getEntidadesEmpregadoras());
         Cliente existente = clienteRepository.findById(cliente.getId())
                 .orElseThrow(() -> new EntidadeNaoEncontradaException("Cliente não encontrado."));
@@ -70,15 +82,14 @@ public class ClienteService {
             e.setCliente(existente);
             existente.getEntidadesEmpregadoras().add(e);
         }
-        return clienteRepository.save(existente);
+        return inicializarRelacionamentos(clienteRepository.save(existente));
     }
 
     @Transactional
     public void deletar(Long id) {
-        if (clienteRepository.findById(id).isEmpty()) {
-            throw new EntidadeNaoEncontradaException("Cliente não encontrado.");
-        }
-        clienteRepository.deleteById(id);
+        Cliente cliente = clienteRepository.findById(id)
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Cliente não encontrado."));
+        clienteRepository.delete(cliente);
     }
 
     private static void validarEmpregadoras(List<EntidadeEmpregadora> lista) {
@@ -98,5 +109,18 @@ public class ClienteService {
 
     private static String hashSenha(String senhaPlana) {
         return BCrypt.withDefaults().hashToString(12, senhaPlana.toCharArray());
+    }
+
+    private static String normalizarCpf(String cpf) {
+        return normalizarTexto(cpf).replaceAll("\\D", "");
+    }
+
+    private static String normalizarTexto(String valor) {
+        return valor == null ? "" : valor.trim();
+    }
+
+    private static Cliente inicializarRelacionamentos(Cliente cliente) {
+        cliente.getEntidadesEmpregadoras().size();
+        return cliente;
     }
 }

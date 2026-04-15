@@ -1,12 +1,12 @@
 # 🚗 Aluguel de Carros — API REST (Backend)
 
-> API REST em **Micronaut** para autenticação, CRUD de clientes e integração com banco de dados **H2**, incluindo documentação **OpenAPI/Swagger**.
+> API REST em **Micronaut** para autenticação, CRUD completo das entidades de domínio e fluxos de negócio, com integração ao banco **H2** e documentação **OpenAPI/Swagger**.
 
 <table>
   <tr>
     <td width="800px">
       <div align="justify">
-        Este <b>README.md</b> descreve o <b>Backend</b> do projeto <b>Aluguel de Carros</b>, uma API REST que implementa operações de autenticação via JWT e gerenciamento completo de clientes (com entidades empregadoras). Segue uma arquitetura em camadas (controller, facade, service, repository) com persistência via JPA/Hibernate. A documentação interativa fica disponível via <b>Swagger UI</b> em <code>src/main/resources/swagger.yml</code>.
+        Este <b>README.md</b> descreve o <b>Backend</b> do projeto <b>Aluguel de Carros</b>, uma API REST que implementa autenticação via JWT, CRUD completo de clientes, empresas, bancos, automóveis, pedidos, pareceres, contratos e contratos de crédito, além de fluxos de negócio por perfil. Segue uma arquitetura em camadas (controller, facade, service, repository) com persistência via JPA/Hibernate. A documentação interativa fica disponível via <b>Swagger UI</b> em <code>src/main/resources/swagger.yml</code>.
       </div>
     </td>
     <td>
@@ -31,6 +31,7 @@
 - [Links Úteis](#-links-úteis)
 - [Sobre o Projeto](#-sobre-o-projeto)
 - [Funcionalidades Principais](#-funcionalidades-principais)
+- [Autenticação por Perfil](#-autenticação-por-perfil)
 - [Tecnologias Utilizadas](#-tecnologias-utilizadas)
 - [Arquitetura](#-arquitetura)
 - [Instalação e Execução](#-instalação-e-execução)
@@ -59,10 +60,10 @@
 
 O **Backend do Aluguel de Carros** é uma API HTTP desenvolvida com **Micronaut** que oferece:
 
-- **Gestão centralizada de clientes** — dados pessoais, autenticação segura com hash (BCrypt) e até 3 entidades empregadoras por cliente.
+- **Gestão das entidades de domínio** — clientes, empresas, bancos, automóveis, pedidos, pareceres, contratos e contratos de crédito.
 - **Autenticação JWT** — emissão e validação de tokens para proteção de rotas sensíveis.
 - **API REST bem definida** — endpoints documentados via OpenAPI/Swagger com tratamento padronizado de erros.
-- **Persistência com JPA/Hibernate** — usando banco H2 em memória (desenvolvimento) com suporte a arquivo (produção).
+- **Persistência com JPA/Hibernate** — usando banco H2 em arquivo local por padrão (`./data/aluguelcarros`).
 
 **Por que existe:** oferece um serviço HTTP seguro e bem documentado para integração com front-ends e outros sistemas.
 
@@ -75,12 +76,25 @@ O **Backend do Aluguel de Carros** é uma API HTTP desenvolvida com **Micronaut*
 ## ✨ Funcionalidades Principais
 
 - 🔐 **Cadastro Público de Cliente** — `POST /clientes` (sem autenticação); inclui lista de 1 a 3 entidades empregadoras.
-- 🔑 **Autenticação JWT** — `POST /auth/login` por CPF ou login customizado; `POST /auth/logout` valida o token.
-- 📋 **CRUD de Clientes** — busca, atualização e exclusão por `id` com autenticação via Bearer token.
-- ✔️ **Validação de Regras de Negócio** — limite de 3 entidades por cliente, hash de senha com BCrypt.
+- 🔑 **Autenticação JWT por Perfil** — `POST /auth/login` por CPF (cliente) ou CNPJ (empresa/banco), com retorno de `userType`.
+- 👤 **Perfil Autenticado** — `GET /auth/me` retorna `id`, `login` e `userType` a partir do token.
+- 📋 **CRUDs completos** — `clientes`, `bancos`, `empresas`, `automoveis`, `pedidos`, `pareceres`, `contratos` e `contratos-credito`.
+- 🔄 **Fluxos de Negócio por Perfil** — cancelamento de pedido, avaliação de pedido por agente, associação de crédito por banco, execução de contrato por pedido e listagens por contexto autenticado.
+- ✔️ **Validação de Regras de Negócio** — CPF/CNPJ/placa/matrícula únicos, limites de entidades empregadoras, status e regras de transição de fluxo.
 - 📊 **Tratamento Robusto de Erros** — respostas JSON com mensagens claras para 404 (não encontrado) e 422 (regra de negócio).
 - 🔒 **Segurança em Rotas Protegidas** — 401 quando token inválido ou ausente.
 - 📖 **Documentação Automática** — Swagger UI e contrato OpenAPI completo em YAML.
+
+---
+
+## 🔐 Autenticação por Perfil
+
+- **Login único** — `POST /auth/login` com `login` e `senha`.
+- **Cliente** — autentica por **CPF** e recebe `userType: cliente`.
+- **Empresa** — autentica por **CNPJ** e recebe `userType: empresa`.
+- **Banco** — autentica por **CNPJ** e recebe `userType: banco`.
+- **Perfil autenticado** — `GET /auth/me` retorna `id`, `login` e `userType` do token.
+- **Rotas públicas atuais** — `POST /clientes`, `POST /bancos`, `POST /empresas`, `POST /auth/login` e `GET /swagger-ui`.
 
 ---
 
@@ -151,18 +165,17 @@ A aplicação segue um **padrão monolítico em camadas**:
 
 ### 💾 Banco de Dados (H2)
 
-O projeto utiliza **H2 em memória** por padrão: o schema é criado/atualizado automaticamente pelo Hibernate na inicialização.
+O projeto utiliza **H2 em arquivo** por padrão (`./data/aluguelcarros`): o schema é criado/atualizado automaticamente pelo Hibernate na inicialização.
 
-**Para persistência em arquivo (desenvolvimento local):**
-Descomente a linha correspondente em `src/main/resources/application.yml`:
+Trecho atual em `src/main/resources/application.yml`:
 
 ```yaml
 datasources:
   default:
-    url: jdbc:h2:file:./data/aluguelcarros
+    url: jdbc:h2:file:./data/aluguelcarros;DB_CLOSE_DELAY=-1;MODE=LEGACY
     username: sa
     password: ''
-    driverClassName: org.h2.Driver
+    driver-class-name: org.h2.Driver
 ```
 
 ---
@@ -210,37 +223,42 @@ backend/
 │   │   │   └── SecurityConfig.java          # Rotas públicas e protegidas
 │   │   │
 │   │   ├── controller/                      # 🎮 REST Endpoints
-│   │   │   ├── AuthController.java          # /auth/login, /auth/logout
-│   │   │   └── ClienteController.java       # /clientes (CRUD)
+│   │   │   ├── AuthController.java
+│   │   │   ├── ClienteController.java
+│   │   │   ├── BancoController.java / EmpresaController.java
+│   │   │   ├── AutomovelController.java / PedidoController.java
+│   │   │   ├── ParecerController.java / ContratoController.java
+│   │   │   ├── ContratoCreditoController.java
+│   │   │   ├── AgentePedidoController.java / BancoPedidoController.java
+│   │   │   └── SwaggerController.java
 │   │   │
 │   │   ├── facade/                          # 🎭 Conversão DTOs ↔ Entidades
-│   │   │   └── ClienteFacade.java
+│   │   │   ├── *Facade.java (Cliente/Banco/Empresa/Automovel/...)
+│   │   │   └── Facades de fluxo por entidade
 │   │   │
 │   │   ├── service/                         # ⚙️ Lógica e Regras de Negócio
-│   │   │   ├── AuthService.java             # Autenticação e geração de JWT
-│   │   │   └── ClienteService.java          # Operações com clientes
+│   │   │   ├── AuthService.java
+│   │   │   ├── *Service.java (CRUD e regras de negócio)
+│   │   │   └── Serviços de fluxo por perfil
 │   │   │
 │   │   ├── repository/                      # 🗄️ Acesso a Dados (JPA)
-│   │   │   ├── ClienteRepository.java
-│   │   │   └── EntidadeEmpregadoraRepository.java
+│   │   │   ├── ClienteRepository.java / EmpresaRepository.java / BancoRepository.java
+│   │   │   ├── AutomovelRepository.java / PedidoRepository.java / ParecerRepository.java
+│   │   │   └── ContratoRepository.java / ContratoCreditoRepository.java
 │   │   │
 │   │   ├── model/                           # 🧬 Entidades JPA
-│   │   │   ├── Cliente.java
-│   │   │   └── EntidadeEmpregadora.java
+│   │   │   ├── Cliente.java / EntidadeEmpregadora.java / Automovel.java
+│   │   │   ├── Pedido.java / Parecer.java / Contrato.java / ContratoCredito.java
+│   │   │   └── Empresa.java / Banco.java / Usuario.java / Agente.java
 │   │   │
 │   │   ├── dto/                             # ✉️ Data Transfer Objects
-│   │   │   ├── ClienteRequest.java
-│   │   │   ├── ClienteResponse.java
-│   │   │   ├── LoginRequest.java
-│   │   │   └── AuthTokenResponse.java
+│   │   │   ├── request/                     # DTOs de entrada (*RequestDTO)
+│   │   │   └── response/                    # DTOs de saída (*ResponseDTO)
 │   │   │
 │   │   ├── exception/                       # 💥 Exceções e Handlers
-│   │   │   ├── ResourceNotFoundException.java
-│   │   │   ├── BusinessRuleException.java
+│   │   │   ├── EntidadeNaoEncontradaException.java
+│   │   │   ├── RegraDeNegocioException.java
 │   │   │   └── GlobalExceptionHandler.java  # Tratamento global
-│   │   │
-│   │   └── util/                            # 🛠️ Funções utilitárias
-│   │       └── PasswordUtils.java
 │   │
 │   └── resources/
 │       ├── application.yml                  # ⚙️ Configuração principal
@@ -250,7 +268,8 @@ backend/
 │           └── swagger-initializer.js       # 🎨 Customização Swagger UI
 │
 ├── src/test/
-│   └── java/br/pucminas/aluguelcarros/     # 🧪 Testes unitários/integração
+│   ├── java/br/pucminas/                   # 🧪 Testes unitários/integração
+│   └── resources/application-test.yml      # ⚙️ Configuração de teste (H2 em memória)
 │
 └── target/                                  # 📦 Artefatos compilados (JAR)
 ```
@@ -261,14 +280,14 @@ backend/
 
 ### Executar Testes Unitários
 
-```bash
-./mvnw test
+```powershell
+.\mvnw.bat test
 ```
 
 ### Executar com Coverage
 
-```bash
-./mvnw test jacoco:report
+```powershell
+.\mvnw.bat test jacoco:report
 ```
 
 ---

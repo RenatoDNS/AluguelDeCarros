@@ -20,6 +20,8 @@ public class SecurityConfig {
     public List<String> rotasPublicas() {
         return List.of(
                 "POST /clientes",
+                "POST /bancos",
+                "POST /empresas",
                 "POST /auth/login",
                 "GET /swagger-ui"
         );

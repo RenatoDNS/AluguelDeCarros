@@ -42,7 +42,7 @@ datasources:
 jpa:
   default:
     entity-scan:
-      packages: br.pucminas.aluguelcarros.model
+      packages: 'br.pucminas.aluguelcarros.model'
     properties:
       hibernate:
         hbm2ddl:

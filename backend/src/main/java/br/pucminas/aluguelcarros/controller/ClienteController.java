@@ -1,7 +1,7 @@
 package br.pucminas.aluguelcarros.controller;
 
-import br.pucminas.aluguelcarros.dto.ClienteRequestDTO;
-import br.pucminas.aluguelcarros.dto.ClienteResponseDTO;
+import br.pucminas.aluguelcarros.dto.request.ClienteRequestDTO;
+import br.pucminas.aluguelcarros.dto.response.ClienteResponseDTO;
 import br.pucminas.aluguelcarros.facade.ClienteFacade;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.annotation.Body;
@@ -13,6 +13,8 @@ import io.micronaut.http.annotation.Post;
 import io.micronaut.http.annotation.Put;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
+
+import java.util.List;
 
 @Controller("/clientes")
 public class ClienteController {
@@ -32,6 +34,11 @@ public class ClienteController {
     @Get("/{id}")
     public ClienteResponseDTO buscarPorId(@PathVariable Long id) {
         return clienteFacade.buscar(id);
+    }
+
+    @Get
+    public List<ClienteResponseDTO> listar() {
+        return clienteFacade.listar();
     }
 
     @Put("/{id}")

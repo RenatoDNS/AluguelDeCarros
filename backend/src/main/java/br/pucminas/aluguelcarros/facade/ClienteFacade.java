@@ -1,8 +1,9 @@
 package br.pucminas.aluguelcarros.facade;
 
-import br.pucminas.aluguelcarros.dto.ClienteRequestDTO;
-import br.pucminas.aluguelcarros.dto.ClienteResponseDTO;
-import br.pucminas.aluguelcarros.dto.EntidadeEmpregadoraDTO;
+import br.pucminas.aluguelcarros.dto.request.ClienteRequestDTO;
+import br.pucminas.aluguelcarros.dto.request.EntidadeEmpregadoraRequestDTO;
+import br.pucminas.aluguelcarros.dto.response.ClienteResponseDTO;
+import br.pucminas.aluguelcarros.dto.response.EntidadeEmpregadoraResponseDTO;
 import br.pucminas.aluguelcarros.model.Cliente;
 import br.pucminas.aluguelcarros.model.EntidadeEmpregadora;
 import br.pucminas.aluguelcarros.service.ClienteService;
@@ -31,6 +32,12 @@ public class ClienteFacade {
         return toResponse(clienteService.buscarPorId(id));
     }
 
+    public List<ClienteResponseDTO> listar() {
+        return clienteService.listar().stream()
+                .map(ClienteFacade::toResponse)
+                .toList();
+    }
+
     public ClienteResponseDTO atualizar(Long id, ClienteRequestDTO dto) {
         Cliente cliente = fromDto(dto);
         cliente.setId(id);
@@ -42,7 +49,19 @@ public class ClienteFacade {
     }
 
     private static ClienteResponseDTO toResponse(Cliente cliente) {
-        return new ClienteResponseDTO(cliente.getId(), cliente.getNome(), cliente.getCpf());
+        List<EntidadeEmpregadoraResponseDTO> entidades = cliente.getEntidadesEmpregadoras().stream()
+                .map(e -> new EntidadeEmpregadoraResponseDTO(e.getNomeEmpresa(), e.getCnpj(), e.getRendimento()))
+                .toList();
+
+        return new ClienteResponseDTO(
+                cliente.getId(),
+                cliente.getRg(),
+                cliente.getNome(),
+                cliente.getCpf(),
+                cliente.getEndereco(),
+                cliente.getProfissao(),
+                entidades
+        );
     }
 
     private static Cliente fromDto(ClienteRequestDTO dto) {
@@ -54,10 +73,10 @@ public class ClienteFacade {
         cliente.setProfissao(dto.profissao());
         cliente.setSenha(dto.senha());
         List<EntidadeEmpregadora> lista = new ArrayList<>();
-        List<EntidadeEmpregadoraDTO> entidades = dto.entidadesEmpregadoras() == null
+        List<EntidadeEmpregadoraRequestDTO> entidades = dto.entidadesEmpregadoras() == null
                 ? Collections.emptyList()
                 : dto.entidadesEmpregadoras();
-        for (EntidadeEmpregadoraDTO ed : entidades) {
+        for (EntidadeEmpregadoraRequestDTO ed : entidades) {
             EntidadeEmpregadora e = new EntidadeEmpregadora();
             e.setNomeEmpresa(ed.nomeEmpresa());
             e.setCnpj(ed.cnpj());

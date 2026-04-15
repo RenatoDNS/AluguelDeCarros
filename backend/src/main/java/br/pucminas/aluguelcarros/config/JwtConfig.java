@@ -1,5 +1,6 @@
 package br.pucminas.aluguelcarros.config;
 
+import br.pucminas.aluguelcarros.enums.UserType;
 import br.pucminas.aluguelcarros.model.Usuario;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -33,13 +34,14 @@ public class JwtConfig {
         return expirationMs;
     }
 
-    public String gerarToken(Usuario usuario) {
+    public String gerarToken(Usuario usuario, UserType userType, String login) {
         SecretKey key = getSigningKey();
         Date now = new Date();
         Date exp = new Date(now.getTime() + expirationMs);
         return Jwts.builder()
                 .subject(String.valueOf(usuario.getId()))
-                .claim("login", usuario.getLogin())
+                .claim("login", login)
+                .claim("userType", userType.value())
                 .issuedAt(now)
                 .expiration(exp)
                 .signWith(key)
@@ -51,16 +53,20 @@ public class JwtConfig {
             return false;
         }
         try {
-            SecretKey key = getSigningKey();
-            Claims claims = Jwts.parser()
-                    .verifyWith(key)
-                    .build()
-                    .parseSignedClaims(token)
-                    .getPayload();
+            Claims claims = extrairClaims(token);
             return claims.getExpiration().after(new Date());
         } catch (Exception e) {
             return false;
         }
+    }
+
+    public Claims extrairClaims(String token) {
+        SecretKey key = getSigningKey();
+        return Jwts.parser()
+                .verifyWith(key)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
     }
 
     private SecretKey getSigningKey() {
