@@ -1,5 +1,6 @@
 package br.pucminas.aluguelcarros.model;
 
+import br.pucminas.aluguelcarros.enums.AgenteTipo;
 import br.pucminas.aluguelcarros.enums.AutomovelStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -13,6 +14,8 @@ import jakarta.persistence.UniqueConstraint;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.math.BigDecimal;
 
 @Entity
 @Table(
@@ -45,6 +48,16 @@ public class Automovel {
 
     @Column(nullable = false)
     private String modelo;
+
+    @Column(nullable = false, precision = 10, scale = 2)
+    private BigDecimal diaria;
+
+    @Column(nullable = false)
+    private Long agentId;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private AgenteTipo agentType;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

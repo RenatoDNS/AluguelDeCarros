@@ -2,6 +2,7 @@ package br.pucminas.aluguelcarros.facade;
 
 import br.pucminas.aluguelcarros.dto.request.AutomovelRequestDTO;
 import br.pucminas.aluguelcarros.dto.response.AutomovelResponseDTO;
+import br.pucminas.aluguelcarros.enums.UserType;
 import br.pucminas.aluguelcarros.model.Automovel;
 import br.pucminas.aluguelcarros.service.AutomovelService;
 import jakarta.inject.Inject;
@@ -19,8 +20,8 @@ public class AutomovelFacade {
         this.automovelService = automovelService;
     }
 
-    public AutomovelResponseDTO cadastrar(AutomovelRequestDTO dto) {
-        return toResponse(automovelService.cadastrar(fromDto(dto)));
+    public AutomovelResponseDTO cadastrar(AutomovelRequestDTO dto, Long agentId, UserType userType) {
+        return toResponse(automovelService.cadastrar(fromDto(dto), agentId, userType));
     }
 
     public AutomovelResponseDTO buscar(Long id) {
@@ -29,6 +30,12 @@ public class AutomovelFacade {
 
     public List<AutomovelResponseDTO> listar() {
         return automovelService.listar().stream()
+                .map(AutomovelFacade::toResponse)
+                .toList();
+    }
+
+    public List<AutomovelResponseDTO> listarMe(Long agentId, UserType userType) {
+        return automovelService.listarMe(agentId, userType).stream()
                 .map(AutomovelFacade::toResponse)
                 .toList();
     }
@@ -56,6 +63,7 @@ public class AutomovelFacade {
         automovel.setAno(dto.ano());
         automovel.setMarca(dto.marca());
         automovel.setModelo(dto.modelo());
+        automovel.setDiaria(dto.diaria());
         automovel.setStatus(automovelService.validarStatus(dto.status()));
         return automovel;
     }
@@ -68,6 +76,9 @@ public class AutomovelFacade {
                 automovel.getAno(),
                 automovel.getMarca(),
                 automovel.getModelo(),
+                automovel.getDiaria(),
+                automovel.getAgentId(),
+                automovel.getAgentType(),
                 automovel.getStatus()
         );
     }

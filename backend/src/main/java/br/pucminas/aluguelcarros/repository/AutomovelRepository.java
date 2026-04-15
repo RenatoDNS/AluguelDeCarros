@@ -1,7 +1,8 @@
 package br.pucminas.aluguelcarros.repository;
 
-import br.pucminas.aluguelcarros.model.Automovel;
+import br.pucminas.aluguelcarros.enums.AgenteTipo;
 import br.pucminas.aluguelcarros.enums.AutomovelStatus;
+import br.pucminas.aluguelcarros.model.Automovel;
 import io.micronaut.data.annotation.Repository;
 import io.micronaut.data.repository.CrudRepository;
 
@@ -16,5 +17,7 @@ public interface AutomovelRepository extends CrudRepository<Automovel, Long> {
     Optional<Automovel> findByPlaca(String placa);
 
     List<Automovel> findByStatus(AutomovelStatus status);
+
+    List<Automovel> findByAgentIdAndAgentType(Long agentId, AgenteTipo agentType);
 }
 

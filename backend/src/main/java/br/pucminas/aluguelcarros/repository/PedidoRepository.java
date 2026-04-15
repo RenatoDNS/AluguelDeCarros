@@ -1,5 +1,6 @@
 package br.pucminas.aluguelcarros.repository;
 
+import br.pucminas.aluguelcarros.enums.AgenteTipo;
 import br.pucminas.aluguelcarros.enums.PedidoStatus;
 import br.pucminas.aluguelcarros.model.Pedido;
 import io.micronaut.data.annotation.Repository;
@@ -16,5 +17,9 @@ public interface PedidoRepository extends CrudRepository<Pedido, Long> {
     List<Pedido> findByStatus(PedidoStatus status);
 
     List<Pedido> findByClienteId(Long clienteId);
+
+    List<Pedido> findByStatusAndAutomovelAgentIdAndAutomovelAgentType(PedidoStatus status,
+                                                                      Long agentId,
+                                                                      AgenteTipo agentType);
 }
 

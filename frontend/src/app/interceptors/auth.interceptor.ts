@@ -3,8 +3,10 @@ import { inject } from '@angular/core';
 
 import { AuthService } from '../services/auth.service';
 
+const PUBLIC_AUTH_PATHS = ['/auth/login', '/clientes', '/bancos', '/empresas'];
+
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
-  if (req.url.includes('/auth/login')) {
+  if (PUBLIC_AUTH_PATHS.some((path) => req.url.includes(path))) {
     return next(req);
   }
 

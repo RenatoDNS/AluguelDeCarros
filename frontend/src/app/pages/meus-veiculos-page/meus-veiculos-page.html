@@ -1,0 +1,211 @@
+<section class="space-y-6">
+  <div class="rounded-[1.75rem] border border-white/70 bg-white/90 p-6 sm:p-8">
+    <p class="text-sm font-semibold uppercase tracking-[0.28em] text-primary-600">Meus Veículos</p>
+    <h1 class="mt-3 font-display text-3xl font-semibold text-slate-950">
+      Gerencie os veículos cadastrados
+    </h1>
+    <p class="mt-4 max-w-2xl text-sm leading-7 text-slate-600">
+      Consulte os veículos associados à sua conta e modifique os dados quando necessário.
+    </p>
+    <button
+      type="button"
+      class="login-submit mt-6 inline-flex items-center justify-center rounded-2xl px-5 py-3 text-sm font-semibold text-white transition hover:brightness-105"
+      (click)="openCreateDialog()"
+    >
+      Cadastrar Veículo
+    </button>
+  </div>
+
+  @if (loading()) {
+    <div class="rounded-[1.75rem] border border-white/70 bg-white/90 p-6 text-sm text-slate-600">
+      Carregando veículos...
+    </div>
+  } @else if (errorMessage() && !dialogOpen()) {
+    <div
+      class="rounded-[1.75rem] border border-primary-200 bg-primary-50 p-6 text-sm text-primary-800"
+    >
+      {{ errorMessage() }}
+    </div>
+  } @else if (!veiculos().length) {
+    <div class="rounded-[1.75rem] border border-white/70 bg-white/90 p-6 text-sm text-slate-600">
+      Você ainda não possui veículos cadastrados.
+    </div>
+  } @else {
+    <div class="grid gap-5 lg:grid-cols-3">
+      @for (veiculo of veiculos(); track veiculo.id) {
+        <article class="vehicle-card rounded-[1.75rem] border border-white/70 bg-white/90 p-6">
+          <div class="flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <p class="text-xs font-semibold uppercase tracking-[0.3em] text-primary-600">
+                {{ veiculo.matricula }}
+              </p>
+              <h2 class="mt-3 text-2xl font-semibold text-slate-950">
+                {{ veiculo.marca }} {{ veiculo.modelo }}
+              </h2>
+            </div>
+
+            <span
+              class="rounded-full border border-primary-200 bg-primary-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-primary-700"
+            >
+              {{ veiculo.status }}
+            </span>
+          </div>
+
+          <dl class="mt-5 grid gap-4 text-sm text-slate-600 sm:grid-cols-2">
+            <div>
+              <dt class="font-semibold text-slate-800">Placa</dt>
+              <dd class="mt-1">{{ veiculo.placa }}</dd>
+            </div>
+            <div>
+              <dt class="font-semibold text-slate-800">Ano</dt>
+              <dd class="mt-1">{{ veiculo.ano }}</dd>
+            </div>
+            <div>
+              <dt class="font-semibold text-slate-800">Diária</dt>
+              <dd class="mt-1">R$ {{ veiculo.diaria }}</dd>
+            </div>
+          </dl>
+
+          <button
+            type="button"
+            class="login-submit mt-6 inline-flex w-full items-center justify-center rounded-2xl px-4 py-3 text-sm font-semibold text-white transition hover:brightness-105"
+            (click)="openEditDialog(veiculo)"
+          >
+            Editar Veículo
+          </button>
+        </article>
+      }
+    </div>
+  }
+
+  @if (dialogOpen()) {
+    <div class="dialog-backdrop fixed inset-0 z-50 flex items-center justify-center px-4 py-6">
+      <div class="dialog-panel w-full max-w-2xl rounded-[1.75rem] bg-white p-6 shadow-2xl">
+        <div class="flex items-start justify-between gap-4">
+          <div>
+            <p class="text-sm font-semibold uppercase tracking-[0.28em] text-primary-600">
+              Veículo
+            </p>
+            <h2 class="mt-2 text-2xl font-semibold text-slate-950">
+              {{ editingVeiculoId() ? 'Editar Veículo' : 'Cadastrar Veículo' }}
+            </h2>
+          </div>
+          <button
+            type="button"
+            class="rounded-full px-3 py-1 text-sm font-semibold text-slate-500 transition hover:bg-slate-100 hover:text-slate-800"
+            (click)="closeDialog()"
+          >
+            Fechar
+          </button>
+        </div>
+
+        <form class="mt-6 space-y-4" [formGroup]="veiculoForm" (ngSubmit)="submit()" novalidate>
+          <div class="grid gap-4 sm:grid-cols-2">
+            <div class="space-y-2">
+              <label class="text-sm font-semibold text-slate-800" for="matricula">Matrícula</label>
+              <input
+                id="matricula"
+                type="text"
+                formControlName="matricula"
+                placeholder="Matrícula"
+                class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-base text-slate-950 outline-none transition focus:border-primary-500 focus:ring-4 focus:ring-primary-100"
+              />
+            </div>
+
+            <div class="space-y-2">
+              <label class="text-sm font-semibold text-slate-800" for="placa">Placa</label>
+              <input
+                id="placa"
+                type="text"
+                maxlength="7"
+                formControlName="placa"
+                placeholder="Placa"
+                class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-base text-slate-950 outline-none transition focus:border-primary-500 focus:ring-4 focus:ring-primary-100"
+              />
+            </div>
+
+            <div class="space-y-2">
+              <label class="text-sm font-semibold text-slate-800" for="ano">Ano</label>
+              <input
+                id="ano"
+                type="text"
+                inputmode="numeric"
+                formControlName="ano"
+                placeholder="Ano"
+                class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-base text-slate-950 outline-none transition focus:border-primary-500 focus:ring-4 focus:ring-primary-100"
+              />
+            </div>
+
+            <div class="space-y-2">
+              <label class="text-sm font-semibold text-slate-800" for="marca">Marca</label>
+              <input
+                id="marca"
+                type="text"
+                formControlName="marca"
+                placeholder="Marca"
+                class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-base text-slate-950 outline-none transition focus:border-primary-500 focus:ring-4 focus:ring-primary-100"
+              />
+            </div>
+
+            <div class="space-y-2 sm:col-span-2">
+              <label class="text-sm font-semibold text-slate-800" for="modelo">Modelo</label>
+              <input
+                id="modelo"
+                type="text"
+                formControlName="modelo"
+                placeholder="Modelo"
+                class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-base text-slate-950 outline-none transition focus:border-primary-500 focus:ring-4 focus:ring-primary-100"
+              />
+            </div>
+          </div>
+
+          <div class="space-y-2">
+            <label class="text-sm font-semibold text-slate-800" for="diaria">Diária</label>
+            <input
+              id="diaria"
+              type="text"
+              mask="separator.2"
+              prefix="R$ "
+              thousandSeparator="."
+              decimalMarker=","
+              formControlName="diaria"
+              placeholder="R$ 0,00"
+              class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-base text-slate-950 outline-none transition focus:border-primary-500 focus:ring-4 focus:ring-primary-100"
+            />
+          </div>
+
+          @if (errorMessage()) {
+            <div
+              class="rounded-2xl border border-primary-200 bg-primary-50 px-4 py-3 text-sm text-primary-800"
+            >
+              {{ errorMessage() }}
+            </div>
+          }
+
+          <div class="flex flex-col gap-3 pt-2 sm:flex-row sm:justify-end">
+            <button
+              type="button"
+              class="inline-flex items-center justify-center rounded-2xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+              (click)="closeDialog()"
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              class="login-submit inline-flex items-center justify-center rounded-2xl px-4 py-3 text-sm font-semibold text-white transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-60"
+              [disabled]="saving()"
+            >
+              {{
+                saving()
+                  ? 'Salvando...'
+                  : editingVeiculoId()
+                    ? 'Salvar alterações'
+                    : 'Cadastrar Veículo'
+              }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+</section>

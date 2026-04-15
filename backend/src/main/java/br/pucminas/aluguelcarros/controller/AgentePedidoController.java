@@ -40,7 +40,7 @@ public class AgentePedidoController {
     @Get("/em-analise")
     public List<PedidoResponseDTO> listarEmAnalise(HttpRequest<?> request) {
         AuthMeResponseDTO perfil = obterPerfilAutenticado(request);
-        return pedidoFacade.listarEmAnaliseParaAgente(perfil.userType());
+        return pedidoFacade.listarEmAnaliseParaAgente(perfil.id(), perfil.userType());
     }
 
     @Post("/{id}/avaliar")

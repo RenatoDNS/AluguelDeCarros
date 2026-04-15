@@ -1,5 +1,6 @@
 package br.pucminas.aluguelcarros.service;
 
+import br.pucminas.aluguelcarros.enums.AgenteTipo;
 import br.pucminas.aluguelcarros.enums.AutomovelStatus;
 import br.pucminas.aluguelcarros.enums.PedidoStatus;
 import br.pucminas.aluguelcarros.enums.UserType;
@@ -122,9 +123,13 @@ public class PedidoService {
     }
 
     @Transactional
-    public List<Pedido> listarEmAnaliseParaAgente(UserType userType) {
+    public List<Pedido> listarEmAnaliseParaAgente(Long agenteId, UserType userType) {
         validarPerfilAgente(userType);
-        return pedidoRepository.findByStatus(PedidoStatus.EM_ANALISE);
+        return pedidoRepository.findByStatusAndAutomovelAgentIdAndAutomovelAgentType(
+                PedidoStatus.EM_ANALISE,
+                agenteId,
+                mapearAgenteTipo(userType)
+        );
     }
 
     public PedidoStatus validarStatus(String status) {
@@ -162,6 +167,13 @@ public class PedidoService {
         if (userType != UserType.EMPRESA && userType != UserType.BANCO) {
             throw new RegraDeNegocioException("Somente empresa ou banco pode executar esta operação.");
         }
+    }
+
+    private AgenteTipo mapearAgenteTipo(UserType userType) {
+        if (userType == UserType.BANCO) {
+            return AgenteTipo.BANCO;
+        }
+        return AgenteTipo.EMPRESA;
     }
 
     private void validarPedidoDoCliente(Pedido pedido, Long clienteAutenticadoId) {

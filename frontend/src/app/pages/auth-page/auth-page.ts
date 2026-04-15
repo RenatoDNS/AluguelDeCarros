@@ -97,13 +97,19 @@ function currencyValidator(): ValidatorFn {
 }
 
 function parseCurrencyValue(value: unknown) {
-  const digits = digitsOnly(value);
+  const normalizedValue = String(value ?? '')
+    .replace(/\s/g, '')
+    .replace('R$', '')
+    .replace(/\./g, '')
+    .replace(',', '.')
+    .trim();
 
-  if (!digits) {
+  if (!normalizedValue) {
     return null;
   }
 
-  return Number(digits) / 100;
+  const parsedValue = Number(normalizedValue);
+  return Number.isFinite(parsedValue) ? parsedValue : null;
 }
 
 @Component({

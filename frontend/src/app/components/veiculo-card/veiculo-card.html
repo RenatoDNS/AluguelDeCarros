@@ -23,6 +23,10 @@
       <dt class="font-semibold text-slate-800">Ano</dt>
       <dd class="mt-1">{{ veiculo().ano }}</dd>
     </div>
+    <div>
+      <dt class="font-semibold text-slate-800">Diária</dt>
+      <dd class="mt-1">{{ veiculo().diaria | currency: 'BRL' : 'symbol' : '1.2-2' : 'pt-BR' }}</dd>
+    </div>
   </dl>
 
   <button

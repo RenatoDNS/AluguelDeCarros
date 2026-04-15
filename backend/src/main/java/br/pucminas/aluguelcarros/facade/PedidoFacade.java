@@ -59,8 +59,8 @@ public class PedidoFacade {
                 .toList();
     }
 
-    public List<PedidoResponseDTO> listarEmAnaliseParaAgente(UserType userType) {
-        return pedidoService.listarEmAnaliseParaAgente(userType)
+    public List<PedidoResponseDTO> listarEmAnaliseParaAgente(Long agenteId, UserType userType) {
+        return pedidoService.listarEmAnaliseParaAgente(agenteId, userType)
                 .stream()
                 .map(PedidoFacade::toResponse)
                 .toList();

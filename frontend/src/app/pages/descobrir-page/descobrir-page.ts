@@ -1,3 +1,4 @@
+import { CurrencyPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 
@@ -14,7 +15,7 @@ type DialogStep = 'inicio' | 'fim';
 @Component({
   selector: 'app-descobrir-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, VeiculoCardComponent],
+  imports: [ReactiveFormsModule, VeiculoCardComponent, CurrencyPipe],
   templateUrl: './descobrir-page.html',
   styleUrl: './descobrir-page.css',
 })
@@ -37,6 +38,28 @@ export class DescobrirPageComponent {
     dataInicio: ['', [Validators.required]],
     dataFim: ['', [Validators.required]],
   });
+
+  totalPreview() {
+    const veiculo = this.selectedVeiculo();
+    const { dataInicio, dataFim } = this.aluguelForm.getRawValue();
+
+    if (!veiculo || !dataInicio || !dataFim) {
+      return null;
+    }
+
+    const startDate = new Date(dataInicio);
+    const endDate = new Date(dataFim);
+
+    if (endDate <= startDate) {
+      return null;
+    }
+
+    const millisecondsPerDay = 1000 * 60 * 60 * 24;
+    const diffInMilliseconds = endDate.getTime() - startDate.getTime();
+    const days = Math.ceil(diffInMilliseconds / millisecondsPerDay);
+
+    return days * veiculo.diaria;
+  }
 
   constructor() {
     this.veiculoService.list().subscribe((veiculos) => this.veiculos.set(veiculos));

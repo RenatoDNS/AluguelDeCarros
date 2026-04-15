@@ -16,6 +16,10 @@ export class DashboardPageComponent {
 
   readonly userType = this.authService.userType;
   readonly showDescobrir = computed(() => this.authService.isCliente());
+  readonly showCadastrarVeiculos = computed(() => {
+    const userType = this.authService.userType();
+    return userType === 'empresa' || userType === 'banco';
+  });
 
   logout() {
     this.authService.logout();

@@ -1,3 +1,4 @@
+import { CurrencyPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 
 import { Veiculo } from '../../models/veiculo';
@@ -5,6 +6,7 @@ import { Veiculo } from '../../models/veiculo';
 @Component({
   selector: 'app-veiculo-card',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [CurrencyPipe],
   templateUrl: './veiculo-card.html',
   styleUrl: './veiculo-card.css',
 })

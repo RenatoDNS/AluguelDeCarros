@@ -38,6 +38,22 @@ export const routes: Routes = [
             (m) => m.MeusPedidosPageComponent,
           ),
       },
+      {
+        path: 'meus-veiculos',
+        canActivate: [roleGuard],
+        data: { userType: ['empresa', 'banco'] },
+        loadComponent: () =>
+          import('./pages/meus-veiculos-page/meus-veiculos-page').then(
+            (m) => m.MeusVeiculosPageComponent,
+          ),
+      },
+      {
+        path: 'pedidos',
+        canActivate: [roleGuard],
+        data: { userType: ['empresa', 'banco'] },
+        loadComponent: () =>
+          import('./pages/pedidos-page/pedidos-page').then((m) => m.PedidosPageComponent),
+      },
     ],
   },
   {

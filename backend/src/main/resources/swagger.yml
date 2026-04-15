@@ -441,6 +441,11 @@ paths:
     post:
       tags: [Automóveis]
       summary: Cadastrar automóvel
+      description: |
+        Disponível somente para perfis `empresa` e `banco` autenticados.
+
+        O backend vincula automaticamente o automóvel ao usuário logado por meio de
+        `agentId` e `agentType`.
       operationId: cadastrarAutomovel
       security:
         - bearerAuth: []
@@ -456,6 +461,7 @@ paths:
               ano: 2024
               marca: "Toyota"
               modelo: "Corolla"
+              diaria: 250.00
               status: "DISPONIVEL"
       responses:
         '200':
@@ -469,7 +475,7 @@ paths:
         '401':
           description: Não autorizado
         '422':
-          description: Regra de negócio violada
+          description: Regra de negócio violada ou perfil sem permissão
     get:
       tags: [Automóveis]
       summary: Listar automóveis
@@ -488,16 +494,41 @@ paths:
         '401':
           description: Não autorizado
 
+  /automoveis/me:
+    get:
+      tags: [Automóveis]
+      summary: Listar automóveis do agente autenticado
+      description: |
+        Disponível somente para perfis `empresa` e `banco`.
+
+        Retorna apenas os automóveis cadastrados pelo usuário autenticado.
+      operationId: listarMeusAutomoveis
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Lista de automóveis do agente autenticado
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AutomovelResponse'
+        '401':
+          description: Não autorizado
+        '422':
+          description: Perfil sem permissão
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MensagemErro'
+
   /automoveis/{id}:
     parameters:
       - $ref: '#/components/parameters/AutomovelId'
     get:
       tags: [Automóveis]
       summary: Buscar automóvel por id
-      description: |
-        Mesmo path base usado no backend para buscar por id (numérico)
-        ou por status (texto). Quando o valor do path é numérico,
-        o backend interpreta como id.
       operationId: buscarAutomovelPorId
       security:
         - bearerAuth: []
@@ -553,14 +584,14 @@ paths:
         '404':
           description: Automóvel não encontrado
 
-  /automoveis/{status}:
+  /automoveis/status/{status}:
     parameters:
       - $ref: '#/components/parameters/AutomovelStatusPath'
     get:
       tags: [Automóveis]
       summary: Listar automóveis por status
       description: |
-        Endpoint de consulta por status solicitado.
+        Endpoint de consulta por status.
 
         Status aceitos:
         - `DISPONIVEL`
@@ -824,13 +855,17 @@ paths:
     get:
       tags: [Fluxos de Negócio]
       summary: Listar pedidos em análise para agente
-      description: Disponível para perfis `empresa` e `banco`.
+      description: |
+        Disponível para perfis `empresa` e `banco`.
+
+        Retorna somente pedidos com status `EM_ANALISE` cujo automóvel foi
+        cadastrado pelo agente autenticado.
       operationId: listarPedidosEmAnaliseParaAgente
       security:
         - bearerAuth: []
       responses:
         '200':
-          description: Lista de pedidos com status EM_ANALISE
+          description: Lista de pedidos EM_ANALISE vinculados aos automóveis do agente autenticado
           content:
             application/json:
               schema:
@@ -1586,7 +1621,7 @@ components:
 
     AutomovelRequest:
       type: object
-      required: [matricula, placa, ano, marca, modelo, status]
+      required: [matricula, placa, ano, marca, modelo, diaria, status]
       properties:
         matricula:
           type: string
@@ -1599,6 +1634,11 @@ components:
           type: string
         modelo:
           type: string
+        diaria:
+          type: number
+          format: double
+          minimum: 0.01
+          description: Valor da diária do automóvel.
         status:
           $ref: '#/components/schemas/AutomovelStatus'
 
@@ -1619,6 +1659,15 @@ components:
           type: string
         modelo:
           type: string
+        diaria:
+          type: number
+          format: double
+        agentId:
+          type: integer
+          format: int64
+          description: Identificador do agente autenticado que cadastrou o automóvel.
+        agentType:
+          $ref: '#/components/schemas/AgenteTipo'
         status:
           $ref: '#/components/schemas/AutomovelStatus'
 
