@@ -23,25 +23,12 @@ micronaut:
           ]
         mapping: /swagger-ui/**
 
-h2:
-  console:
-    enabled: true
-    settings:
-      web-allow-others: true
-
 datasources:
   default:
-    # H2 em memória
-    #    url: jdbc:h2:mem:aluguelcarros;DB_CLOSE_DELAY=-1;MODE=LEGACY
-    #    driver-class-name: org.h2.Driver
-    #    username: sa
-    #    password: ""
-
-    # H2 persistente em arquivo
-    url: jdbc:h2:file:./data/aluguelcarros;DB_CLOSE_DELAY=-1;MODE=LEGACY
-    driver-class-name: org.h2.Driver
-    username: sa
-    password: ""
+    url: ${DB_URL:`jdbc:postgresql://localhost:5432/aluguelcarros`}
+    driver-class-name: org.postgresql.Driver
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:postgres}
 
 jpa:
   default:
@@ -52,6 +39,7 @@ jpa:
         hbm2ddl:
           auto: update
         show_sql: false
+        dialect: org.hibernate.dialect.PostgreSQLDialect
 
 jwt:
   # TODO: mover para variável de ambiente

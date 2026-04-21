@@ -49,13 +49,13 @@
 
 ## 🔗 Links Úteis
 
-| Recurso | URL / Caminho                                                                      |
-|---------|------------------------------------------------------------------------------------|
-| **📖 Backend (README)** | [`backend/README.md`](backend/README.md)                                           |
+| Recurso                  | URL / Caminho                                                                      |
+| ------------------------ | ---------------------------------------------------------------------------------- |
+| **📖 Backend (README)**  | [`backend/README.md`](backend/README.md)                                           |
 | **🌐 Frontend (README)** | [`frontend/README.md`](frontend/README.md)                                         |
-| **📊 OpenAPI (YAML)** | [`backend/src/main/resources/swagger.yml`](backend/src/main/resources/swagger.yml) |
-| **🎨 Swagger UI** | `http://localhost:8080/api/aluguelcarros/v1/swagger-ui` (ao executar backend)      |
-| **📐 Diagramas UML** | [`docs/`](./docs/) — casos de uso e classes/pacotes (`.svg` / `.txt`)              |
+| **📊 OpenAPI (YAML)**    | [`backend/src/main/resources/swagger.yml`](backend/src/main/resources/swagger.yml) |
+| **🎨 Swagger UI**        | `http://localhost:8080/api/aluguelcarros/v1/swagger-ui` (ao executar backend)      |
+| **📐 Diagramas UML**     | [`docs/`](./docs/) — casos de uso e classes/pacotes (`.svg` / `.txt`)              |
 
 ---
 
@@ -84,30 +84,30 @@ O **Aluguel de Carros** é uma aplicação full-stack de **locação de veículo
 
 ### 🖥️ Back-end
 
-| Tecnologia | Uso |
-|------------|-----|
-| **Java 21** | Linguagem |
-| **Micronaut 4.10** | Framework HTTP, injeção de dependências, validação |
-| **Maven** | Build e dependências (`pom.xml`) |
-| **H2** | Banco em memória (desenvolvimento); JDBC + Hibernate |
-| **JPA / Hibernate** | Mapeamento objeto-relacional (`ddl-auto: update`) |
-| **JJWT** | Geração e validação de tokens JWT |
-| **BCrypt** (favre) | Hash de senhas |
-| **Lombok** | Redução de boilerplate em parte do código |
-| **micronaut-openapi** | Swagger UI |
+| Tecnologia            | Uso                                                  |
+| --------------------- | ---------------------------------------------------- |
+| **Java 21**           | Linguagem                                            |
+| **Micronaut 4.10**    | Framework HTTP, injeção de dependências, validação   |
+| **Maven**             | Build e dependências (`pom.xml`)                     |
+| **H2**                | Banco em memória (desenvolvimento); JDBC + Hibernate |
+| **JPA / Hibernate**   | Mapeamento objeto-relacional (`ddl-auto: update`)    |
+| **JJWT**              | Geração e validação de tokens JWT                    |
+| **BCrypt** (favre)    | Hash de senhas                                       |
+| **Lombok**            | Redução de boilerplate em parte do código            |
+| **micronaut-openapi** | Swagger UI                                           |
 
 ### 💻 Front-end
 
-| Tecnologia | Uso |
-|------------|-----|
-| **Angular 21.2.6** | Framework web e componentes |
-| **TypeScript 5.x** | Linguagem tipada |
-| **RxJS 7.x** | Programação reativa com observables |
-| **HttpClient** | Requisições HTTP para a API |
-| **Angular Router** | Roteamento entre páginas |
-| **Angular Forms** | Formulários reativos |
-| **Node.js 20.x LTS** | Runtime para desenvolvimento |
-| **npm** | Gerenciador de dependências |
+| Tecnologia           | Uso                                 |
+| -------------------- | ----------------------------------- |
+| **Angular 21.2.6**   | Framework web e componentes         |
+| **TypeScript 5.x**   | Linguagem tipada                    |
+| **RxJS 7.x**         | Programação reativa com observables |
+| **HttpClient**       | Requisições HTTP para a API         |
+| **Angular Router**   | Roteamento entre páginas            |
+| **Angular Forms**    | Formulários reativos                |
+| **Node.js 20.x LTS** | Runtime para desenvolvimento        |
+| **npm**              | Gerenciador de dependências         |
 
 ## 🏗 Arquitetura
 
@@ -123,7 +123,6 @@ A aplicação segue um **monólito em camadas**:
 
 Diagramas de apoio (casos de uso e classes/pacotes) estão em [`docs/`](./docs/).
 
-
 ## 🔧 Instalação e Execução
 
 ### Pré-requisitos
@@ -134,11 +133,19 @@ Diagramas de apoio (casos de uso e classes/pacotes) estão em [`docs/`](./docs/)
 
 ---
 
-### 💾 Banco de Dados (H2)
+### 💾 Banco de Dados (H2 / PostgreSQL)
 
 O perfil padrão usa **H2 em memória**: o schema é criado/atualizado pelo Hibernate na subida da aplicação. Não é necessário subir PostgreSQL nem Docker para desenvolvimento local básico.
 
 Para persistir em arquivo, há exemplo comentado no `backend/src/main/resources/application.yml` (`jdbc:h2:file:./data/...`).
+
+Se preferir usar **PostgreSQL com Docker**, a raiz do projeto possui `docker-compose.yml` pronto:
+
+```bash
+docker compose up -d
+```
+
+Em seguida, execute o backend com o perfil `postgres` (mais detalhes em `backend/README.md`).
 
 ---
 
@@ -294,26 +301,26 @@ Visão simplificada do repositório:
 
 ## 👥 Autores
 
-| Nome                | GitHub                                                                                             | LinkedIn                                                                                                           | Licença / ano |
-|---------------------|----------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------|----------------|
-| **Renato Douglas**  | [![GitHub](https://img.shields.io/badge/GitHub-181717?logo=github)](https://github.com/RenatoDNS)  | [![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?logo=linkedin)](https://www.linkedin.com/in/renatodns/)  | Copyright © 2026 — ver [LICENSE](./LICENSE) |
+| Nome                | GitHub                                                                                             | LinkedIn                                                                                                                | Licença / ano                               |
+| ------------------- | -------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- | ------------------------------------------- |
+| **Renato Douglas**  | [![GitHub](https://img.shields.io/badge/GitHub-181717?logo=github)](https://github.com/RenatoDNS)  | [![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?logo=linkedin)](https://www.linkedin.com/in/renatodns/)       | Copyright © 2026 — ver [LICENSE](./LICENSE) |
 | **Vicenzo Fonseca** | [![GitHub](https://img.shields.io/badge/GitHub-181717?logo=github)](https://github.com/VicenzoFMS) | [![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?logo=linkedin)](https://www.linkedin.com/in/vicenzo-fonseca/) | Copyright © 2026 — ver [LICENSE](./LICENSE) |
 
 ---
 
 ## 🤝 Contribuição
 
-1. Faça um *fork* do repositório.
+1. Faça um _fork_ do repositório.
 2. Crie uma branch (`git checkout -b feature/minha-feature`).
 3. Commit com mensagens claras (de preferência [Conventional Commits](https://www.conventionalcommits.org/)).
-4. Abra um *Pull Request* descrevendo o que mudou.
+4. Abra um _Pull Request_ descrevendo o que mudou.
 
 ---
 
 ## 🙏 Agradecimentos
 
 - [**Engenharia de Software PUC Minas**](https://www.instagram.com/engsoftwarepucminas/) — apoio acadêmico e formação em engenharia de software.
-- [**Prof. Dr. João Paulo Aramuni**](https://github.com/joaopauloaramuni) — referência em documentação e organização de projetos (incluindo o *template* de README que orientou esta documentação).
+- [**Prof. Dr. João Paulo Aramuni**](https://github.com/joaopauloaramuni) — referência em documentação e organização de projetos (incluindo o _template_ de README que orientou esta documentação).
 
 ---
 

@@ -1,6 +1,6 @@
 # 🚗 Aluguel de Carros — API REST (Backend)
 
-> API REST em **Micronaut** para autenticação, CRUD completo das entidades de domínio e fluxos de negócio, com integração ao banco **H2** e documentação **OpenAPI/Swagger**.
+> API REST em **Micronaut** para autenticação, CRUD completo das entidades de domínio e fluxos de negócio, com integração ao banco **PostgreSQL** e documentação **OpenAPI/Swagger**.
 
 <table>
   <tr>
@@ -36,7 +36,7 @@
 - [Arquitetura](#-arquitetura)
 - [Instalação e Execução](#-instalação-e-execução)
   - [Pré-requisitos](#pré-requisitos)
-  - [Banco de Dados (H2)](#-banco-de-dados-h2)
+  - [Banco de Dados (PostgreSQL)](#-banco-de-dados-postgresql)
   - [Como Executar a Aplicação](#-como-executar-a-aplicação)
 - [Estrutura de Pastas](#-estrutura-de-pastas)
 - [Testes](#-testes)
@@ -48,10 +48,10 @@
 
 ## 🔗 Links Úteis
 
-| Recurso | Caminho / URL |
-|---------|---------------|
-| **OpenAPI (YAML)** | [`src/main/resources/swagger.yml`](src/main/resources/swagger.yml) |
-| **Swagger UI** | `http://localhost:8080/api/aluguelcarros/v1/swagger-ui` |
+| Recurso                  | Caminho / URL                                                           |
+| ------------------------ | ----------------------------------------------------------------------- |
+| **OpenAPI (YAML)**       | [`src/main/resources/swagger.yml`](src/main/resources/swagger.yml)      |
+| **Swagger UI**           | `http://localhost:8080/api/aluguelcarros/v1/swagger-ui`                 |
 | **Documentação Técnica** | [`../docs/`](../docs/) — diagramas UML (casos de uso e classes/pacotes) |
 
 ---
@@ -63,7 +63,7 @@ O **Backend do Aluguel de Carros** é uma API HTTP desenvolvida com **Micronaut*
 - **Gestão das entidades de domínio** — clientes, empresas, bancos, automóveis, pedidos, pareceres, contratos e contratos de crédito.
 - **Autenticação JWT** — emissão e validação de tokens para proteção de rotas sensíveis.
 - **API REST bem definida** — endpoints documentados via OpenAPI/Swagger com tratamento padronizado de erros.
-- **Persistência com JPA/Hibernate** — usando banco H2 em arquivo local por padrão (`./data/aluguelcarros`).
+- **Persistência com JPA/Hibernate** — usando PostgreSQL como banco padrão.
 
 **Por que existe:** oferece um serviço HTTP seguro e bem documentado para integração com front-ends e outros sistemas.
 
@@ -102,17 +102,17 @@ O **Backend do Aluguel de Carros** é uma API HTTP desenvolvida com **Micronaut*
 
 ### 🖥️ Back-end
 
-| Tecnologia | Versão | Uso |
-|------------|--------|-----|
-| **Java** | 21 | Linguagem de programação |
-| **Micronaut** | 4.10 | Framework HTTP, DI, validação |
-| **Maven** | 3.9+ | Build e gerenciador de dependências |
-| **H2 Database** | Latest | Banco de dados em memória (development) |
-| **JPA / Hibernate** | Latest | Mapeamento objeto-relacional |
-| **JJWT** | Latest | Geração e validação de tokens JWT |
-| **BCrypt (favre)** | Latest | Hash seguro de senhas |
-| **Lombok** | Latest | Redução de boilerplate |
-| **micronaut-openapi** | Latest | Swagger UI e OpenAPI |
+| Tecnologia            | Versão | Uso                                     |
+| --------------------- | ------ | --------------------------------------- |
+| **Java**              | 21     | Linguagem de programação                |
+| **Micronaut**         | 4.10   | Framework HTTP, DI, validação           |
+| **Maven**             | 3.9+   | Build e gerenciador de dependências     |
+| **PostgreSQL**        | 16+    | Banco de dados relacional                |
+| **JPA / Hibernate**   | Latest | Mapeamento objeto-relacional            |
+| **JJWT**              | Latest | Geração e validação de tokens JWT       |
+| **BCrypt (favre)**    | Latest | Hash seguro de senhas                   |
+| **Lombok**            | Latest | Redução de boilerplate                  |
+| **micronaut-openapi** | Latest | Swagger UI e OpenAPI                    |
 
 ---
 
@@ -146,6 +146,7 @@ A aplicação segue um **padrão monolítico em camadas**:
 8. **Exception** (`exception/`) — Exceções de domínio e handler global.
 
 **Padrões aplicados:**
+
 - **Repository Pattern** — isolamento de persistência
 - **Service Layer** — concentração de regras de negócio
 - **DTO Pattern** — separação entre entrada/saída e entidades internas
@@ -163,19 +164,43 @@ A aplicação segue um **padrão monolítico em camadas**:
 
 ---
 
-### 💾 Banco de Dados (H2)
+### 💾 Banco de Dados (PostgreSQL)
 
-O projeto utiliza **H2 em arquivo** por padrão (`./data/aluguelcarros`): o schema é criado/atualizado automaticamente pelo Hibernate na inicialização.
+O projeto utiliza **PostgreSQL** por padrão: o schema é criado/atualizado automaticamente pelo Hibernate na inicialização.
 
 Trecho atual em `src/main/resources/application.yml`:
 
 ```yaml
 datasources:
   default:
-    url: jdbc:h2:file:./data/aluguelcarros;DB_CLOSE_DELAY=-1;MODE=LEGACY
-    username: sa
-    password: ''
-    driver-class-name: org.h2.Driver
+    url: ${DB_URL:`jdbc:postgresql://localhost:5432/aluguelcarros`}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+```
+
+Para usar **PostgreSQL via Docker**, suba o banco na raiz do repositório (pasta acima de `backend`):
+
+```bash
+docker compose up -d
+```
+
+**Windows (PowerShell):**
+
+```powershell
+$env:DB_URL="jdbc:postgresql://localhost:5432/aluguelcarros"
+$env:DB_USERNAME="postgres"
+$env:DB_PASSWORD="postgres"
+.\mvnw.bat mn:run
+```
+
+**Linux / macOS:**
+
+```bash
+DB_URL=jdbc:postgresql://localhost:5432/aluguelcarros \
+DB_USERNAME=postgres \
+DB_PASSWORD=postgres \
+./mvnw mn:run
 ```
 
 ---
@@ -195,11 +220,13 @@ datasources:
 ```
 
 ✅ **A API ficará disponível em:**
+
 - **Base:** `http://localhost:8080`
 - **Context Path:** `/api/aluguelcarros/v1`
 - **Exemplo:** `http://localhost:8080/api/aluguelcarros/v1/auth/login`
 
 ✅ **Swagger UI disponível em:**
+
 - `http://localhost:8080/api/aluguelcarros/v1/swagger-ui`
 
 ---
@@ -269,7 +296,7 @@ backend/
 │
 ├── src/test/
 │   ├── java/br/pucminas/                   # 🧪 Testes unitários/integração
-│   └── resources/application-test.yml      # ⚙️ Configuração de teste (H2 em memória)
+│   └── resources/                          # ⚙️ Configurações de teste (opcional)
 │
 └── target/                                  # 📦 Artefatos compilados (JAR)
 ```
@@ -305,10 +332,10 @@ backend/
 
 ## 🤝 Contribuição
 
-1. Faça um *fork* do repositório.
+1. Faça um _fork_ do repositório.
 2. Crie uma branch (`git checkout -b feature/minha-feature`).
 3. Commit com mensagens claras ([Conventional Commits](https://www.conventionalcommits.org/)).
-4. Abra um *Pull Request* descrevendo as mudanças.
+4. Abra um _Pull Request_ descrevendo as mudanças.
 
 ---
 
@@ -319,4 +346,3 @@ Este projeto está licenciado sob a **MIT License** — veja o arquivo [LICENSE]
 ---
 
 **Desenvolvido com ❤️ — [Voltar ao README Principal](../README.md)**
-
