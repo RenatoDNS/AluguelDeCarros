@@ -70,10 +70,6 @@ public class AuthService {
         return new AuthMeResponseDTO(id, login, userType);
     }
 
-    public boolean validarToken(String token) {
-        return jwtConfig.validarToken(token);
-    }
-
     private AuthResult gerarResultado(Usuario usuario, UserType userType, String login) {
         String token = jwtConfig.gerarToken(usuario, userType, login);
         return new AuthResult(token, userType);

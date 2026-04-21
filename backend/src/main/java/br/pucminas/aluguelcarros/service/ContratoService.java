@@ -95,13 +95,6 @@ public class ContratoService {
     }
 
     @Transactional
-    public Contrato executarPorPedido(Long pedidoId) {
-        Contrato contrato = contratoRepository.findByPedidoId(pedidoId)
-                .orElseThrow(() -> new EntidadeNaoEncontradaException("Contrato não encontrado para o pedido informado."));
-        return executar(contrato.getId());
-    }
-
-    @Transactional
     public Contrato obterOuCriarPorPedido(Long pedidoId, TipoPropriedade tipoPropriedade, LocalDate dataAssinatura) {
         Contrato existente = contratoRepository.findByPedidoId(pedidoId).orElse(null);
         if (existente != null) {

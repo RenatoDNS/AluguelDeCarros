@@ -37,8 +37,8 @@ public class PedidoFacade {
                 .toList();
     }
 
-    public List<PedidoResponseDTO> listarEmAnaliseParaAgente(Long agenteId, UserType userType) {
-        return pedidoService.listarEmAnaliseParaAgente(agenteId, userType)
+    public List<PedidoResponseDTO> listarPorStatusParaAgente(String status, Long agenteId, UserType userType) {
+        return pedidoService.listarPorStatusParaAgente(status, agenteId, userType)
                 .stream()
                 .map(PedidoFacade::toResponse)
                 .toList();

@@ -23,35 +23,55 @@ tags:
   - name: Autenticação
     description: Login JWT e leitura de perfil autenticado
   - name: Clientes
-    description: Cadastro e gestão de clientes
+    description: Cadastro de clientes
   - name: Bancos
-    description: Cadastro e gestão de bancos
+    description: Cadastro de bancos
   - name: Empresas
-    description: Cadastro e gestão de empresas
+    description: Cadastro de empresas
   - name: Automóveis
-    description: Cadastro e gestão de automóveis
-  - name: Pareceres
-    description: Emissão e gestão de pareceres vinculados a pedidos
+    description: Cadastro e Gestão de automóveis
   - name: Pedidos
-    description: Cadastro e gestão de pedidos
+    description: Fluxos de pedidos
+  - name: Pareceres
+    description: Emissão e Gestão de pareceres
   - name: Contratos
-    description: Gestão de contratos vinculados a pedidos aprovados
+    description: Gestão de contratos
   - name: Contratos de Crédito
-    description: Gestão de crédito associado a contratos por bancos
+    description: Gestão de contratos de crédito
+  - name: Swagger
+    description: Endpoints da documentação OpenAPI e UI
   - name: Fluxos de Negócio
-    description: Endpoints de fluxo ponta a ponta sobre pedidos
+    description: Endpoints de fluxo por perfil
 
 paths:
+  /swagger-ui:
+    get:
+      tags: [Swagger]
+      summary: Redirecionar para a interface Swagger UI
+      operationId: swaggerUiIndex
+      responses:
+        '307':
+          description: Redireciona para `/swagger-ui/index.html`
+
+  /swagger-ui/swagger.yml:
+    get:
+      tags: [Swagger]
+      summary: Obter especificação OpenAPI em YAML
+      operationId: swaggerSpec
+      responses:
+        '200':
+          description: Especificação YAML
+          content:
+            application/yaml:
+              schema:
+                type: string
+        '404':
+          description: Arquivo de especificação não encontrado
+
   /auth/login:
     post:
       tags: [Autenticação]
       summary: Autenticar e obter token JWT
-      description: |
-        Rota pública.
-
-        O campo `login` aceita:
-        - CPF para cliente
-        - CNPJ para empresa ou banco
       operationId: login
       requestBody:
         required: true
@@ -60,8 +80,8 @@ paths:
             schema:
               $ref: '#/components/schemas/LoginRequest'
             example:
-              login: "12345678901"
-              senha: "senha123"
+              login: '12345678901'
+              senha: 'senha123'
       responses:
         '200':
           description: Autenticação bem-sucedida
@@ -75,15 +95,11 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/MensagemErro'
-              example:
-                mensagem: "Credenciais inválidas."
 
   /auth/me:
     get:
       tags: [Autenticação]
       summary: Retornar o perfil autenticado
-      description: |
-        Retorna dados básicos do usuário autenticado (`id`, `login`, `userType`).
       operationId: me
       security:
         - bearerAuth: []
@@ -96,15 +112,15 @@ paths:
                 $ref: '#/components/schemas/AuthMeResponse'
         '401':
           description: Token ausente, inválido ou formato incorreto
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MensagemErro'
 
   /clientes:
     post:
       tags: [Clientes]
       summary: Cadastrar cliente
-      description: |
-        Rota pública.
-
-        O cliente deve informar entre 1 e 3 entidades empregadoras.
       operationId: cadastrarCliente
       requestBody:
         required: true
@@ -112,17 +128,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/ClienteRequest'
-            example:
-              rg: "MG1234567"
-              cpf: "12345678901"
-              nome: "João da Silva"
-              endereco: "Rua A, 100"
-              profissao: "Analista"
-              senha: "senha123"
-              entidadesEmpregadoras:
-                - nomeEmpresa: "Empresa XPTO"
-                  cnpj: "11222333000181"
-                  rendimento: 4500.0
       responses:
         '200':
           description: Cliente criado
@@ -132,99 +137,21 @@ paths:
                 $ref: '#/components/schemas/ClienteResponse'
         '400':
           description: Erro de validação
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MensagemErro'
         '422':
           description: Regra de negócio violada
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/MensagemErro'
-    get:
-      tags: [Clientes]
-      summary: Listar clientes
-      operationId: listarClientes
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: Lista de clientes
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/ClienteResponse'
-        '401':
-          description: Não autorizado
-
-  /clientes/{id}:
-    parameters:
-      - $ref: '#/components/parameters/ClienteId'
-    get:
-      tags: [Clientes]
-      summary: Buscar cliente por id
-      operationId: buscarClientePorId
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: Cliente encontrado
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ClienteResponse'
-        '401':
-          description: Não autorizado
-        '404':
-          description: Cliente não encontrado
-    put:
-      tags: [Clientes]
-      summary: Atualizar cliente
-      operationId: atualizarCliente
-      security:
-        - bearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ClienteRequest'
-      responses:
-        '200':
-          description: Cliente atualizado
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ClienteResponse'
-        '400':
-          description: Erro de validação
-        '401':
-          description: Não autorizado
-        '404':
-          description: Cliente não encontrado
-        '422':
-          description: Regra de negócio violada
-    delete:
-      tags: [Clientes]
-      summary: Remover cliente
-      operationId: removerCliente
-      security:
-        - bearerAuth: []
-      responses:
-        '204':
-          description: Cliente removido
-        '401':
-          description: Não autorizado
-        '404':
-          description: Cliente não encontrado
 
   /bancos:
     post:
       tags: [Bancos]
       summary: Cadastrar banco
-      description: |
-        Rota pública.
-
-        O banco autentica por CNPJ e usa o CNPJ como login interno.
       operationId: cadastrarBanco
       requestBody:
         required: true
@@ -232,11 +159,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/BancoRequest'
-            example:
-              razaoSocial: "Banco XPTO"
-              cnpj: "12345678000199"
-              codigoBancario: "341"
-              senha: "senhaBanco123"
       responses:
         '200':
           description: Banco criado
@@ -246,95 +168,21 @@ paths:
                 $ref: '#/components/schemas/BancoResponse'
         '400':
           description: Erro de validação
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MensagemErro'
         '422':
           description: Regra de negócio violada
-    get:
-      tags: [Bancos]
-      summary: Listar bancos
-      operationId: listarBancos
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: Lista de bancos
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/BancoResponse'
-        '401':
-          description: Não autorizado
-
-  /bancos/{id}:
-    parameters:
-      - $ref: '#/components/parameters/BancoId'
-    get:
-      tags: [Bancos]
-      summary: Buscar banco por id
-      operationId: buscarBancoPorId
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: Banco encontrado
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/BancoResponse'
-        '401':
-          description: Não autorizado
-        '404':
-          description: Banco não encontrado
-    put:
-      tags: [Bancos]
-      summary: Atualizar banco
-      operationId: atualizarBanco
-      security:
-        - bearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/BancoRequest'
-      responses:
-        '200':
-          description: Banco atualizado
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/BancoResponse'
-        '400':
-          description: Erro de validação
-        '401':
-          description: Não autorizado
-        '404':
-          description: Banco não encontrado
-        '422':
-          description: Regra de negócio violada
-    delete:
-      tags: [Bancos]
-      summary: Remover banco
-      operationId: removerBanco
-      security:
-        - bearerAuth: []
-      responses:
-        '204':
-          description: Banco removido
-        '401':
-          description: Não autorizado
-        '404':
-          description: Banco não encontrado
+                $ref: '#/components/schemas/MensagemErro'
 
   /empresas:
     post:
       tags: [Empresas]
       summary: Cadastrar empresa
-      description: |
-        Rota pública.
-
-        A empresa autentica por CNPJ e usa o CNPJ como login interno.
       operationId: cadastrarEmpresa
       requestBody:
         required: true
@@ -342,11 +190,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/EmpresaRequest'
-            example:
-              razaoSocial: "Empresa XPTO LTDA"
-              cnpj: "99887766000155"
-              ramoDeAtividade: "Tecnologia"
-              senha: "senhaEmpresa123"
       responses:
         '200':
           description: Empresa criada
@@ -356,96 +199,22 @@ paths:
                 $ref: '#/components/schemas/EmpresaResponse'
         '400':
           description: Erro de validação
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MensagemErro'
         '422':
           description: Regra de negócio violada
-    get:
-      tags: [Empresas]
-      summary: Listar empresas
-      operationId: listarEmpresas
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: Lista de empresas
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/EmpresaResponse'
-        '401':
-          description: Não autorizado
-
-  /empresas/{id}:
-    parameters:
-      - $ref: '#/components/parameters/EmpresaId'
-    get:
-      tags: [Empresas]
-      summary: Buscar empresa por id
-      operationId: buscarEmpresaPorId
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: Empresa encontrada
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EmpresaResponse'
-        '401':
-          description: Não autorizado
-        '404':
-          description: Empresa não encontrada
-    put:
-      tags: [Empresas]
-      summary: Atualizar empresa
-      operationId: atualizarEmpresa
-      security:
-        - bearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/EmpresaRequest'
-      responses:
-        '200':
-          description: Empresa atualizada
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EmpresaResponse'
-        '400':
-          description: Erro de validação
-        '401':
-          description: Não autorizado
-        '404':
-          description: Empresa não encontrada
-        '422':
-          description: Regra de negócio violada
-    delete:
-      tags: [Empresas]
-      summary: Remover empresa
-      operationId: removerEmpresa
-      security:
-        - bearerAuth: []
-      responses:
-        '204':
-          description: Empresa removida
-        '401':
-          description: Não autorizado
-        '404':
-          description: Empresa não encontrada
+                $ref: '#/components/schemas/MensagemErro'
 
   /automoveis:
     post:
       tags: [Automóveis]
       summary: Cadastrar automóvel
-      description: |
-        Disponível somente para perfis `empresa` e `banco` autenticados.
-
-        O backend vincula automaticamente o automóvel ao usuário logado por meio de
-        `agentId` e `agentType`.
+      description: Disponivel apenas para perfis `empresa` e `banco`.
       operationId: cadastrarAutomovel
       security:
         - bearerAuth: []
@@ -455,27 +224,27 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/AutomovelRequest'
-            example:
-              matricula: "MAT-1001"
-              placa: "ABC1D23"
-              ano: 2024
-              marca: "Toyota"
-              modelo: "Corolla"
-              diaria: 250.00
-              status: "DISPONIVEL"
       responses:
         '200':
-          description: Automóvel criado
+          description: Automovel criado
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/AutomovelResponse'
         '400':
           description: Erro de validação
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MensagemErro'
         '401':
           description: Não autorizado
         '422':
-          description: Regra de negócio violada ou perfil sem permissão
+          description: Regra de negócio violada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MensagemErro'
     get:
       tags: [Automóveis]
       summary: Listar automóveis
@@ -498,10 +267,6 @@ paths:
     get:
       tags: [Automóveis]
       summary: Listar automóveis do agente autenticado
-      description: |
-        Disponível somente para perfis `empresa` e `banco`.
-
-        Retorna apenas os automóveis cadastrados pelo usuário autenticado.
       operationId: listarMeusAutomoveis
       security:
         - bearerAuth: []
@@ -525,7 +290,7 @@ paths:
 
   /automoveis/{id}:
     parameters:
-      - $ref: '#/components/parameters/AutomovelId'
+      - $ref: '#/components/parameters/IdPath'
     get:
       tags: [Automóveis]
       summary: Buscar automóvel por id
@@ -534,7 +299,7 @@ paths:
         - bearerAuth: []
       responses:
         '200':
-          description: Automóvel encontrado
+          description: Automovel encontrado
           content:
             application/json:
               schema:
@@ -542,7 +307,11 @@ paths:
         '401':
           description: Não autorizado
         '404':
-          description: Automóvel não encontrado
+          description: Automovel não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MensagemErro'
     put:
       tags: [Automóveis]
       summary: Atualizar automóvel
@@ -557,19 +326,31 @@ paths:
               $ref: '#/components/schemas/AutomovelRequest'
       responses:
         '200':
-          description: Automóvel atualizado
+          description: Automovel atualizado
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/AutomovelResponse'
         '400':
           description: Erro de validação
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MensagemErro'
         '401':
           description: Não autorizado
         '404':
-          description: Automóvel não encontrado
+          description: Automovel não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MensagemErro'
         '422':
           description: Regra de negócio violada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MensagemErro'
     delete:
       tags: [Automóveis]
       summary: Remover automóvel
@@ -578,25 +359,28 @@ paths:
         - bearerAuth: []
       responses:
         '204':
-          description: Automóvel removido
+          description: Automovel removido
         '401':
           description: Não autorizado
         '404':
-          description: Automóvel não encontrado
+          description: Automovel não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MensagemErro'
+        '422':
+          description: Regra de negócio violada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MensagemErro'
 
   /automoveis/status/{status}:
     parameters:
-      - $ref: '#/components/parameters/AutomovelStatusPath'
+      - $ref: '#/components/parameters/StatusPath'
     get:
       tags: [Automóveis]
       summary: Listar automóveis por status
-      description: |
-        Endpoint de consulta por status.
-
-        Status aceitos:
-        - `DISPONIVEL`
-        - `ALUGADO`
-        - `VINCULADO`
       operationId: listarAutomoveisPorStatus
       security:
         - bearerAuth: []
@@ -622,11 +406,6 @@ paths:
     post:
       tags: [Pedidos]
       summary: Cadastrar pedido
-      description: |
-        Ao criar um pedido:
-        - `status` é definido como `EM_ANALISE`
-        - `dataFim` deve ser maior que `dataInicio`
-        - o automóvel deve estar com status `DISPONIVEL`
       operationId: cadastrarPedido
       security:
         - bearerAuth: []
@@ -636,12 +415,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/PedidoRequest'
-            example:
-              clienteId: 1
-              automovelId: 1
-              dataInicio: "2026-04-15"
-              dataFim: "2026-04-20"
-              status: "APROVADO"
       responses:
         '200':
           description: Pedido criado
@@ -651,115 +424,14 @@ paths:
                 $ref: '#/components/schemas/PedidoResponse'
         '400':
           description: Erro de validação
-        '401':
-          description: Não autorizado
-        '422':
-          description: Regra de negócio violada
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/MensagemErro'
-    get:
-      tags: [Pedidos]
-      summary: Listar pedidos
-      operationId: listarPedidos
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: Lista de pedidos
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/PedidoResponse'
         '401':
           description: Não autorizado
-
-  /pedidos/{id}:
-    parameters:
-      - $ref: '#/components/parameters/PedidoId'
-    get:
-      tags: [Pedidos]
-      summary: Buscar pedido por id
-      operationId: buscarPedidoPorId
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: Pedido encontrado
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PedidoResponse'
-        '401':
-          description: Não autorizado
-        '404':
-          description: Pedido não encontrado
-    put:
-      tags: [Pedidos]
-      summary: Atualizar pedido
-      operationId: atualizarPedido
-      security:
-        - bearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/PedidoRequest'
-      responses:
-        '200':
-          description: Pedido atualizado
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PedidoResponse'
-        '400':
-          description: Erro de validação
-        '401':
-          description: Não autorizado
-        '404':
-          description: Pedido não encontrado
         '422':
           description: Regra de negócio violada
-    delete:
-      tags: [Pedidos]
-      summary: Remover pedido
-      operationId: removerPedido
-      security:
-        - bearerAuth: []
-      responses:
-        '204':
-          description: Pedido removido
-        '401':
-          description: Não autorizado
-        '404':
-          description: Pedido não encontrado
-
-  /pedidos/status/{status}:
-    parameters:
-      - $ref: '#/components/parameters/PedidoStatusPath'
-    get:
-      tags: [Pedidos]
-      summary: Listar pedidos por status
-      operationId: listarPedidosPorStatus
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: Lista de pedidos filtrada por status
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/PedidoResponse'
-        '401':
-          description: Não autorizado
-        '422':
-          description: Status inválido
           content:
             application/json:
               schema:
@@ -769,7 +441,6 @@ paths:
     get:
       tags: [Fluxos de Negócio]
       summary: Listar pedidos do cliente autenticado
-      description: Disponível apenas para perfil `cliente`.
       operationId: listarPedidosMe
       security:
         - bearerAuth: []
@@ -793,13 +464,10 @@ paths:
 
   /pedidos/{id}/cancelar:
     parameters:
-      - $ref: '#/components/parameters/PedidoId'
+      - $ref: '#/components/parameters/IdPath'
     post:
       tags: [Fluxos de Negócio]
       summary: Cancelar pedido
-      description: |
-        Disponível apenas para perfil `cliente` dono do pedido.
-        Regra: somente pedido com status `EM_ANALISE` pode ser cancelado.
       operationId: cancelarPedido
       security:
         - bearerAuth: []
@@ -814,6 +482,10 @@ paths:
           description: Não autorizado
         '404':
           description: Pedido não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MensagemErro'
         '422':
           description: Regra de negócio violada
           content:
@@ -821,51 +493,18 @@ paths:
               schema:
                 $ref: '#/components/schemas/MensagemErro'
 
-  /pedidos/{id}/executar-contrato:
+  /agente/pedidos/{status}:
     parameters:
-      - $ref: '#/components/parameters/PedidoId'
-    post:
-      tags: [Fluxos de Negócio]
-      summary: Executar contrato por pedido
-      description: |
-        Disponível para perfis `empresa` e `banco`.
-        Executa o contrato vinculado ao pedido e reflete no status do automóvel.
-      operationId: executarContratoPorPedido
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: Contrato executado
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ContratoResponse'
-        '401':
-          description: Não autorizado
-        '404':
-          description: Pedido/Contrato não encontrado
-        '422':
-          description: Regra de negócio violada
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/MensagemErro'
-
-  /agente/pedidos/em-analise:
+      - $ref: '#/components/parameters/StatusPath'
     get:
       tags: [Fluxos de Negócio]
-      summary: Listar pedidos em análise para agente
-      description: |
-        Disponível para perfis `empresa` e `banco`.
-
-        Retorna somente pedidos com status `EM_ANALISE` cujo automóvel foi
-        cadastrado pelo agente autenticado.
-      operationId: listarPedidosEmAnaliseParaAgente
+      summary: Listar pedidos por status para agente
+      operationId: listarPedidosPorStatusParaAgente
       security:
         - bearerAuth: []
       responses:
         '200':
-          description: Lista de pedidos EM_ANALISE vinculados aos automóveis do agente autenticado
+          description: Lista de pedidos por status vinculados aos automóveis do agente
           content:
             application/json:
               schema:
@@ -883,13 +522,10 @@ paths:
 
   /agente/pedidos/{id}/avaliar:
     parameters:
-      - $ref: '#/components/parameters/PedidoId'
+      - $ref: '#/components/parameters/IdPath'
     post:
       tags: [Fluxos de Negócio]
       summary: Avaliar pedido como agente
-      description: |
-        Disponível para perfis `empresa` e `banco`.
-        Cria parecer para o pedido e atualiza o status para `APROVADO` ou `REJEITADO`.
       operationId: avaliarPedidoComoAgente
       security:
         - bearerAuth: []
@@ -899,9 +535,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/PedidoAvaliacaoRequest'
-            example:
-              resultado: "APROVADO"
-              justificativa: "Renda e documentação aprovadas."
       responses:
         '200':
           description: Parecer emitido
@@ -911,10 +544,18 @@ paths:
                 $ref: '#/components/schemas/ParecerResponse'
         '400':
           description: Erro de validação
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MensagemErro'
         '401':
           description: Não autorizado
         '404':
           description: Pedido não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MensagemErro'
         '422':
           description: Regra de negócio violada
           content:
@@ -922,15 +563,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/MensagemErro'
 
-  /banco/pedidos/{id}/associar-credito:
+  /banco/pedidos/{id}/associar-cr:
     parameters:
-      - $ref: '#/components/parameters/PedidoId'
+      - $ref: '#/components/parameters/IdPath'
     post:
       tags: [Fluxos de Negócio]
       summary: Associar crédito ao pedido
-      description: |
-        Disponível somente para perfil `banco`.
-        Cria (ou reaproveita) contrato de tipo `BANCO` e associa contrato de crédito.
       operationId: associarCreditoAoPedido
       security:
         - bearerAuth: []
@@ -940,24 +578,27 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/AssociarCreditoRequest'
-            example:
-              valorFinanciado: 50000.0
-              taxaJuros: 1.25
-              prazoMeses: 36
-              dataAssinatura: "2026-04-14"
       responses:
         '200':
-          description: Crédito associado ao pedido
+          description: crédito associado ao pedido
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ContratoCreditoResponse'
         '400':
           description: Erro de validação
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MensagemErro'
         '401':
           description: Não autorizado
         '404':
-          description: Pedido/Contrato/Banco não encontrado
+          description: Pedido, contrato ou banco não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MensagemErro'
         '422':
           description: Regra de negócio violada
           content:
@@ -969,10 +610,6 @@ paths:
     post:
       tags: [Pareceres]
       summary: Emitir parecer para pedido
-      description: |
-        Regras de negócio:
-        - só pode emitir parecer para pedido com status `EM_ANALISE`
-        - ao emitir parecer, o status do pedido é atualizado para `APROVADO` ou `REJEITADO`
       operationId: cadastrarParecer
       security:
         - bearerAuth: []
@@ -982,13 +619,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/ParecerRequest'
-            example:
-              pedidoId: 1
-              agenteTipo: "BANCO"
-              agenteId: 1
-              resultado: "APROVADO"
-              justificativa: "Renda comprovada e histórico favorável."
-              dataEmissao: "2026-04-14"
       responses:
         '200':
           description: Parecer emitido
@@ -998,10 +628,18 @@ paths:
                 $ref: '#/components/schemas/ParecerResponse'
         '400':
           description: Erro de validação
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MensagemErro'
         '401':
           description: Não autorizado
         '404':
           description: Entidade relacionada não encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MensagemErro'
         '422':
           description: Regra de negócio violada
           content:
@@ -1028,7 +666,7 @@ paths:
 
   /pareceres/{id}:
     parameters:
-      - $ref: '#/components/parameters/ParecerId'
+      - $ref: '#/components/parameters/IdPath'
     get:
       tags: [Pareceres]
       summary: Buscar parecer por id
@@ -1046,6 +684,10 @@ paths:
           description: Não autorizado
         '404':
           description: Parecer não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MensagemErro'
     put:
       tags: [Pareceres]
       summary: Atualizar parecer
@@ -1067,12 +709,24 @@ paths:
                 $ref: '#/components/schemas/ParecerResponse'
         '400':
           description: Erro de validação
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MensagemErro'
         '401':
           description: Não autorizado
         '404':
           description: Parecer não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MensagemErro'
         '422':
           description: Regra de negócio violada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MensagemErro'
     delete:
       tags: [Pareceres]
       summary: Remover parecer
@@ -1086,15 +740,15 @@ paths:
           description: Não autorizado
         '404':
           description: Parecer não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MensagemErro'
 
   /contratos:
     post:
       tags: [Contratos]
       summary: Cadastrar contrato
-      description: |
-        Regras de negócio:
-        - contrato só pode ser criado para pedido com status `APROVADO`
-        - cada pedido pode possuir apenas um contrato
       operationId: cadastrarContrato
       security:
         - bearerAuth: []
@@ -1104,10 +758,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/ContratoRequest'
-            example:
-              pedidoId: 1
-              tipoPropriedade: "CLIENTE"
-              dataAssinatura: "2026-04-14"
       responses:
         '200':
           description: Contrato criado
@@ -1117,10 +767,18 @@ paths:
                 $ref: '#/components/schemas/ContratoResponse'
         '400':
           description: Erro de validação
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MensagemErro'
         '401':
           description: Não autorizado
         '404':
           description: Entidade relacionada não encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MensagemErro'
         '422':
           description: Regra de negócio violada
           content:
@@ -1147,7 +805,7 @@ paths:
 
   /contratos/{id}:
     parameters:
-      - $ref: '#/components/parameters/ContratoId'
+      - $ref: '#/components/parameters/IdPath'
     get:
       tags: [Contratos]
       summary: Buscar contrato por id
@@ -1165,6 +823,10 @@ paths:
           description: Não autorizado
         '404':
           description: Contrato não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MensagemErro'
     put:
       tags: [Contratos]
       summary: Atualizar contrato
@@ -1186,12 +848,24 @@ paths:
                 $ref: '#/components/schemas/ContratoResponse'
         '400':
           description: Erro de validação
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MensagemErro'
         '401':
           description: Não autorizado
         '404':
           description: Contrato não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MensagemErro'
         '422':
           description: Regra de negócio violada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MensagemErro'
     delete:
       tags: [Contratos]
       summary: Remover contrato
@@ -1205,17 +879,17 @@ paths:
           description: Não autorizado
         '404':
           description: Contrato não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MensagemErro'
 
   /contratos/{id}/executar:
     parameters:
-      - $ref: '#/components/parameters/ContratoId'
+      - $ref: '#/components/parameters/IdPath'
     post:
       tags: [Contratos]
       summary: Executar contrato
-      description: |
-        Executa o contrato e atualiza o status do automóvel do pedido:
-        - `CLIENTE` -> `ALUGADO`
-        - `EMPRESA` ou `BANCO` -> `VINCULADO`
       operationId: executarContrato
       security:
         - bearerAuth: []
@@ -1230,6 +904,10 @@ paths:
           description: Não autorizado
         '404':
           description: Contrato não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MensagemErro'
         '422':
           description: Regra de negócio violada
           content:
@@ -1237,15 +915,10 @@ paths:
               schema:
                 $ref: '#/components/schemas/MensagemErro'
 
-  /contratos-credito:
+  /contratos-cr:
     post:
-      tags: [Contratos de Crédito]
+      tags: [Contratos de Cr]
       summary: Cadastrar contrato de crédito
-      description: |
-        Regras de negócio:
-        - somente usuário com perfil `banco` pode associar crédito
-        - o banco associado é obtido do token autenticado
-        - cada contrato pode possuir apenas um contrato de crédito
       operationId: cadastrarContratoCredito
       security:
         - bearerAuth: []
@@ -1255,11 +928,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/ContratoCreditoRequest'
-            example:
-              contratoId: 1
-              valorFinanciado: 50000.0
-              taxaJuros: 1.25
-              prazoMeses: 36
       responses:
         '200':
           description: Contrato de crédito criado
@@ -1269,10 +937,18 @@ paths:
                 $ref: '#/components/schemas/ContratoCreditoResponse'
         '400':
           description: Erro de validação
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MensagemErro'
         '401':
           description: Não autorizado
         '404':
           description: Entidade relacionada não encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MensagemErro'
         '422':
           description: Regra de negócio violada
           content:
@@ -1280,7 +956,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/MensagemErro'
     get:
-      tags: [Contratos de Crédito]
+      tags: [Contratos de Cr]
       summary: Listar contratos de crédito
       operationId: listarContratosCredito
       security:
@@ -1297,11 +973,11 @@ paths:
         '401':
           description: Não autorizado
 
-  /contratos-credito/{id}:
+  /contratos-cr/{id}:
     parameters:
-      - $ref: '#/components/parameters/ContratoCreditoId'
+      - $ref: '#/components/parameters/IdPath'
     get:
-      tags: [Contratos de Crédito]
+      tags: [Contratos de Cr]
       summary: Buscar contrato de crédito por id
       operationId: buscarContratoCreditoPorId
       security:
@@ -1317,10 +993,13 @@ paths:
           description: Não autorizado
         '404':
           description: Contrato de crédito não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MensagemErro'
     put:
-      tags: [Contratos de Crédito]
+      tags: [Contratos de Cr]
       summary: Atualizar contrato de crédito
-      description: Somente o banco autenticado associado ao contrato de crédito pode atualizar.
       operationId: atualizarContratoCredito
       security:
         - bearerAuth: []
@@ -1339,10 +1018,18 @@ paths:
                 $ref: '#/components/schemas/ContratoCreditoResponse'
         '400':
           description: Erro de validação
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MensagemErro'
         '401':
           description: Não autorizado
         '404':
           description: Contrato de crédito não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MensagemErro'
         '422':
           description: Regra de negócio violada
           content:
@@ -1350,9 +1037,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/MensagemErro'
     delete:
-      tags: [Contratos de Crédito]
+      tags: [Contratos de Cr]
       summary: Remover contrato de crédito
-      description: Somente o banco autenticado associado ao contrato de crédito pode remover.
       operationId: removerContratoCredito
       security:
         - bearerAuth: []
@@ -1363,6 +1049,10 @@ paths:
           description: Não autorizado
         '404':
           description: Contrato de crédito não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MensagemErro'
 
 components:
   securitySchemes:
@@ -1373,7 +1063,7 @@ components:
       description: Token retornado em `POST /auth/login`
 
   parameters:
-    ClienteId:
+    IdPath:
       name: id
       in: path
       required: true
@@ -1381,75 +1071,12 @@ components:
         type: integer
         format: int64
 
-    BancoId:
-      name: id
-      in: path
-      required: true
-      schema:
-        type: integer
-        format: int64
-
-    EmpresaId:
-      name: id
-      in: path
-      required: true
-      schema:
-        type: integer
-        format: int64
-
-    AutomovelId:
-      name: id
-      in: path
-      required: true
-      schema:
-        type: integer
-        format: int64
-
-    AutomovelStatusPath:
+    StatusPath:
       name: status
       in: path
       required: true
       schema:
         type: string
-
-    PedidoId:
-      name: id
-      in: path
-      required: true
-      schema:
-        type: integer
-        format: int64
-
-    PedidoStatusPath:
-      name: status
-      in: path
-      required: true
-      schema:
-        type: string
-
-    ParecerId:
-      name: id
-      in: path
-      required: true
-      schema:
-        type: integer
-        format: int64
-
-    ContratoId:
-      name: id
-      in: path
-      required: true
-      schema:
-        type: integer
-        format: int64
-
-    ContratoCreditoId:
-      name: id
-      in: path
-      required: true
-      schema:
-        type: integer
-        format: int64
 
   schemas:
     LoginRequest:
@@ -1469,11 +1096,10 @@ components:
       properties:
         token:
           type: string
-          description: JWT
         expiresIn:
           type: integer
           format: int64
-          description: Tempo de expiração do token em milissegundos
+          description: Tempo de expiracao do token em milissegundos
         userType:
           $ref: '#/components/schemas/UserType'
 
@@ -1548,9 +1174,9 @@ components:
           format: int64
         rg:
           type: string
-        cpf:
-          type: string
         nome:
+          type: string
+        cpf:
           type: string
         endereco:
           type: string
@@ -1615,6 +1241,10 @@ components:
         ramoDeAtividade:
           type: string
 
+    AgenteTipo:
+      type: string
+      enum: [BANCO, EMPRESA]
+
     AutomovelStatus:
       type: string
       enum: [DISPONIVEL, ALUGADO, VINCULADO]
@@ -1638,7 +1268,6 @@ components:
           type: number
           format: double
           minimum: 0.01
-          description: Valor da diária do automóvel.
         status:
           $ref: '#/components/schemas/AutomovelStatus'
 
@@ -1665,7 +1294,6 @@ components:
         agentId:
           type: integer
           format: int64
-          description: Identificador do agente autenticado que cadastrou o automóvel.
         agentType:
           $ref: '#/components/schemas/AgenteTipo'
         status:
@@ -1693,7 +1321,7 @@ components:
           format: date
         status:
           type: string
-          description: Campo opcional; na criação o backend força EM_ANALISE.
+          nullable: true
 
     PedidoResponse:
       type: object
@@ -1718,17 +1346,22 @@ components:
         status:
           $ref: '#/components/schemas/PedidoStatus'
 
-    AgenteTipo:
-      type: string
-      enum: [BANCO, EMPRESA]
-
     ParecerResultado:
       type: string
       enum: [APROVADO, REJEITADO]
 
+    PedidoAvaliacaoRequest:
+      type: object
+      required: [resultado, justificativa]
+      properties:
+        resultado:
+          $ref: '#/components/schemas/ParecerResultado'
+        justificativa:
+          type: string
+
     ParecerRequest:
       type: object
-      required: [pedidoId, agenteTipo, agenteId, resultado, justificativa, dataEmissao]
+      required: [pedidoId, agenteTipo, agenteId, resultado, justificativa, dataEmissão]
       properties:
         pedidoId:
           type: integer
@@ -1742,7 +1375,7 @@ components:
           $ref: '#/components/schemas/ParecerResultado'
         justificativa:
           type: string
-        dataEmissao:
+        dataEmissão:
           type: string
           format: date
 
@@ -1764,7 +1397,7 @@ components:
           $ref: '#/components/schemas/ParecerResultado'
         justificativa:
           type: string
-        dataEmissao:
+        dataEmissão:
           type: string
           format: date
 
@@ -1823,15 +1456,6 @@ components:
           format: int32
           minimum: 1
 
-    PedidoAvaliacaoRequest:
-      type: object
-      required: [resultado, justificativa]
-      properties:
-        resultado:
-          $ref: '#/components/schemas/ParecerResultado'
-        justificativa:
-          type: string
-
     AssociarCreditoRequest:
       type: object
       required: [valorFinanciado, taxaJuros, prazoMeses]
@@ -1851,6 +1475,7 @@ components:
         dataAssinatura:
           type: string
           format: date
+          nullable: true
 
     ContratoCreditoResponse:
       type: object

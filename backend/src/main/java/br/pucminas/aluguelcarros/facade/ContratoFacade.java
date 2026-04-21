@@ -46,10 +46,6 @@ public class ContratoFacade {
         return toResponse(contratoService.executar(id));
     }
 
-    public ContratoResponseDTO executarPorPedido(Long pedidoId) {
-        return toResponse(contratoService.executarPorPedido(pedidoId));
-    }
-
     private Contrato fromDto(ContratoRequestDTO dto) {
         Contrato contrato = new Contrato();
 

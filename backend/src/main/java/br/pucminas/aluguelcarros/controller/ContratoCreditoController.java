@@ -22,7 +22,7 @@ import java.util.List;
 @Controller("/contratos-credito")
 public class ContratoCreditoController {
 
-    //TODO assinar contrato somente
+    //TODO assinar contrato e get contrato do pedido
 
     private final ContratoCreditoFacade contratoCreditoFacade;
     private final AuthService authService;

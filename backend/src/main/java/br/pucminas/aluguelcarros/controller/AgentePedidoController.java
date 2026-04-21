@@ -37,10 +37,10 @@ public class AgentePedidoController {
         this.authService = authService;
     }
 
-    @Get("/em-analise")
-    public List<PedidoResponseDTO> listarEmAnalise(HttpRequest<?> request) {
+    @Get("/{status}")
+    public List<PedidoResponseDTO> listarPorStatus(@PathVariable String status, HttpRequest<?> request) {
         AuthMeResponseDTO perfil = obterPerfilAutenticado(request);
-        return pedidoFacade.listarEmAnaliseParaAgente(perfil.id(), perfil.userType());
+        return pedidoFacade.listarPorStatusParaAgente(status, perfil.id(), perfil.userType());
     }
 
     @Post("/{id}/avaliar")

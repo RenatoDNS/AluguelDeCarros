@@ -16,7 +16,6 @@ import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import jakarta.transaction.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -82,10 +81,11 @@ public class PedidoService {
     }
 
     @Transactional
-    public List<Pedido> listarEmAnaliseParaAgente(Long agenteId, UserType userType) {
+    public List<Pedido> listarPorStatusParaAgente(String status, Long agenteId, UserType userType) {
         validarPerfilAgente(userType);
+        PedidoStatus statusPedido = validarStatus(status);
         return pedidoRepository.findByStatusAndAutomovelAgentIdAndAutomovelAgentType(
-                PedidoStatus.EM_ANALISE,
+                statusPedido,
                 agenteId,
                 mapearAgenteTipo(userType)
         );
