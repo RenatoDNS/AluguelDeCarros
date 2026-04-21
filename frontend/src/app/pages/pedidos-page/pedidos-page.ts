@@ -8,6 +8,7 @@ import { type PedidoAvaliacaoResultado, type PedidoResponse } from '../../models
 import { PedidoService } from '../../services/pedido.service';
 
 type DialogAction = 'APROVADO' | 'REJEITADO';
+type PedidoSection = 'em-analise' | 'finalizados';
 
 @Component({
   selector: 'app-pedidos-page',
@@ -21,6 +22,7 @@ export class PedidosPageComponent {
   private readonly pedidoService = inject(PedidoService);
 
   readonly pedidos = signal<PedidoResponse[]>([]);
+  readonly selectedSection = signal<PedidoSection>('em-analise');
   readonly loading = signal(true);
   readonly saving = signal(false);
   readonly errorMessage = signal('');
@@ -33,6 +35,10 @@ export class PedidosPageComponent {
 
   constructor() {
     this.loadPedidos();
+  }
+
+  setSection(section: PedidoSection) {
+    this.selectedSection.set(section);
   }
 
   openDialog(pedido: PedidoResponse, action: DialogAction) {

@@ -1,4 +1,25 @@
 <section class="space-y-6">
+  <div class="segmented-bar" role="tablist" aria-label="Seções de pedidos">
+    <button
+      type="button"
+      class="segmented-option"
+      [class.segmented-option-active]="selectedSection() === 'em-analise'"
+      [attr.aria-pressed]="selectedSection() === 'em-analise'"
+      (click)="setSection('em-analise')"
+    >
+      Em Análise
+    </button>
+    <button
+      type="button"
+      class="segmented-option"
+      [class.segmented-option-active]="selectedSection() === 'finalizados'"
+      [attr.aria-pressed]="selectedSection() === 'finalizados'"
+      (click)="setSection('finalizados')"
+    >
+      Finalizados
+    </button>
+  </div>
+
   <div class="rounded-[1.75rem] border border-white/70 bg-white/90 p-6 sm:p-8">
     <p class="text-sm font-semibold uppercase tracking-[0.28em] text-primary-600">Pedidos</p>
     <h1 class="mt-3 font-display text-3xl font-semibold text-slate-950">
@@ -9,7 +30,11 @@
     </p>
   </div>
 
-  @if (loading()) {
+  @if (selectedSection() === 'finalizados') {
+    <div class="rounded-[1.75rem] border border-white/70 bg-white/90 p-6 text-sm text-slate-600">
+      Não há pedidos finalizados para exibir no momento.
+    </div>
+  } @else if (loading()) {
     <div class="rounded-[1.75rem] border border-white/70 bg-white/90 p-6 text-sm text-slate-600">
       Carregando pedidos...
     </div>
@@ -84,7 +109,7 @@
     </div>
   }
 
-  @if (dialogOpen() && selectedPedido(); as pedido) {
+  @if (selectedSection() === 'em-analise' && dialogOpen() && selectedPedido(); as pedido) {
     <div class="dialog-backdrop fixed inset-0 z-50 flex items-center justify-center px-4 py-6">
       <div class="dialog-panel w-full max-w-2xl rounded-[1.75rem] bg-white p-6 shadow-2xl">
         <div class="flex items-start justify-between gap-4">

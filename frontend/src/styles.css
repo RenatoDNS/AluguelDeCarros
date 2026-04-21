@@ -43,8 +43,16 @@ body {
   font-family: var(--font-sans);
   color: var(--color-ink);
   background:
-    radial-gradient(circle at top left, color-mix(in srgb, var(--color-primary-500) 16%, transparent) 0%, transparent 30%),
-    radial-gradient(circle at top right, color-mix(in srgb, var(--color-secondary-500) 12%, transparent) 0%, transparent 22%),
+    radial-gradient(
+      circle at top left,
+      color-mix(in srgb, var(--color-primary-500) 16%, transparent) 0%,
+      transparent 30%
+    ),
+    radial-gradient(
+      circle at top right,
+      color-mix(in srgb, var(--color-secondary-500) 12%, transparent) 0%,
+      transparent 22%
+    ),
     linear-gradient(
       180deg,
       var(--color-surface-soft) 0%,
@@ -55,4 +63,8 @@ body {
 
 * {
   box-sizing: border-box;
+}
+
+.racing-font {
+  font-family: 'Racing Sans One';
 }
