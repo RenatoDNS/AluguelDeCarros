@@ -52,8 +52,8 @@ public class AutomovelFacade {
         return toResponse(automovelService.atualizar(automovel));
     }
 
-    public void remover(Long id) {
-        automovelService.deletar(id);
+    public void remover(Long id, Long agentId, UserType userType) {
+        automovelService.deletar(id, agentId, userType);
     }
 
     private Automovel fromDto(AutomovelRequestDTO dto) {

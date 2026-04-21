@@ -22,6 +22,7 @@ export class MeusVeiculosPageComponent {
   readonly dialogOpen = signal(false);
   readonly loading = signal(true);
   readonly saving = signal(false);
+  readonly deletingVeiculoId = signal<number | null>(null);
   readonly editingVeiculoId = signal<number | null>(null);
   readonly errorMessage = signal('');
   readonly veiculoForm = this.formBuilder.nonNullable.group({
@@ -59,6 +60,23 @@ export class MeusVeiculosPageComponent {
   closeDialog() {
     this.dialogOpen.set(false);
     this.resetForm();
+  }
+
+  deleteVeiculo(veiculoId: number) {
+    this.deletingVeiculoId.set(veiculoId);
+    this.errorMessage.set('');
+
+    this.veiculoService
+      .delete(veiculoId)
+      .pipe(finalize(() => this.deletingVeiculoId.set(null)))
+      .subscribe({
+        next: () => {
+          this.loadVeiculos();
+        },
+        error: (error) => {
+          this.errorMessage.set(error?.error?.mensagem ?? 'Não foi possível remover o veículo.');
+        },
+      });
   }
 
   submit() {

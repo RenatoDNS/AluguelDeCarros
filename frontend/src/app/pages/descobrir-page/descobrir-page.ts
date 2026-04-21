@@ -2,7 +2,7 @@ import { CurrencyPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 
-import { finalize } from 'rxjs';
+import { finalize, switchMap } from 'rxjs';
 
 import { VeiculoCardComponent } from '../../components/veiculo-card/veiculo-card';
 import { Veiculo } from '../../models/veiculo';
@@ -90,11 +90,12 @@ export class DescobrirPageComponent {
   }
 
   submitPedido() {
-    const profile = this.authService.profile();
+    const userType = this.authService.userType();
+    const token = this.authService.token();
     const veiculo = this.selectedVeiculo();
     const { dataInicio, dataFim } = this.aluguelForm.getRawValue();
 
-    if (!profile?.id || !veiculo) {
+    if (!token || userType !== 'cliente' || !veiculo) {
       this.errorMessage.set('Não foi possível identificar o cliente ou o veículo selecionado.');
       return;
     }
@@ -120,15 +121,20 @@ export class DescobrirPageComponent {
     this.errorMessage.set('');
     this.successMessage.set('');
 
-    this.pedidoService
-      .create({
-        clienteId: profile.id,
-        automovelId: veiculo.id,
-        dataInicio,
-        dataFim,
-        status: 'EM_ANALISE',
-      })
-      .pipe(finalize(() => this.loading.set(false)))
+    this.authService
+      .me()
+      .pipe(
+        switchMap((profile) =>
+          this.pedidoService.create({
+            clienteId: profile.id,
+            automovelId: veiculo.id,
+            dataInicio,
+            dataFim,
+            status: 'EM_ANALISE',
+          }),
+        ),
+        finalize(() => this.loading.set(false)),
+      )
       .subscribe({
         next: () => {
           this.successMessage.set('Pedido realizado com sucesso.');

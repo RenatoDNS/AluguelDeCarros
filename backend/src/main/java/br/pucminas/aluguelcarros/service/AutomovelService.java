@@ -116,9 +116,16 @@ public class AutomovelService {
     }
 
     @Transactional
-    public void deletar(Long id) {
+    public void deletar(Long id, Long agentId, UserType userType) {
+        validarPerfilAgente(userType);
+
         Automovel automovel = automovelRepository.findById(id)
                 .orElseThrow(() -> new EntidadeNaoEncontradaException("Automovel nao encontrado."));
+
+        if (!agentId.equals(automovel.getAgentId()) || mapearAgenteTipo(userType) != automovel.getAgentType()) {
+            throw new RegraDeNegocioException("Usuario autenticado nao pode remover automovel de outro agente.");
+        }
+
         automovelRepository.delete(automovel);
     }
 

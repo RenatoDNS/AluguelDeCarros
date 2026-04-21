@@ -1,6 +1,8 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 
+import { map } from 'rxjs';
+
 import { type UserType } from '../models/auth';
 import { AuthService } from '../services/auth.service';
 
@@ -9,19 +11,25 @@ export const roleGuard: CanActivateFn = (route) => {
   const router = inject(Router);
   const expectedUserType = route.data?.['userType'] as UserType | UserType[] | undefined;
 
-  if (!authService.isAuthenticated()) {
-    return router.createUrlTree(['/login']);
-  }
+  return authService.waitUntilReady().pipe(
+    map(() => {
+      if (!authService.isAuthenticated()) {
+        return router.createUrlTree(['/login']);
+      }
 
-  if (!expectedUserType) {
-    return true;
-  }
+      if (!expectedUserType) {
+        return true;
+      }
 
-  const expectedUserTypes = Array.isArray(expectedUserType) ? expectedUserType : [expectedUserType];
+      const expectedUserTypes = Array.isArray(expectedUserType)
+        ? expectedUserType
+        : [expectedUserType];
 
-  if (expectedUserTypes.some((userType) => authService.hasUserType(userType))) {
-    return true;
-  }
+      if (expectedUserTypes.some((userType) => authService.hasUserType(userType))) {
+        return true;
+      }
 
-  return router.createUrlTree(['/dashboard']);
+      return router.createUrlTree(['/dashboard']);
+    }),
+  );
 };

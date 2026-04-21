@@ -1,8 +1,8 @@
+import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 
-import { PedidoResponse, type PedidoStatus } from '../../models/pedido';
+import { type PedidoResponse, type PedidoStatus } from '../../models/pedido';
 import { PedidoService } from '../../services/pedido.service';
-import { DatePipe } from '@angular/common';
 
 type StatusMeta = {
   label: string;
@@ -22,6 +22,7 @@ export class MeusPedidosPageComponent {
 
   readonly pedidos = signal<PedidoResponse[]>([]);
   readonly loading = signal(true);
+  readonly cancelingPedidoId = signal<number | null>(null);
   readonly errorMessage = signal('');
 
   private readonly statusMetaMap: Record<PedidoStatus, StatusMeta> = {
@@ -48,6 +49,39 @@ export class MeusPedidosPageComponent {
   };
 
   constructor() {
+    this.loadPedidos();
+  }
+
+  canCancel(pedido: PedidoResponse) {
+    return pedido.status === 'EM_ANALISE';
+  }
+
+  cancelPedido(pedidoId: number) {
+    this.cancelingPedidoId.set(pedidoId);
+    this.errorMessage.set('');
+
+    this.pedidoService.cancel(pedidoId).subscribe({
+      next: (pedidoAtualizado) => {
+        this.pedidos.update((pedidos) =>
+          pedidos.map((pedido) => (pedido.id === pedidoId ? pedidoAtualizado : pedido)),
+        );
+        this.cancelingPedidoId.set(null);
+      },
+      error: (error) => {
+        this.errorMessage.set(error?.error?.mensagem ?? 'Não foi possível cancelar o pedido.');
+        this.cancelingPedidoId.set(null);
+      },
+    });
+  }
+
+  statusMeta(status: PedidoStatus) {
+    return this.statusMetaMap[status];
+  }
+
+  private loadPedidos() {
+    this.loading.set(true);
+    this.errorMessage.set('');
+
     this.pedidoService.listMine().subscribe({
       next: (pedidos) => {
         this.pedidos.set(pedidos);
@@ -60,9 +94,5 @@ export class MeusPedidosPageComponent {
         this.loading.set(false);
       },
     });
-  }
-
-  statusMeta(status: PedidoStatus) {
-    return this.statusMetaMap[status];
   }
 }

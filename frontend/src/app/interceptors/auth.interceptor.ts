@@ -1,8 +1,6 @@
 import { HttpInterceptorFn } from '@angular/common/http';
-import { inject } from '@angular/core';
 
-import { AuthService } from '../services/auth.service';
-
+const TOKEN_STORAGE_KEY = 'auth_token';
 const PUBLIC_AUTH_PATHS = ['/auth/login', '/clientes', '/bancos', '/empresas'];
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
@@ -10,8 +8,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     return next(req);
   }
 
-  const authService = inject(AuthService);
-  const token = authService.token();
+  const token = sessionStorage.getItem(TOKEN_STORAGE_KEY);
 
   if (!token) {
     return next(req);

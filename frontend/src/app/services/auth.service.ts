@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { computed, inject, Injectable, signal } from '@angular/core';
-import { catchError, map, switchMap, tap, throwError } from 'rxjs';
+import { BehaviorSubject, catchError, filter, map, switchMap, take, tap, throwError } from 'rxjs';
 
 import { environment } from '../../environments/environment';
 import {
@@ -14,22 +14,6 @@ import {
 
 const TOKEN_STORAGE_KEY = 'auth_token';
 const USER_TYPE_STORAGE_KEY = 'auth_user_type';
-const PROFILE_STORAGE_KEY = 'auth_me';
-
-function getStoredProfile() {
-  const storedProfile = sessionStorage.getItem(PROFILE_STORAGE_KEY);
-
-  if (!storedProfile) {
-    return null;
-  }
-
-  try {
-    return JSON.parse(storedProfile) as AuthMeResponse;
-  } catch {
-    sessionStorage.removeItem(PROFILE_STORAGE_KEY);
-    return null;
-  }
-}
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -38,13 +22,18 @@ export class AuthService {
   private readonly userTypeState = signal<UserType | null>(
     sessionStorage.getItem(USER_TYPE_STORAGE_KEY) as UserType | null,
   );
-  private readonly profileState = signal<AuthMeResponse | null>(getStoredProfile());
+  private readonly authReadyState = signal(false);
+  private readonly authReady$ = new BehaviorSubject(false);
 
   readonly token = computed(() => this.tokenState());
   readonly userType = computed(() => this.userTypeState());
-  readonly profile = computed(() => this.profileState());
   readonly isAuthenticated = computed(() => Boolean(this.tokenState()));
   readonly isCliente = computed(() => this.userTypeState() === 'cliente');
+  readonly isReady = computed(() => this.authReadyState());
+
+  constructor() {
+    this.initializeAuthState();
+  }
 
   login(payload: LoginPayload) {
     const body: LoginRequest = {
@@ -61,10 +50,6 @@ export class AuthService {
       }),
       switchMap(() =>
         this.me().pipe(
-          tap((profile) => {
-            sessionStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(profile));
-            this.profileState.set(profile);
-          }),
           map(() => void 0),
           catchError((error) => {
             this.clearAuthState();
@@ -95,16 +80,40 @@ export class AuthService {
     return this.userTypeState() === userType;
   }
 
+  waitUntilReady() {
+    return this.authReady$.pipe(filter(Boolean), take(1));
+  }
+
   logout() {
     this.clearAuthState();
+  }
+
+  private initializeAuthState() {
+    if (!this.tokenState()) {
+      this.setAuthReady();
+      return;
+    }
+
+    this.me().subscribe({
+      next: () => {
+        this.setAuthReady();
+      },
+      error: () => {
+        this.clearAuthState();
+        this.setAuthReady();
+      },
+    });
+  }
+
+  private setAuthReady() {
+    this.authReadyState.set(true);
+    this.authReady$.next(true);
   }
 
   private clearAuthState() {
     sessionStorage.removeItem(TOKEN_STORAGE_KEY);
     sessionStorage.removeItem(USER_TYPE_STORAGE_KEY);
-    sessionStorage.removeItem(PROFILE_STORAGE_KEY);
     this.tokenState.set(null);
     this.userTypeState.set(null);
-    this.profileState.set(null);
   }
 }

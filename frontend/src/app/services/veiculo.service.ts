@@ -24,4 +24,8 @@ export class VeiculoService {
   update(id: number, payload: VeiculoUpdatePayload) {
     return this.http.put<Veiculo>(`${environment.apiUrl}/automoveis/${id}`, payload).pipe(map(() => void 0));
   }
+
+  delete(id: number) {
+    return this.http.delete(`${environment.apiUrl}/automoveis/${id}`).pipe(map(() => void 0));
+  }
 }

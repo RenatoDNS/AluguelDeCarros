@@ -24,6 +24,10 @@ export class PedidoService {
     return this.http.get<PedidoResponse[]>(`${environment.apiUrl}/agente/pedidos/em-analise`);
   }
 
+  cancel(id: number) {
+    return this.http.post<PedidoResponse>(`${environment.apiUrl}/pedidos/${id}/cancelar`, {});
+  }
+
   evaluate(id: number, payload: PedidoAvaliacaoRequest) {
     return this.http.post(`${environment.apiUrl}/agente/pedidos/${id}/avaliar`, payload);
   }

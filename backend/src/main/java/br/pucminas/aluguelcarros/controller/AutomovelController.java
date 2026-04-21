@@ -65,8 +65,9 @@ public class AutomovelController {
     }
 
     @Delete("/{id}")
-    public HttpResponse<Void> deletar(@PathVariable Long id) {
-        automovelFacade.remover(id);
+    public HttpResponse<Void> deletar(@PathVariable Long id, HttpRequest<?> request) {
+        AuthMeResponseDTO perfil = obterPerfilAutenticado(request);
+        automovelFacade.remover(id, perfil.id(), perfil.userType());
         return HttpResponse.noContent();
     }
 
