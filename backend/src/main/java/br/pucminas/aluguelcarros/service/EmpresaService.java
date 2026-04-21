@@ -39,43 +39,6 @@ public class EmpresaService {
         return empresaRepository.save(empresa);
     }
 
-    @Transactional
-    public Empresa buscarPorId(Long id) {
-        return empresaRepository.findById(id)
-                .orElseThrow(() -> new EntidadeNaoEncontradaException("Empresa não encontrada."));
-    }
-
-    @Transactional
-    public List<Empresa> listar() {
-        List<Empresa> empresas = new ArrayList<>();
-        empresaRepository.findAll().forEach(empresas::add);
-        return empresas;
-    }
-
-    @Transactional
-    public Empresa atualizar(Empresa empresa) {
-        Empresa existente = empresaRepository.findById(empresa.getId())
-                .orElseThrow(() -> new EntidadeNaoEncontradaException("Empresa não encontrada."));
-
-        String cnpj = normalizarCnpj(empresa.getCnpj());
-        validarCnpjDisponivel(cnpj, existente.getId());
-
-        existente.setRazaoSocial(normalizarTexto(empresa.getRazaoSocial()));
-        existente.setCnpj(cnpj);
-        existente.setRamoDeAtividade(normalizarTexto(empresa.getRamoDeAtividade()));
-        existente.setLogin(cnpj);
-        existente.setSenha(hashSenha(empresa.getSenha()));
-
-        return empresaRepository.save(existente);
-    }
-
-    @Transactional
-    public void deletar(Long id) {
-        Empresa empresa = empresaRepository.findById(id)
-                .orElseThrow(() -> new EntidadeNaoEncontradaException("Empresa não encontrada."));
-        empresaRepository.delete(empresa);
-    }
-
     private void validarCnpjDisponivel(String cnpj, Long idAtual) {
         empresaRepository.findByCnpj(cnpj)
                 .filter(e -> idAtual == null || !e.getId().equals(idAtual))

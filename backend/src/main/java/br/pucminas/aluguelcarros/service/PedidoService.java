@@ -61,47 +61,6 @@ public class PedidoService {
     }
 
     @Transactional
-    public List<Pedido> listar() {
-        List<Pedido> pedidos = new ArrayList<>();
-        pedidoRepository.findAll().forEach(pedidos::add);
-        return pedidos;
-    }
-
-    @Transactional
-    public List<Pedido> listarPorStatus(String status) {
-        return pedidoRepository.findByStatus(validarStatus(status));
-    }
-
-    @Transactional
-    public Pedido atualizar(Pedido pedido) {
-        Pedido existente = pedidoRepository.findById(pedido.getId())
-                .orElseThrow(() -> new EntidadeNaoEncontradaException("Pedido não encontrado."));
-
-        validarPeriodo(pedido);
-
-        Cliente cliente = buscarCliente(pedido.getCliente().getId());
-        Automovel automovel = buscarAutomovel(pedido.getAutomovel().getId());
-
-        existente.setCliente(cliente);
-        existente.setAutomovel(automovel);
-        existente.setDataInicio(pedido.getDataInicio());
-        existente.setDataFim(pedido.getDataFim());
-
-        if (pedido.getStatus() != null) {
-            existente.setStatus(pedido.getStatus());
-        }
-
-        return pedidoRepository.save(existente);
-    }
-
-    @Transactional
-    public void deletar(Long id) {
-        Pedido pedido = pedidoRepository.findById(id)
-                .orElseThrow(() -> new EntidadeNaoEncontradaException("Pedido não encontrado."));
-        pedidoRepository.delete(pedido);
-    }
-
-    @Transactional
     public Pedido cancelar(Long pedidoId, Long clienteAutenticadoId, UserType userType) {
         validarPerfilCliente(userType);
 

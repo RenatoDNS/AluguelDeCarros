@@ -28,26 +28,6 @@ public class ClienteFacade {
         return toResponse(clienteService.cadastrar(fromDto(dto)));
     }
 
-    public ClienteResponseDTO buscar(Long id) {
-        return toResponse(clienteService.buscarPorId(id));
-    }
-
-    public List<ClienteResponseDTO> listar() {
-        return clienteService.listar().stream()
-                .map(ClienteFacade::toResponse)
-                .toList();
-    }
-
-    public ClienteResponseDTO atualizar(Long id, ClienteRequestDTO dto) {
-        Cliente cliente = fromDto(dto);
-        cliente.setId(id);
-        return toResponse(clienteService.atualizar(cliente));
-    }
-
-    public void remover(Long id) {
-        clienteService.deletar(id);
-    }
-
     private static ClienteResponseDTO toResponse(Cliente cliente) {
         List<EntidadeEmpregadoraResponseDTO> entidades = cliente.getEntidadesEmpregadoras().stream()
                 .map(e -> new EntidadeEmpregadoraResponseDTO(e.getNomeEmpresa(), e.getCnpj(), e.getRendimento()))

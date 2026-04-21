@@ -23,24 +23,6 @@ public class EmpresaFacade {
         return toResponse(empresaService.cadastrar(fromDto(dto)));
     }
 
-    public EmpresaResponseDTO buscar(Long id) {
-        return toResponse(empresaService.buscarPorId(id));
-    }
-
-    public List<EmpresaResponseDTO> listar() {
-        return empresaService.listar().stream().map(EmpresaFacade::toResponse).toList();
-    }
-
-    public EmpresaResponseDTO atualizar(Long id, EmpresaRequestDTO dto) {
-        Empresa empresa = fromDto(dto);
-        empresa.setId(id);
-        return toResponse(empresaService.atualizar(empresa));
-    }
-
-    public void remover(Long id) {
-        empresaService.deletar(id);
-    }
-
     private static Empresa fromDto(EmpresaRequestDTO dto) {
         Empresa empresa = new Empresa();
         empresa.setRazaoSocial(dto.razaoSocial());

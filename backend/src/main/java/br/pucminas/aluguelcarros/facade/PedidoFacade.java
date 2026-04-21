@@ -26,28 +26,6 @@ public class PedidoFacade {
         return toResponse(pedidoService.cadastrar(fromDto(dto)));
     }
 
-    public PedidoResponseDTO buscar(Long id) {
-        return toResponse(pedidoService.buscarPorId(id));
-    }
-
-    public List<PedidoResponseDTO> listar() {
-        return pedidoService.listar().stream().map(PedidoFacade::toResponse).toList();
-    }
-
-    public List<PedidoResponseDTO> listarPorStatus(String status) {
-        return pedidoService.listarPorStatus(status).stream().map(PedidoFacade::toResponse).toList();
-    }
-
-    public PedidoResponseDTO atualizar(Long id, PedidoRequestDTO dto) {
-        Pedido pedido = fromDto(dto);
-        pedido.setId(id);
-        return toResponse(pedidoService.atualizar(pedido));
-    }
-
-    public void remover(Long id) {
-        pedidoService.deletar(id);
-    }
-
     public PedidoResponseDTO cancelar(Long id, Long clienteAutenticadoId, UserType userType) {
         return toResponse(pedidoService.cancelar(id, clienteAutenticadoId, userType));
     }

@@ -30,26 +30,5 @@ public class BancoController {
     public BancoResponseDTO cadastrar(@Body @Valid BancoRequestDTO dto) {
         return bancoFacade.cadastrar(dto);
     }
-
-    @Get("/{id}")
-    public BancoResponseDTO buscarPorId(@PathVariable Long id) {
-        return bancoFacade.buscar(id);
-    }
-
-    @Get
-    public List<BancoResponseDTO> listar() {
-        return bancoFacade.listar();
-    }
-
-    @Put("/{id}")
-    public BancoResponseDTO atualizar(@PathVariable Long id, @Body @Valid BancoRequestDTO dto) {
-        return bancoFacade.atualizar(id, dto);
-    }
-
-    @Delete("/{id}")
-    public HttpResponse<Void> deletar(@PathVariable Long id) {
-        bancoFacade.remover(id);
-        return HttpResponse.noContent();
-    }
 }
 

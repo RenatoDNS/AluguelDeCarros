@@ -30,26 +30,5 @@ public class EmpresaController {
     public EmpresaResponseDTO cadastrar(@Body @Valid EmpresaRequestDTO dto) {
         return empresaFacade.cadastrar(dto);
     }
-
-    @Get("/{id}")
-    public EmpresaResponseDTO buscarPorId(@PathVariable Long id) {
-        return empresaFacade.buscar(id);
-    }
-
-    @Get
-    public List<EmpresaResponseDTO> listar() {
-        return empresaFacade.listar();
-    }
-
-    @Put("/{id}")
-    public EmpresaResponseDTO atualizar(@PathVariable Long id, @Body @Valid EmpresaRequestDTO dto) {
-        return empresaFacade.atualizar(id, dto);
-    }
-
-    @Delete("/{id}")
-    public HttpResponse<Void> deletar(@PathVariable Long id) {
-        empresaFacade.remover(id);
-        return HttpResponse.noContent();
-    }
 }
 

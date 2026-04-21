@@ -44,11 +44,6 @@ public class PedidoController {
         return pedidoFacade.cadastrar(dto);
     }
 
-    @Get
-    public List<PedidoResponseDTO> listar() {
-        return pedidoFacade.listar();
-    }
-
     @Get("/me")
     public List<PedidoResponseDTO> listarMe(HttpRequest<?> request) {
         AuthMeResponseDTO perfil = obterPerfilAutenticado(request);
@@ -59,34 +54,6 @@ public class PedidoController {
     public PedidoResponseDTO cancelar(@PathVariable Long id, HttpRequest<?> request) {
         AuthMeResponseDTO perfil = obterPerfilAutenticado(request);
         return pedidoFacade.cancelar(id, perfil.id(), perfil.userType());
-    }
-
-    @Post("/{id}/executar-contrato")
-    public ContratoResponseDTO executarContrato(@PathVariable Long id, HttpRequest<?> request) {
-        AuthMeResponseDTO perfil = obterPerfilAutenticado(request);
-        validarPerfilAgente(perfil.userType());
-        return contratoFacade.executarPorPedido(id);
-    }
-
-    @Get("/{id}")
-    public PedidoResponseDTO buscarPorId(@PathVariable Long id) {
-        return pedidoFacade.buscar(id);
-    }
-
-    @Get("/status/{status}")
-    public List<PedidoResponseDTO> listarPorStatus(@PathVariable String status) {
-        return pedidoFacade.listarPorStatus(status);
-    }
-
-    @Put("/{id}")
-    public PedidoResponseDTO atualizar(@PathVariable Long id, @Body @Valid PedidoRequestDTO dto) {
-        return pedidoFacade.atualizar(id, dto);
-    }
-
-    @Delete("/{id}")
-    public HttpResponse<Void> deletar(@PathVariable Long id) {
-        pedidoFacade.remover(id);
-        return HttpResponse.noContent();
     }
 
     private AuthMeResponseDTO obterPerfilAutenticado(HttpRequest<?> request) {

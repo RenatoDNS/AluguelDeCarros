@@ -40,58 +40,6 @@ public class ClienteService {
         return inicializarRelacionamentos(clienteRepository.save(cliente));
     }
 
-    @Transactional
-    public Cliente buscarPorId(Long id) {
-        Cliente cliente = clienteRepository.findById(id)
-                .orElseThrow(() -> new EntidadeNaoEncontradaException("Cliente não encontrado."));
-        return inicializarRelacionamentos(cliente);
-    }
-
-    @Transactional
-    public List<Cliente> listar() {
-        List<Cliente> clientes = new ArrayList<>();
-        clienteRepository.findAll().forEach(cliente -> clientes.add(inicializarRelacionamentos(cliente)));
-        return clientes;
-    }
-
-    @Transactional
-    public Cliente atualizar(Cliente cliente) {
-        cliente.setCpf(normalizarCpf(cliente.getCpf()));
-        cliente.setRg(normalizarTexto(cliente.getRg()));
-        validarEmpregadoras(cliente.getEntidadesEmpregadoras());
-        Cliente existente = clienteRepository.findById(cliente.getId())
-                .orElseThrow(() -> new EntidadeNaoEncontradaException("Cliente não encontrado."));
-        if (!existente.getCpf().equals(cliente.getCpf())
-                && clienteRepository.findByCpf(cliente.getCpf()).isPresent()) {
-            throw new RegraDeNegocioException("CPF já cadastrado.");
-        }
-        if (!existente.getRg().equals(cliente.getRg())
-                && clienteRepository.findByRg(cliente.getRg()).isPresent()) {
-            throw new RegraDeNegocioException("RG já cadastrado.");
-        }
-        existente.setRg(cliente.getRg());
-        existente.setCpf(cliente.getCpf());
-        existente.setNome(cliente.getNome());
-        existente.setEndereco(cliente.getEndereco());
-        existente.setProfissao(cliente.getProfissao());
-        existente.setLogin(cliente.getCpf());
-        existente.setSenha(hashSenha(cliente.getSenha()));
-        existente.getEntidadesEmpregadoras().clear();
-        for (EntidadeEmpregadora e : cliente.getEntidadesEmpregadoras()) {
-            e.setId(null);
-            e.setCliente(existente);
-            existente.getEntidadesEmpregadoras().add(e);
-        }
-        return inicializarRelacionamentos(clienteRepository.save(existente));
-    }
-
-    @Transactional
-    public void deletar(Long id) {
-        Cliente cliente = clienteRepository.findById(id)
-                .orElseThrow(() -> new EntidadeNaoEncontradaException("Cliente não encontrado."));
-        clienteRepository.delete(cliente);
-    }
-
     private static void validarEmpregadoras(List<EntidadeEmpregadora> lista) {
         if (lista == null || lista.isEmpty() || lista.size() > 3) {
             throw new RegraDeNegocioException("Informe entre 1 e 3 entidades empregadoras.");

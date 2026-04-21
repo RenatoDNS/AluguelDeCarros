@@ -39,43 +39,6 @@ public class BancoService {
         return bancoRepository.save(banco);
     }
 
-    @Transactional
-    public Banco buscarPorId(Long id) {
-        return bancoRepository.findById(id)
-                .orElseThrow(() -> new EntidadeNaoEncontradaException("Banco não encontrado."));
-    }
-
-    @Transactional
-    public List<Banco> listar() {
-        List<Banco> bancos = new ArrayList<>();
-        bancoRepository.findAll().forEach(bancos::add);
-        return bancos;
-    }
-
-    @Transactional
-    public Banco atualizar(Banco banco) {
-        Banco existente = bancoRepository.findById(banco.getId())
-                .orElseThrow(() -> new EntidadeNaoEncontradaException("Banco não encontrado."));
-
-        String cnpj = normalizarCnpj(banco.getCnpj());
-        validarCnpjDisponivel(cnpj, existente.getId());
-
-        existente.setRazaoSocial(normalizarTexto(banco.getRazaoSocial()));
-        existente.setCnpj(cnpj);
-        existente.setCodigoBancario(normalizarTexto(banco.getCodigoBancario()));
-        existente.setLogin(cnpj);
-        existente.setSenha(hashSenha(banco.getSenha()));
-
-        return bancoRepository.save(existente);
-    }
-
-    @Transactional
-    public void deletar(Long id) {
-        Banco banco = bancoRepository.findById(id)
-                .orElseThrow(() -> new EntidadeNaoEncontradaException("Banco não encontrado."));
-        bancoRepository.delete(banco);
-    }
-
     private void validarCnpjDisponivel(String cnpj, Long idAtual) {
         bancoRepository.findByCnpj(cnpj)
                 .filter(b -> idAtual == null || !b.getId().equals(idAtual))

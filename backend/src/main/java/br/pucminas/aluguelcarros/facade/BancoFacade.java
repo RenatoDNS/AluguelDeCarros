@@ -23,24 +23,6 @@ public class BancoFacade {
         return toResponse(bancoService.cadastrar(fromDto(dto)));
     }
 
-    public BancoResponseDTO buscar(Long id) {
-        return toResponse(bancoService.buscarPorId(id));
-    }
-
-    public List<BancoResponseDTO> listar() {
-        return bancoService.listar().stream().map(BancoFacade::toResponse).toList();
-    }
-
-    public BancoResponseDTO atualizar(Long id, BancoRequestDTO dto) {
-        Banco banco = fromDto(dto);
-        banco.setId(id);
-        return toResponse(bancoService.atualizar(banco));
-    }
-
-    public void remover(Long id) {
-        bancoService.deletar(id);
-    }
-
     private static Banco fromDto(BancoRequestDTO dto) {
         Banco banco = new Banco();
         banco.setRazaoSocial(dto.razaoSocial());
