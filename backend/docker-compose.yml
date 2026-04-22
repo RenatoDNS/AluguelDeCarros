@@ -1,4 +1,20 @@
 services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: aluguelcarros-api
+    restart: unless-stopped
+    env_file:
+      - .env.example
+    environment:
+      DB_URL: jdbc:postgresql://postgres:5432/aluguelcarros
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
   postgres:
     image: postgres:16-alpine
     container_name: aluguelcarros-postgres

@@ -1,0 +1,10 @@
+target/
+.git/
+.idea/
+.micronaut/
+out/
+*.iml
+*.ipr
+*.iws
+.env
+
