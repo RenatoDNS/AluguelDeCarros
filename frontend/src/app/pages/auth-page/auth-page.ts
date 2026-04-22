@@ -287,7 +287,7 @@ export class AuthPageComponent {
       .subscribe({
         next: () => {
           this.resetCurrentRegisterForm();
-          this.successMessage.set('Cadastro simulado realizado com sucesso.');
+          this.successMessage.set('Cadastro realizado com sucesso.');
         },
         error: () => {
           this.errorMessage.set('Falha ao cadastrar. Revise os dados informados.');
