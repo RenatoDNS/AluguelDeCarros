@@ -8,16 +8,14 @@ import java.time.LocalDate;
 
 @Serdeable
 public record PedidoResponseDTO(
-        Long id,
-        String numeroProtocolo,
-        Long clienteId,
-        Long automovelId,
-        PedidoTipo tipoPedido,
-        LocalDate dataInicio,
-        LocalDate dataFim,
-        Integer qntdParcelas,
-        PedidoStatus status,
-        String justificativa
-) {
+    Long id,
+    String numeroProtocolo,
+    ClienteResumoDTO cliente,
+    AutomovelResponseDTO automovel,
+    PedidoTipo tipoPedido,
+    LocalDate dataInicio,
+    LocalDate dataFim,
+    Integer qntdParcelas,
+    PedidoStatus status,
+    String justificativa) {
 }
-

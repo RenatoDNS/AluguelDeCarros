@@ -3,6 +3,8 @@ package br.pucminas.aluguelcarros.facade;
 import br.pucminas.aluguelcarros.dto.request.PedidoAluguelRequestDTO;
 import br.pucminas.aluguelcarros.dto.request.PedidoAvaliacaoRequestDTO;
 import br.pucminas.aluguelcarros.dto.request.PedidoCompraRequestDTO;
+import br.pucminas.aluguelcarros.dto.response.AutomovelResponseDTO;
+import br.pucminas.aluguelcarros.dto.response.ClienteResumoDTO;
 import br.pucminas.aluguelcarros.dto.response.PedidoResponseDTO;
 import br.pucminas.aluguelcarros.enums.PedidoStatus;
 import br.pucminas.aluguelcarros.enums.PedidoTipo;
@@ -130,14 +132,42 @@ public class PedidoFacade {
         return new PedidoResponseDTO(
                 pedido.getId(),
                 pedido.getNumeroProtocolo(),
-                pedido.getCliente().getId(),
-                pedido.getAutomovel().getId(),
+                toClienteResumo(pedido.getCliente()),
+                toAutomovelResponse(pedido.getAutomovel()),
                 pedido.getTipoPedido(),
                 pedido.getDataInicio(),
                 pedido.getDataFim(),
                 pedido.getQntdParcelas(),
                 pedido.getStatus(),
                 pedido.getJustificativa()
+        );
+    }
+
+    private static ClienteResumoDTO toClienteResumo(Cliente cliente) {
+        return new ClienteResumoDTO(
+                cliente.getId(),
+                cliente.getNome(),
+                cliente.getCpf(),
+                cliente.getRg(),
+                cliente.getEndereco(),
+                cliente.getProfissao()
+        );
+    }
+
+    private static AutomovelResponseDTO toAutomovelResponse(Automovel automovel) {
+        return new AutomovelResponseDTO(
+                automovel.getId(),
+                automovel.getMatricula(),
+                automovel.getPlaca(),
+                automovel.getAno(),
+                automovel.getMarca(),
+                automovel.getModelo(),
+                automovel.getValor(),
+                automovel.getLinkImagem(),
+                automovel.getTaxaJuros(),
+                automovel.getAgentId(),
+                automovel.getAgentType(),
+                automovel.getStatus()
         );
     }
 }

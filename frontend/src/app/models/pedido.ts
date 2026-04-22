@@ -1,3 +1,6 @@
+import { ClienteResumo } from './contrato';
+import { Veiculo } from './veiculo';
+
 export type PedidoStatus = 'EM_ANALISE' | 'APROVADO' | 'REJEITADO' | 'CANCELADO';
 export type PedidoTipo = 'ALUGUEL' | 'COMPRA';
 export type PedidoAvaliacaoResultado = 'APROVADO' | 'REJEITADO';
@@ -19,8 +22,8 @@ export type PedidoCreditoRequest = {
 export type PedidoResponse = {
   id: number;
   numeroProtocolo: string;
-  clienteId: number;
-  automovelId: number;
+  cliente: ClienteResumo;
+  automovel: Veiculo;
   tipoPedido: PedidoTipo;
   dataInicio: string | null;
   dataFim: string | null;

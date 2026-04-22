@@ -58,7 +58,7 @@
             </div>
             <div>
               <dt class="font-semibold text-slate-800">Automóvel</dt>
-              <dd class="mt-1">{{ pedido.automovelId }}</dd>
+              <dd class="mt-1">{{ pedido.automovel.marca }} {{ pedido.automovel.modelo }}</dd>
             </div>
             @if (pedido.dataInicio) {
               <div>
