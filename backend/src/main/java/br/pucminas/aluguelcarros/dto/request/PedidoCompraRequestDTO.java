@@ -1,18 +1,14 @@
 package br.pucminas.aluguelcarros.dto.request;
 
-import io.micronaut.core.annotation.Nullable;
 import io.micronaut.serde.annotation.Serdeable;
 import jakarta.validation.constraints.NotNull;
-
-import java.time.LocalDate;
+import jakarta.validation.constraints.Positive;
 
 @Serdeable
-public record PedidoRequestDTO(
+public record PedidoCompraRequestDTO(
         @NotNull Long clienteId,
         @NotNull Long automovelId,
-        @NotNull LocalDate dataInicio,
-        @NotNull LocalDate dataFim,
-        @Nullable String status
+        @NotNull @Positive Integer qntdParcelas
 ) {
 }
 

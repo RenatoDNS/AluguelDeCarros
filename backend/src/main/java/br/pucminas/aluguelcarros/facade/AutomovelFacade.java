@@ -63,7 +63,9 @@ public class AutomovelFacade {
         automovel.setAno(dto.ano());
         automovel.setMarca(dto.marca());
         automovel.setModelo(dto.modelo());
-        automovel.setDiaria(dto.diaria());
+        automovel.setValor(dto.valor());
+        automovel.setLinkImagem(dto.linkImagem());
+        automovel.setTaxaJuros(dto.taxaJuros());
         automovel.setStatus(automovelService.validarStatus(dto.status()));
         return automovel;
     }
@@ -76,7 +78,9 @@ public class AutomovelFacade {
                 automovel.getAno(),
                 automovel.getMarca(),
                 automovel.getModelo(),
-                automovel.getDiaria(),
+                automovel.getValor(),
+                automovel.getLinkImagem(),
+                automovel.getTaxaJuros(),
                 automovel.getAgentId(),
                 automovel.getAgentType(),
                 automovel.getStatus()

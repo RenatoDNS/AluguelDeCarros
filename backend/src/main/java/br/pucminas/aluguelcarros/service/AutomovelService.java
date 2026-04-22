@@ -40,7 +40,9 @@ public class AutomovelService {
         automovel.setPlaca(placa);
         automovel.setMarca(normalizarTexto(automovel.getMarca()));
         automovel.setModelo(normalizarTexto(automovel.getModelo()));
-        automovel.setDiaria(validarDiaria(automovel.getDiaria()));
+        automovel.setValor(validarValor(automovel.getValor()));
+        automovel.setLinkImagem(normalizarTexto(automovel.getLinkImagem()));
+        automovel.setTaxaJuros(validarTaxaJuros(automovel.getTaxaJuros()));
         automovel.setAgentId(agentId);
         automovel.setAgentType(mapearAgenteTipo(userType));
         automovel.setStatus(validarStatus(automovel.getStatus().name()));
@@ -61,11 +63,21 @@ public class AutomovelService {
         return AgenteTipo.EMPRESA;
     }
 
-    private BigDecimal validarDiaria(BigDecimal diaria) {
-        if (diaria == null || diaria.signum() <= 0) {
-            throw new RegraDeNegocioException("Diaria invalida.");
+    private BigDecimal validarValor(BigDecimal valor) {
+        if (valor == null || valor.signum() <= 0) {
+            throw new RegraDeNegocioException("Valor invalido.");
         }
-        return diaria;
+        return valor;
+    }
+
+    private BigDecimal validarTaxaJuros(BigDecimal taxaJuros) {
+        if (taxaJuros == null) {
+            return null;
+        }
+        if (taxaJuros.signum() <= 0) {
+            throw new RegraDeNegocioException("Taxa de juros invalida.");
+        }
+        return taxaJuros;
     }
 
     @Transactional
@@ -109,7 +121,9 @@ public class AutomovelService {
         existente.setAno(automovel.getAno());
         existente.setMarca(normalizarTexto(automovel.getMarca()));
         existente.setModelo(normalizarTexto(automovel.getModelo()));
-        existente.setDiaria(validarDiaria(automovel.getDiaria()));
+        existente.setValor(validarValor(automovel.getValor()));
+        existente.setLinkImagem(normalizarTexto(automovel.getLinkImagem()));
+        existente.setTaxaJuros(validarTaxaJuros(automovel.getTaxaJuros()));
         existente.setStatus(validarStatus(automovel.getStatus().name()));
 
         return automovelRepository.save(existente);

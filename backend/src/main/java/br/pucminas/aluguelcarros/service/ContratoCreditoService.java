@@ -97,17 +97,21 @@ public class ContratoCreditoService {
     }
 
     @Transactional
-    public ContratoCredito associarCreditoAoPedido(Long pedidoId,
-                                                   Long bancoAutenticadoId,
-                                                   UserType userType,
-                                                   Double valorFinanciado,
-                                                   Double taxaJuros,
-                                                   Integer prazoMeses,
-                                                   LocalDate dataAssinatura) {
+    public ContratoCredito obterOuCriarPorPedido(Long pedidoId,
+                                                 Long bancoAutenticadoId,
+                                                 UserType userType,
+                                                 Double valorFinanciado,
+                                                 Double taxaJuros,
+                                                 Integer prazoMeses,
+                                                 LocalDate dataAssinatura) {
         validarPerfilBanco(userType);
 
         Contrato contrato = contratoService.obterOuCriarPorPedido(pedidoId, TipoPropriedade.BANCO, dataAssinatura);
-        validarContratoUnico(contrato.getId(), null);
+        ContratoCredito existente = contratoCreditoRepository.findByContratoId(contrato.getId()).orElse(null);
+        if (existente != null) {
+            return existente;
+        }
+
         Banco banco = buscarBanco(bancoAutenticadoId);
 
         ContratoCredito contratoCredito = new ContratoCredito();

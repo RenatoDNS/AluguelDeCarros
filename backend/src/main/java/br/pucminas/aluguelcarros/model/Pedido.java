@@ -1,6 +1,7 @@
 package br.pucminas.aluguelcarros.model;
 
 import br.pucminas.aluguelcarros.enums.PedidoStatus;
+import br.pucminas.aluguelcarros.enums.PedidoTipo;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -45,14 +46,24 @@ public class Pedido {
     @JoinColumn(name = "automovel_id")
     private Automovel automovel;
 
-    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    @Column(name = "tipo_pedido", nullable = false)
+    private PedidoTipo tipoPedido;
+
+    @Column
     private LocalDate dataInicio;
 
-    @Column(nullable = false)
+    @Column
     private LocalDate dataFim;
+
+    @Column(name = "qntd_parcelas")
+    private Integer qntdParcelas;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private PedidoStatus status;
+
+    @Column(length = 1000)
+    private String justificativa;
 }
 

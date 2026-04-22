@@ -14,7 +14,9 @@ public record AutomovelResponseDTO(
         Integer ano,
         String marca,
         String modelo,
-        BigDecimal diaria,
+        BigDecimal valor,
+        String linkImagem,
+        BigDecimal taxaJuros,
         Long agentId,
         AgenteTipo agentType,
         AutomovelStatus status

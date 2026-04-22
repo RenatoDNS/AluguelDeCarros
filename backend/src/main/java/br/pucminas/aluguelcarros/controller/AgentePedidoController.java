@@ -2,12 +2,9 @@ package br.pucminas.aluguelcarros.controller;
 
 import br.pucminas.aluguelcarros.dto.request.PedidoAvaliacaoRequestDTO;
 import br.pucminas.aluguelcarros.dto.response.AuthMeResponseDTO;
-import br.pucminas.aluguelcarros.dto.response.ParecerResponseDTO;
 import br.pucminas.aluguelcarros.dto.response.PedidoResponseDTO;
-import br.pucminas.aluguelcarros.enums.AgenteTipo;
 import br.pucminas.aluguelcarros.enums.UserType;
 import br.pucminas.aluguelcarros.exception.RegraDeNegocioException;
-import br.pucminas.aluguelcarros.facade.ParecerFacade;
 import br.pucminas.aluguelcarros.facade.PedidoFacade;
 import br.pucminas.aluguelcarros.service.AuthService;
 import io.micronaut.http.HttpRequest;
@@ -25,30 +22,28 @@ import java.util.List;
 public class AgentePedidoController {
 
     private final PedidoFacade pedidoFacade;
-    private final ParecerFacade parecerFacade;
     private final AuthService authService;
 
     @Inject
     public AgentePedidoController(PedidoFacade pedidoFacade,
-                                  ParecerFacade parecerFacade,
                                   AuthService authService) {
         this.pedidoFacade = pedidoFacade;
-        this.parecerFacade = parecerFacade;
         this.authService = authService;
     }
 
     @Get("/{status}")
     public List<PedidoResponseDTO> listarPorStatus(@PathVariable String status, HttpRequest<?> request) {
         AuthMeResponseDTO perfil = obterPerfilAutenticado(request);
+        validarPerfilAgente(perfil.userType());
         return pedidoFacade.listarPorStatusParaAgente(status, perfil.id(), perfil.userType());
     }
 
     @Post("/{id}/avaliar")
-    public ParecerResponseDTO avaliarPedido(@PathVariable Long id,
-                                            @Body @Valid PedidoAvaliacaoRequestDTO dto,
-                                            HttpRequest<?> request) {
+    public PedidoResponseDTO avaliarPedido(@PathVariable Long id,
+                                           @Body @Valid PedidoAvaliacaoRequestDTO dto,
+                                           HttpRequest<?> request) {
         AuthMeResponseDTO perfil = obterPerfilAutenticado(request);
-        return parecerFacade.avaliarPedido(id, dto, mapearAgenteTipo(perfil.userType()), perfil.id());
+        return pedidoFacade.avaliarPedido(id, dto, perfil.id(), perfil.userType());
     }
 
     private AuthMeResponseDTO obterPerfilAutenticado(HttpRequest<?> request) {
@@ -56,14 +51,11 @@ public class AgentePedidoController {
         return authService.obterPerfilAutenticado(authorization);
     }
 
-    private AgenteTipo mapearAgenteTipo(UserType userType) {
-        if (userType == UserType.BANCO) {
-            return AgenteTipo.BANCO;
+    private void validarPerfilAgente(UserType userType) {
+        if (userType != UserType.BANCO && userType != UserType.EMPRESA) {
+            throw new RegraDeNegocioException("Somente banco ou empresa pode listar pedidos por status.");
         }
-        if (userType == UserType.EMPRESA) {
-            return AgenteTipo.EMPRESA;
-        }
-        throw new RegraDeNegocioException("Somente empresa ou banco pode avaliar pedidos.");
     }
+
 }
 

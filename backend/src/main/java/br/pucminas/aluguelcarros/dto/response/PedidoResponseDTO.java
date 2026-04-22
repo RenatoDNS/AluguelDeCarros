@@ -1,6 +1,7 @@
 package br.pucminas.aluguelcarros.dto.response;
 
 import br.pucminas.aluguelcarros.enums.PedidoStatus;
+import br.pucminas.aluguelcarros.enums.PedidoTipo;
 import io.micronaut.serde.annotation.Serdeable;
 
 import java.time.LocalDate;
@@ -11,9 +12,12 @@ public record PedidoResponseDTO(
         String numeroProtocolo,
         Long clienteId,
         Long automovelId,
+        PedidoTipo tipoPedido,
         LocalDate dataInicio,
         LocalDate dataFim,
-        PedidoStatus status
+        Integer qntdParcelas,
+        PedidoStatus status,
+        String justificativa
 ) {
 }
 

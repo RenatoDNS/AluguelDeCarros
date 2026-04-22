@@ -50,7 +50,13 @@ public class Automovel {
     private String modelo;
 
     @Column(nullable = false, precision = 10, scale = 2)
-    private BigDecimal diaria;
+    private BigDecimal valor;
+
+    @Column(name = "link_imagem", nullable = false, length = 2048)
+    private String linkImagem;
+
+    @Column(name = "taxa_juros", precision = 8, scale = 4)
+    private BigDecimal taxaJuros;
 
     @Column(nullable = false)
     private Long agentId;
