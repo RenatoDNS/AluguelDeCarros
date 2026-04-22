@@ -26,148 +26,145 @@ import java.util.List;
 @Singleton
 public class PedidoFacade {
 
-    private final PedidoService pedidoService;
-    private final ContratoService contratoService;
-    private final ContratoCreditoService contratoCreditoService;
+  private final PedidoService pedidoService;
+  private final ContratoService contratoService;
+  private final ContratoCreditoService contratoCreditoService;
 
-    @Inject
-    public PedidoFacade(PedidoService pedidoService,
-                        ContratoService contratoService,
-                        ContratoCreditoService contratoCreditoService) {
-        this.pedidoService = pedidoService;
-        this.contratoService = contratoService;
-        this.contratoCreditoService = contratoCreditoService;
+  @Inject
+  public PedidoFacade(PedidoService pedidoService,
+      ContratoService contratoService,
+      ContratoCreditoService contratoCreditoService) {
+    this.pedidoService = pedidoService;
+    this.contratoService = contratoService;
+    this.contratoCreditoService = contratoCreditoService;
+  }
+
+  public PedidoResponseDTO cadastrarAluguel(PedidoAluguelRequestDTO dto) {
+    return toResponse(pedidoService.cadastrarAluguel(fromAluguelDto(dto)));
+  }
+
+  public PedidoResponseDTO cadastrarCompra(PedidoCompraRequestDTO dto) {
+    return toResponse(pedidoService.cadastrarCompra(fromCompraDto(dto)));
+  }
+
+  public PedidoResponseDTO cancelar(Long id, Long clienteAutenticadoId, UserType userType) {
+    return toResponse(pedidoService.cancelar(id, clienteAutenticadoId, userType));
+  }
+
+  public List<PedidoResponseDTO> listarMe(Long clienteAutenticadoId, UserType userType) {
+    return pedidoService.listarPedidosDoCliente(clienteAutenticadoId, userType)
+        .stream()
+        .map(PedidoFacade::toResponse)
+        .toList();
+  }
+
+  public List<PedidoResponseDTO> listarPorStatusParaAgente(String status, Long agenteId, UserType userType) {
+    List<Pedido> pedidos = pedidoService.listarPorStatusParaAgente(status, agenteId, userType);
+
+    if (pedidoService.validarStatus(status) == PedidoStatus.APROVADO) {
+      gerarContratosAutomaticos(pedidos, agenteId, userType);
     }
 
-    public PedidoResponseDTO cadastrarAluguel(PedidoAluguelRequestDTO dto) {
-        return toResponse(pedidoService.cadastrarAluguel(fromAluguelDto(dto)));
+    return pedidos.stream()
+        .map(PedidoFacade::toResponse)
+        .toList();
+  }
+
+  public PedidoResponseDTO avaliarPedido(Long pedidoId, PedidoAvaliacaoRequestDTO dto, Long agenteId,
+      UserType userType) {
+    return toResponse(pedidoService.avaliarPedido(pedidoId, dto.resultado(), dto.justificativa(), agenteId, userType));
+  }
+
+  private void gerarContratosAutomaticos(List<Pedido> pedidos, Long agenteId, UserType userType) {
+    for (Pedido pedido : pedidos) {
+      if (pedido.getTipoPedido() == PedidoTipo.ALUGUEL) {
+        contratoService.obterOuCriarPorPedido(pedido.getId(), TipoPropriedade.CLIENTE, LocalDate.now());
+        continue;
+      }
+
+      contratoCreditoService.obterOuCriarPorPedido(
+          pedido.getId(),
+          agenteId,
+          userType,
+          pedido.getAutomovel().getValor().doubleValue(),
+          obterTaxaJurosCredito(pedido),
+          pedido.getQntdParcelas(),
+          LocalDate.now());
     }
+  }
 
-    public PedidoResponseDTO cadastrarCompra(PedidoCompraRequestDTO dto) {
-        return toResponse(pedidoService.cadastrarCompra(fromCompraDto(dto)));
+  private static Double obterTaxaJurosCredito(Pedido pedido) {
+    BigDecimal taxa = pedido.getAutomovel().getTaxaJuros();
+    if (taxa == null) {
+      return 0D;
     }
+    return taxa.doubleValue();
+  }
 
-    public PedidoResponseDTO cancelar(Long id, Long clienteAutenticadoId, UserType userType) {
-        return toResponse(pedidoService.cancelar(id, clienteAutenticadoId, userType));
-    }
+  private Pedido fromAluguelDto(PedidoAluguelRequestDTO dto) {
+    Pedido pedido = pedidoBase(dto.clienteId(), dto.automovelId());
+    pedido.setDataInicio(dto.dataInicio());
+    pedido.setDataFim(dto.dataFim());
+    return pedido;
+  }
 
-    public List<PedidoResponseDTO> listarMe(Long clienteAutenticadoId, UserType userType) {
-        return pedidoService.listarPedidosDoCliente(clienteAutenticadoId, userType)
-                .stream()
-                .map(PedidoFacade::toResponse)
-                .toList();
-    }
+  private Pedido fromCompraDto(PedidoCompraRequestDTO dto) {
+    Pedido pedido = pedidoBase(dto.clienteId(), dto.automovelId());
+    pedido.setQntdParcelas(dto.qntdParcelas());
+    return pedido;
+  }
 
-    public List<PedidoResponseDTO> listarPorStatusParaAgente(String status, Long agenteId, UserType userType) {
-        List<Pedido> pedidos = pedidoService.listarPorStatusParaAgente(status, agenteId, userType);
+  private static Pedido pedidoBase(Long clienteId, Long automovelId) {
+    Pedido pedido = new Pedido();
 
-        if (pedidoService.validarStatus(status) == PedidoStatus.APROVADO) {
-            gerarContratosAutomaticos(pedidos, agenteId, userType);
-        }
+    Cliente cliente = new Cliente();
+    cliente.setId(clienteId);
 
-        return pedidos.stream()
-                .map(PedidoFacade::toResponse)
-                .toList();
-    }
+    Automovel automovel = new Automovel();
+    automovel.setId(automovelId);
 
-    public PedidoResponseDTO avaliarPedido(Long pedidoId, PedidoAvaliacaoRequestDTO dto, Long agenteId, UserType userType) {
-        return toResponse(pedidoService.avaliarPedido(pedidoId, dto.resultado(), dto.justificativa(), agenteId, userType));
-    }
+    pedido.setCliente(cliente);
+    pedido.setAutomovel(automovel);
+    return pedido;
+  }
 
-    private void gerarContratosAutomaticos(List<Pedido> pedidos, Long agenteId, UserType userType) {
-        for (Pedido pedido : pedidos) {
-            if (pedido.getTipoPedido() == PedidoTipo.ALUGUEL) {
-                contratoService.obterOuCriarPorPedido(pedido.getId(), TipoPropriedade.CLIENTE, LocalDate.now());
-                continue;
-            }
+  public static PedidoResponseDTO toResponse(Pedido pedido) {
+    return new PedidoResponseDTO(
+        pedido.getId(),
+        pedido.getNumeroProtocolo(),
+        toClienteResumo(pedido.getCliente()),
+        toAutomovelResponse(pedido.getAutomovel()),
+        pedido.getTipoPedido(),
+        pedido.getDataInicio(),
+        pedido.getDataFim(),
+        pedido.getQntdParcelas(),
+        pedido.getStatus(),
+        pedido.getJustificativa());
+  }
 
-            contratoCreditoService.obterOuCriarPorPedido(
-                    pedido.getId(),
-                    agenteId,
-                    userType,
-                    pedido.getAutomovel().getValor().doubleValue(),
-                    obterTaxaJurosCredito(pedido),
-                    pedido.getQntdParcelas(),
-                    LocalDate.now()
-            );
-        }
-    }
+  private static ClienteResumoDTO toClienteResumo(Cliente cliente) {
+    return new ClienteResumoDTO(
+        cliente.getId(),
+        cliente.getNome(),
+        cliente.getCpf(),
+        cliente.getRg(),
+        cliente.getEndereco(),
+        cliente.getProfissao());
+  }
 
-    private static Double obterTaxaJurosCredito(Pedido pedido) {
-        BigDecimal taxa = pedido.getAutomovel().getTaxaJuros();
-        if (taxa == null) {
-            return 0D;
-        }
-        return taxa.doubleValue();
-    }
-
-    private Pedido fromAluguelDto(PedidoAluguelRequestDTO dto) {
-        Pedido pedido = pedidoBase(dto.clienteId(), dto.automovelId());
-        pedido.setDataInicio(dto.dataInicio());
-        pedido.setDataFim(dto.dataFim());
-        return pedido;
-    }
-
-    private Pedido fromCompraDto(PedidoCompraRequestDTO dto) {
-        Pedido pedido = pedidoBase(dto.clienteId(), dto.automovelId());
-        pedido.setQntdParcelas(dto.qntdParcelas());
-        return pedido;
-    }
-
-    private static Pedido pedidoBase(Long clienteId, Long automovelId) {
-        Pedido pedido = new Pedido();
-
-        Cliente cliente = new Cliente();
-        cliente.setId(clienteId);
-
-        Automovel automovel = new Automovel();
-        automovel.setId(automovelId);
-
-        pedido.setCliente(cliente);
-        pedido.setAutomovel(automovel);
-        return pedido;
-    }
-
-    public static PedidoResponseDTO toResponse(Pedido pedido) {
-        return new PedidoResponseDTO(
-                pedido.getId(),
-                pedido.getNumeroProtocolo(),
-                toClienteResumo(pedido.getCliente()),
-                toAutomovelResponse(pedido.getAutomovel()),
-                pedido.getTipoPedido(),
-                pedido.getDataInicio(),
-                pedido.getDataFim(),
-                pedido.getQntdParcelas(),
-                pedido.getStatus(),
-                pedido.getJustificativa()
-        );
-    }
-
-    private static ClienteResumoDTO toClienteResumo(Cliente cliente) {
-        return new ClienteResumoDTO(
-                cliente.getId(),
-                cliente.getNome(),
-                cliente.getCpf(),
-                cliente.getRg(),
-                cliente.getEndereco(),
-                cliente.getProfissao()
-        );
-    }
-
-    private static AutomovelResponseDTO toAutomovelResponse(Automovel automovel) {
-        return new AutomovelResponseDTO(
-                automovel.getId(),
-                automovel.getMatricula(),
-                automovel.getPlaca(),
-                automovel.getAno(),
-                automovel.getMarca(),
-                automovel.getModelo(),
-                automovel.getValor(),
-                automovel.getLinkImagem(),
-                automovel.getTaxaJuros(),
-                automovel.getAgentId(),
-                automovel.getAgentType(),
-                automovel.getStatus()
-        );
-    }
+  private static AutomovelResponseDTO toAutomovelResponse(Automovel automovel) {
+    return new AutomovelResponseDTO(
+        automovel.getId(),
+        automovel.getMatricula(),
+        automovel.getPlaca(),
+        automovel.getAno(),
+        automovel.getMarca(),
+        automovel.getModelo(),
+        automovel.getValor(),
+        automovel.getLinkImagem(),
+        automovel.getTaxaJuros(),
+        automovel.getAgentId(),
+        automovel.getAgentType(),
+        automovel.getStatus());
+  }
 }
