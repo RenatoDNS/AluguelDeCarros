@@ -2,17 +2,17 @@ micronaut:
   application:
     name: aluguelcarros
   server:
-    context-path: /api/aluguelcarros/v1
-    port: 8080
+    context-path: ${SERVER_CONTEXT_PATH}
+    port: ${SERVER_PORT}
     cors:
-      enabled: true
+      enabled: ${CORS_ENABLED}
       configurations:
         web:
           allowed-origins:
-            - http://localhost:4200
+            - ${CORS_ALLOWED_ORIGIN}
           allowed-methods: [GET, POST, PUT, DELETE, OPTIONS]
           allowed-headers: [Authorization, Content-Type, Accept, Origin]
-          allow-credentials: true
+          allow-credentials: ${CORS_ALLOW_CREDENTIALS}
   router:
     static-resources:
       swagger-ui:
@@ -25,10 +25,10 @@ micronaut:
 
 datasources:
   default:
-    url: ${DB_URL:`jdbc:postgresql://localhost:5432/aluguelcarros`}
+    url: ${DB_URL}
     driver-class-name: org.postgresql.Driver
-    username: ${DB_USERNAME:postgres}
-    password: ${DB_PASSWORD:postgres}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
 
 jpa:
   default:
@@ -42,7 +42,5 @@ jpa:
         dialect: org.hibernate.dialect.PostgreSQLDialect
 
 jwt:
-  # TODO: mover para variável de ambiente
-  secret: teste-secret-key-isso-ira-mudar
-  expiration-ms: 3600000
-  # 3600000 = 1 hora
+  secret: ${JWT_SECRET}
+  expiration-ms: ${JWT_EXPIRATION_MS}
