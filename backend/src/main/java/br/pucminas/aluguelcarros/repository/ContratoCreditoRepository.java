@@ -9,6 +9,5 @@ import java.util.Optional;
 @Repository
 public interface ContratoCreditoRepository extends CrudRepository<ContratoCredito, Long> {
 
-    Optional<ContratoCredito> findByContratoId(Long contratoId);
+    Optional<ContratoCredito> findByBancoIdAndClienteIdAndVeiculoId(Long bancoId, Long clienteId, Long veiculoId);
 }
-

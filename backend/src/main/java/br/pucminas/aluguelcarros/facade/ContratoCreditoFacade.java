@@ -1,15 +1,17 @@
 package br.pucminas.aluguelcarros.facade;
 
-import br.pucminas.aluguelcarros.dto.request.ContratoCreditoRequestDTO;
+import br.pucminas.aluguelcarros.dto.response.BancoResumoDTO;
+import br.pucminas.aluguelcarros.dto.response.ClienteResumoDTO;
 import br.pucminas.aluguelcarros.dto.response.ContratoCreditoResponseDTO;
+import br.pucminas.aluguelcarros.dto.response.VeiculoResumoDTO;
 import br.pucminas.aluguelcarros.enums.UserType;
-import br.pucminas.aluguelcarros.model.Contrato;
+import br.pucminas.aluguelcarros.model.Automovel;
+import br.pucminas.aluguelcarros.model.Banco;
+import br.pucminas.aluguelcarros.model.Cliente;
 import br.pucminas.aluguelcarros.model.ContratoCredito;
 import br.pucminas.aluguelcarros.service.ContratoCreditoService;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
-
-import java.util.List;
 
 @Singleton
 public class ContratoCreditoFacade {
@@ -21,54 +23,52 @@ public class ContratoCreditoFacade {
         this.contratoCreditoService = contratoCreditoService;
     }
 
-    public ContratoCreditoResponseDTO cadastrar(ContratoCreditoRequestDTO dto, Long bancoAutenticadoId, UserType userType) {
-        return toResponse(contratoCreditoService.cadastrar(fromDto(dto), bancoAutenticadoId, userType));
-    }
-
     public ContratoCreditoResponseDTO buscar(Long id) {
         return toResponse(contratoCreditoService.buscarPorId(id));
     }
 
-    public List<ContratoCreditoResponseDTO> listar() {
-        return contratoCreditoService.listar().stream().map(ContratoCreditoFacade::toResponse).toList();
-    }
-
-    public ContratoCreditoResponseDTO atualizar(Long id,
-                                                ContratoCreditoRequestDTO dto,
-                                                Long bancoAutenticadoId,
-                                                UserType userType) {
-        return toResponse(contratoCreditoService.atualizar(id, fromDto(dto), bancoAutenticadoId, userType));
-    }
-
-    public void remover(Long id, Long bancoAutenticadoId, UserType userType) {
-        contratoCreditoService.deletar(id, bancoAutenticadoId, userType);
-    }
-
-
-    private static ContratoCredito fromDto(ContratoCreditoRequestDTO dto) {
-        ContratoCredito contratoCredito = new ContratoCredito();
-
-        Contrato contrato = new Contrato();
-        contrato.setId(dto.contratoId());
-
-        contratoCredito.setContrato(contrato);
-        contratoCredito.setValorFinanciado(dto.valorFinanciado());
-        contratoCredito.setTaxaJuros(dto.taxaJuros());
-        contratoCredito.setPrazoMeses(dto.prazoMeses());
-
-        return contratoCredito;
+    public ContratoCreditoResponseDTO assinar(Long id, Long usuarioId, UserType userType) {
+        return toResponse(contratoCreditoService.assinar(id, usuarioId, userType));
     }
 
     private static ContratoCreditoResponseDTO toResponse(ContratoCredito contratoCredito) {
+        Banco banco = contratoCredito.getBanco();
+        Cliente cliente = contratoCredito.getCliente();
+        Automovel veiculo = contratoCredito.getVeiculo();
+
         return new ContratoCreditoResponseDTO(
                 contratoCredito.getId(),
-                contratoCredito.getContrato().getId(),
-                contratoCredito.getBanco().getId(),
-                contratoCredito.getValorFinanciado(),
-                contratoCredito.getTaxaJuros(),
-                contratoCredito.getPrazoMeses()
+                new BancoResumoDTO(
+                        banco.getId(),
+                        banco.getRazaoSocial(),
+                        banco.getCnpj(),
+                        banco.getCodigoBancario()
+                ),
+                new ClienteResumoDTO(
+                        cliente.getId(),
+                        cliente.getNome(),
+                        cliente.getCpf(),
+                        cliente.getRg(),
+                        cliente.getEndereco(),
+                        cliente.getProfissao()
+                ),
+                new VeiculoResumoDTO(
+                        veiculo.getId(),
+                        veiculo.getMatricula(),
+                        veiculo.getPlaca(),
+                        veiculo.getAno(),
+                        veiculo.getMarca(),
+                        veiculo.getModelo(),
+                        veiculo.getValor(),
+                        veiculo.getLinkImagem()
+                ),
+                contratoCredito.getQuantidadeParcelas(),
+                contratoCredito.getValorParcela(),
+                contratoCredito.getValorTotal(),
+                contratoCredito.getDataAssinaturaBanco(),
+                contratoCredito.getDataAssinaturaCliente(),
+                contratoCredito.isBancoAssinou(),
+                contratoCredito.isClienteAssinou()
         );
     }
 }
-
-

@@ -4,11 +4,14 @@ import br.pucminas.aluguelcarros.model.Contrato;
 import io.micronaut.data.annotation.Repository;
 import io.micronaut.data.repository.CrudRepository;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 @Repository
 public interface ContratoRepository extends CrudRepository<Contrato, Long> {
 
-    Optional<Contrato> findByPedidoId(Long pedidoId);
+    Optional<Contrato> findByClienteIdAndVeiculoIdAndDataInicioAluguelAndDataFimAluguel(Long clienteId,
+                                                                                          Long veiculoId,
+                                                                                          LocalDate dataInicioAluguel,
+                                                                                          LocalDate dataFimAluguel);
 }
-

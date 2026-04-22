@@ -2,14 +2,22 @@ package br.pucminas.aluguelcarros.dto.response;
 
 import io.micronaut.serde.annotation.Serdeable;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+
 @Serdeable
 public record ContratoCreditoResponseDTO(
         Long id,
-        Long contratoId,
-        Long bancoId,
-        Double valorFinanciado,
-        Double taxaJuros,
-        Integer prazoMeses
+        BancoResumoDTO banco,
+        ClienteResumoDTO cliente,
+        VeiculoResumoDTO veiculo,
+        Integer quantidadeParcelas,
+        BigDecimal valorParcela,
+        BigDecimal valorTotal,
+        LocalDate dataAssinaturaBanco,
+        LocalDate dataAssinaturaCliente,
+        boolean bancoAssinou,
+        boolean clienteAssinou
 ) {
 }
 

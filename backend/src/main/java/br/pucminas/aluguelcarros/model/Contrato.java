@@ -1,30 +1,22 @@
 package br.pucminas.aluguelcarros.model;
 
-import br.pucminas.aluguelcarros.enums.TipoPropriedade;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
-@Table(
-        name = "contrato",
-        uniqueConstraints = {
-                @UniqueConstraint(name = "uk_contrato_pedido", columnNames = "pedido_id")
-        }
-)
+@Table(name = "contrato")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -35,14 +27,39 @@ public class Contrato {
     private Long id;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "pedido_id")
-    private Pedido pedido;
+    @JoinColumn(name = "empresa_id")
+    private Empresa empresa;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "tipo_propriedade", nullable = false)
-    private TipoPropriedade tipoPropriedade;
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "cliente_id")
+    private Cliente cliente;
 
-    @Column(name = "data_assinatura", nullable = false)
-    private LocalDate dataAssinatura;
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "veiculo_id")
+    private Automovel veiculo;
+
+    @Column(name = "data_inicio_aluguel", nullable = false)
+    private LocalDate dataInicioAluguel;
+
+    @Column(name = "data_fim_aluguel", nullable = false)
+    private LocalDate dataFimAluguel;
+
+    @Column(name = "valor_total", nullable = false, precision = 12, scale = 2)
+    private BigDecimal valorTotal;
+
+    @Column(name = "valor_diaria", nullable = false, precision = 12, scale = 2)
+    private BigDecimal valorDiaria;
+
+    @Column(name = "data_assinatura_empresa")
+    private LocalDate dataAssinaturaEmpresa;
+
+    @Column(name = "data_assinatura_cliente")
+    private LocalDate dataAssinaturaCliente;
+
+    @Column(name = "empresa_assinou", nullable = false)
+    private boolean empresaAssinou;
+
+    @Column(name = "cliente_assinou", nullable = false)
+    private boolean clienteAssinou;
 }
 

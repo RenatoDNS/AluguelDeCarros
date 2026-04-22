@@ -1,55 +1,49 @@
 package br.pucminas.aluguelcarros.service;
 
+import br.pucminas.aluguelcarros.enums.AutomovelStatus;
+import br.pucminas.aluguelcarros.enums.PedidoStatus;
+import br.pucminas.aluguelcarros.enums.PedidoTipo;
 import br.pucminas.aluguelcarros.enums.UserType;
-import br.pucminas.aluguelcarros.enums.TipoPropriedade;
 import br.pucminas.aluguelcarros.exception.EntidadeNaoEncontradaException;
 import br.pucminas.aluguelcarros.exception.RegraDeNegocioException;
+import br.pucminas.aluguelcarros.model.Automovel;
 import br.pucminas.aluguelcarros.model.Banco;
-import br.pucminas.aluguelcarros.model.Contrato;
+import br.pucminas.aluguelcarros.model.Cliente;
 import br.pucminas.aluguelcarros.model.ContratoCredito;
+import br.pucminas.aluguelcarros.model.Pedido;
+import br.pucminas.aluguelcarros.repository.AutomovelRepository;
 import br.pucminas.aluguelcarros.repository.BancoRepository;
+import br.pucminas.aluguelcarros.repository.ClienteRepository;
 import br.pucminas.aluguelcarros.repository.ContratoCreditoRepository;
-import br.pucminas.aluguelcarros.repository.ContratoRepository;
+import br.pucminas.aluguelcarros.repository.PedidoRepository;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import jakarta.transaction.Transactional;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 @Singleton
 public class ContratoCreditoService {
 
     private final ContratoCreditoRepository contratoCreditoRepository;
-    private final ContratoRepository contratoRepository;
     private final BancoRepository bancoRepository;
-    private final ContratoService contratoService;
+    private final ClienteRepository clienteRepository;
+    private final AutomovelRepository automovelRepository;
+    private final PedidoRepository pedidoRepository;
 
     @Inject
     public ContratoCreditoService(ContratoCreditoRepository contratoCreditoRepository,
-                                  ContratoRepository contratoRepository,
                                   BancoRepository bancoRepository,
-                                  ContratoService contratoService) {
+                                  ClienteRepository clienteRepository,
+                                  AutomovelRepository automovelRepository,
+                                  PedidoRepository pedidoRepository) {
         this.contratoCreditoRepository = contratoCreditoRepository;
-        this.contratoRepository = contratoRepository;
         this.bancoRepository = bancoRepository;
-        this.contratoService = contratoService;
-    }
-
-    @Transactional
-    public ContratoCredito cadastrar(ContratoCredito contratoCredito, Long bancoAutenticadoId, UserType userType) {
-        validarPerfilBanco(userType);
-
-        Contrato contrato = buscarContrato(contratoCredito.getContrato().getId());
-        Banco banco = buscarBanco(bancoAutenticadoId);
-
-        validarContratoUnico(contrato.getId(), null);
-
-        contratoCredito.setContrato(contrato);
-        contratoCredito.setBanco(banco);
-
-        return contratoCreditoRepository.save(contratoCredito);
+        this.clienteRepository = clienteRepository;
+        this.automovelRepository = automovelRepository;
+        this.pedidoRepository = pedidoRepository;
     }
 
     @Transactional
@@ -59,41 +53,32 @@ public class ContratoCreditoService {
     }
 
     @Transactional
-    public List<ContratoCredito> listar() {
-        List<ContratoCredito> contratosCredito = new ArrayList<>();
-        contratoCreditoRepository.findAll().forEach(contratosCredito::add);
-        return contratosCredito;
-    }
+    public ContratoCredito assinar(Long contratoId, Long usuarioId, UserType userType) {
+        ContratoCredito contratoCredito = buscarPorId(contratoId);
 
-    @Transactional
-    public ContratoCredito atualizar(Long id,
-                                     ContratoCredito atualizacao,
-                                     Long bancoAutenticadoId,
-                                     UserType userType) {
-        validarPerfilBanco(userType);
+        if (userType == UserType.CLIENTE) {
+            validarClienteDoContrato(contratoCredito, usuarioId);
+            if (!contratoCredito.isClienteAssinou()) {
+                contratoCredito.setClienteAssinou(true);
+                contratoCredito.setDataAssinaturaCliente(LocalDate.now());
+            }
+        } else if (userType == UserType.BANCO) {
+            validarBancoDoContrato(contratoCredito, usuarioId);
+            if (!contratoCredito.isBancoAssinou()) {
+                contratoCredito.setBancoAssinou(true);
+                contratoCredito.setDataAssinaturaBanco(LocalDate.now());
+            }
+        } else {
+            throw new RegraDeNegocioException("Somente cliente ou banco podem assinar contrato de crédito.");
+        }
 
-        ContratoCredito existente = buscarPorId(id);
-        validarBancoProprietario(existente, bancoAutenticadoId);
-        Contrato contrato = buscarContrato(atualizacao.getContrato().getId());
-        Banco banco = buscarBanco(bancoAutenticadoId);
+        if (contratoCredito.isClienteAssinou() && contratoCredito.isBancoAssinou()) {
+            Automovel veiculo = contratoCredito.getVeiculo();
+            veiculo.setStatus(AutomovelStatus.VINCULADO);
+            automovelRepository.update(veiculo);
+        }
 
-        validarContratoUnico(contrato.getId(), existente.getId());
-
-        existente.setContrato(contrato);
-        existente.setBanco(banco);
-        existente.setValorFinanciado(atualizacao.getValorFinanciado());
-        existente.setTaxaJuros(atualizacao.getTaxaJuros());
-        existente.setPrazoMeses(atualizacao.getPrazoMeses());
-
-        return contratoCreditoRepository.save(existente);
-    }
-
-    @Transactional
-    public void deletar(Long id, Long bancoAutenticadoId, UserType userType) {
-        validarPerfilBanco(userType);
-        ContratoCredito contratoCredito = buscarPorId(id);
-        validarBancoProprietario(contratoCredito, bancoAutenticadoId);
-        contratoCreditoRepository.delete(contratoCredito);
+        return contratoCreditoRepository.update(contratoCredito);
     }
 
     @Transactional
@@ -106,20 +91,38 @@ public class ContratoCreditoService {
                                                  LocalDate dataAssinatura) {
         validarPerfilBanco(userType);
 
-        Contrato contrato = contratoService.obterOuCriarPorPedido(pedidoId, TipoPropriedade.BANCO, dataAssinatura);
-        ContratoCredito existente = contratoCreditoRepository.findByContratoId(contrato.getId()).orElse(null);
+        Pedido pedido = buscarPedido(pedidoId);
+        validarPedidoParaContratoCredito(pedido);
+
+        Banco banco = buscarBanco(bancoAutenticadoId);
+        Cliente cliente = buscarCliente(pedido.getCliente().getId());
+        Automovel veiculo = buscarVeiculo(pedido.getAutomovel().getId());
+
+        ContratoCredito existente = contratoCreditoRepository
+                .findByBancoIdAndClienteIdAndVeiculoId(banco.getId(), cliente.getId(), veiculo.getId())
+                .orElse(null);
         if (existente != null) {
             return existente;
         }
 
-        Banco banco = buscarBanco(bancoAutenticadoId);
+        int parcelas = prazoMeses == null || prazoMeses <= 0 ? 1 : prazoMeses;
+        BigDecimal valorBase = BigDecimal.valueOf(valorFinanciado == null ? 0D : valorFinanciado);
+        BigDecimal juros = BigDecimal.valueOf(taxaJuros == null ? 0D : taxaJuros);
+
+        BigDecimal total = valorBase.multiply(BigDecimal.ONE.add(juros)).setScale(2, RoundingMode.HALF_UP);
+        BigDecimal valorParcela = total.divide(BigDecimal.valueOf(parcelas), 2, RoundingMode.HALF_UP);
 
         ContratoCredito contratoCredito = new ContratoCredito();
-        contratoCredito.setContrato(contrato);
         contratoCredito.setBanco(banco);
-        contratoCredito.setValorFinanciado(valorFinanciado);
-        contratoCredito.setTaxaJuros(taxaJuros);
-        contratoCredito.setPrazoMeses(prazoMeses);
+        contratoCredito.setCliente(cliente);
+        contratoCredito.setVeiculo(veiculo);
+        contratoCredito.setQuantidadeParcelas(parcelas);
+        contratoCredito.setValorParcela(valorParcela);
+        contratoCredito.setValorTotal(total);
+        contratoCredito.setBancoAssinou(false);
+        contratoCredito.setClienteAssinou(false);
+        contratoCredito.setDataAssinaturaBanco(null);
+        contratoCredito.setDataAssinaturaCliente(null);
 
         return contratoCreditoRepository.save(contratoCredito);
     }
@@ -130,29 +133,41 @@ public class ContratoCreditoService {
         }
     }
 
-    private void validarContratoUnico(Long contratoId, Long idAtual) {
-        contratoCreditoRepository.findByContratoId(contratoId)
-                .filter(item -> idAtual == null || !item.getId().equals(idAtual))
-                .ifPresent(item -> {
-                    throw new RegraDeNegocioException("Já existe contrato de crédito para este contrato.");
-                });
-    }
-
-    private void validarBancoProprietario(ContratoCredito contratoCredito, Long bancoAutenticadoId) {
-        if (!contratoCredito.getBanco().getId().equals(bancoAutenticadoId)) {
-            throw new RegraDeNegocioException("Somente o banco associado pode alterar este contrato de crédito.");
+    private void validarPedidoParaContratoCredito(Pedido pedido) {
+        if (pedido.getStatus() != PedidoStatus.APROVADO || pedido.getTipoPedido() != PedidoTipo.COMPRA) {
+            throw new RegraDeNegocioException("Contrato de crédito só pode ser gerado para pedido de compra APROVADO.");
         }
     }
 
-    private Contrato buscarContrato(Long contratoId) {
-        return contratoRepository.findById(contratoId)
-                .orElseThrow(() -> new EntidadeNaoEncontradaException("Contrato não encontrado."));
+    private void validarClienteDoContrato(ContratoCredito contratoCredito, Long clienteAutenticadoId) {
+        if (!contratoCredito.getCliente().getId().equals(clienteAutenticadoId)) {
+            throw new RegraDeNegocioException("Cliente autenticado não pode assinar contrato de outro cliente.");
+        }
+    }
+
+    private void validarBancoDoContrato(ContratoCredito contratoCredito, Long bancoAutenticadoId) {
+        if (!contratoCredito.getBanco().getId().equals(bancoAutenticadoId)) {
+            throw new RegraDeNegocioException("Banco autenticado não pode assinar contrato de outro banco.");
+        }
+    }
+
+    private Pedido buscarPedido(Long pedidoId) {
+        return pedidoRepository.findById(pedidoId)
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Pedido não encontrado."));
     }
 
     private Banco buscarBanco(Long bancoId) {
         return bancoRepository.findById(bancoId)
                 .orElseThrow(() -> new EntidadeNaoEncontradaException("Banco não encontrado."));
     }
+
+    private Cliente buscarCliente(Long clienteId) {
+        return clienteRepository.findById(clienteId)
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Cliente não encontrado."));
+    }
+
+    private Automovel buscarVeiculo(Long veiculoId) {
+        return automovelRepository.findById(veiculoId)
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Veículo não encontrado."));
+    }
 }
-
-
