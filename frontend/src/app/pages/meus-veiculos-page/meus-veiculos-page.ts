@@ -1,11 +1,22 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { NgxMaskDirective } from 'ngx-mask';
 import { finalize } from 'rxjs';
 
 import { type Veiculo } from '../../models/veiculo';
+import { AuthService } from '../../services/auth.service';
 import { VeiculoService } from '../../services/veiculo.service';
+
+function parsePercentValue(value: string) {
+  const normalizedValue = String(value ?? '').replace('%', '').replace(',', '.').trim();
+  const parsedValue = Number(normalizedValue);
+  return Number.isFinite(parsedValue) ? parsedValue : Number.NaN;
+}
+
+function formatPercentValue(value: number) {
+  return `${value.toFixed(2).replace('.', ',')}%`;
+}
 
 @Component({
   selector: 'app-meus-veiculos-page',
@@ -16,6 +27,7 @@ import { VeiculoService } from '../../services/veiculo.service';
 })
 export class MeusVeiculosPageComponent {
   private readonly formBuilder = inject(FormBuilder);
+  private readonly authService = inject(AuthService);
   private readonly veiculoService = inject(VeiculoService);
 
   readonly veiculos = signal<Veiculo[]>([]);
@@ -25,13 +37,19 @@ export class MeusVeiculosPageComponent {
   readonly deletingVeiculoId = signal<number | null>(null);
   readonly editingVeiculoId = signal<number | null>(null);
   readonly errorMessage = signal('');
+  readonly isBanco = computed(() => this.authService.userType() === 'banco');
+  readonly valorLabel = computed(() => (this.isBanco() ? 'Preço do Veículo' : 'Diária'));
+  readonly valorErrorMessage = computed(() =>
+    this.isBanco() ? 'Informe um preço do veículo válido.' : 'Informe uma diária válida.',
+  );
   readonly veiculoForm = this.formBuilder.nonNullable.group({
     matricula: ['', [Validators.required]],
     placa: ['', [Validators.required, Validators.maxLength(7)]],
     ano: ['', [Validators.required, Validators.pattern(/^\d+$/)]],
     marca: ['', [Validators.required]],
     modelo: ['', [Validators.required]],
-    diaria: ['', [Validators.required]],
+    valor: ['', [Validators.required]],
+    taxaJuros: [''],
   });
 
   constructor() {
@@ -52,7 +70,8 @@ export class MeusVeiculosPageComponent {
       ano: String(veiculo.ano),
       marca: veiculo.marca,
       modelo: veiculo.modelo,
-      diaria: this.formatCurrencyValue(veiculo.diaria),
+      valor: this.formatCurrencyValue(veiculo.valor),
+      taxaJuros: veiculo.taxaJuros === undefined ? '' : formatPercentValue(veiculo.taxaJuros),
     });
     this.dialogOpen.set(true);
   }
@@ -85,36 +104,49 @@ export class MeusVeiculosPageComponent {
       return;
     }
 
-    const { matricula, placa, ano, marca, modelo, diaria } = this.veiculoForm.getRawValue();
-    const diariaValue = this.parseCurrencyValue(diaria);
+    const { matricula, placa, ano, marca, modelo, valor, taxaJuros } = this.veiculoForm.getRawValue();
+    const valorValue = this.parseCurrencyValue(valor);
 
-    if (!Number.isFinite(diariaValue) || diariaValue <= 0) {
-      this.errorMessage.set('Informe uma diária válida.');
+    if (!Number.isFinite(valorValue) || valorValue <= 0) {
+      this.errorMessage.set(this.valorErrorMessage());
       return;
+    }
+
+    let taxaJurosValue: number | undefined;
+
+    if (this.isBanco()) {
+      if (!String(taxaJuros ?? '').trim()) {
+        this.errorMessage.set('Informe a taxa de juros para contrato de crédito.');
+        this.veiculoForm.controls.taxaJuros.markAsTouched();
+        return;
+      }
+
+      taxaJurosValue = parsePercentValue(taxaJuros);
+
+      if (!Number.isFinite(taxaJurosValue)) {
+        this.errorMessage.set('Informe uma taxa de juros válida.');
+        this.veiculoForm.controls.taxaJuros.markAsTouched();
+        return;
+      }
     }
 
     this.saving.set(true);
     this.errorMessage.set('');
 
+    const payload = {
+      matricula,
+      placa,
+      ano: Number(ano),
+      marca,
+      modelo,
+      status: 'DISPONIVEL' as const,
+      valor: valorValue,
+      ...(this.isBanco() ? { taxaJuros: taxaJurosValue } : {}),
+    };
+
     const request$ = this.editingVeiculoId()
-      ? this.veiculoService.update(this.editingVeiculoId()!, {
-          matricula,
-          placa,
-          ano: Number(ano),
-          marca,
-          modelo,
-          status: 'DISPONIVEL',
-          diaria: diariaValue,
-        })
-      : this.veiculoService.create({
-          matricula,
-          placa,
-          ano: Number(ano),
-          marca,
-          modelo,
-          status: 'DISPONIVEL',
-          diaria: diariaValue,
-        });
+      ? this.veiculoService.update(this.editingVeiculoId()!, payload)
+      : this.veiculoService.create(payload);
 
     request$
       .pipe(finalize(() => this.saving.set(false)))
@@ -164,7 +196,8 @@ export class MeusVeiculosPageComponent {
       ano: '',
       marca: '',
       modelo: '',
-      diaria: '',
+      valor: '',
+      taxaJuros: '',
     });
   }
 }

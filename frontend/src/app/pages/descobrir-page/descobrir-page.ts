@@ -2,7 +2,7 @@ import { CurrencyPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 
-import { finalize, switchMap } from 'rxjs';
+import { finalize, of, switchMap } from 'rxjs';
 
 import { VeiculoCardComponent } from '../../components/veiculo-card/veiculo-card';
 import { Veiculo } from '../../models/veiculo';
@@ -11,6 +11,10 @@ import { PedidoService } from '../../services/pedido.service';
 import { VeiculoService } from '../../services/veiculo.service';
 
 type DialogStep = 'inicio' | 'fim';
+type BancoPedidoPlaceholder = {
+  parcelas: number;
+  automovelId: number;
+};
 
 @Component({
   selector: 'app-descobrir-page',
@@ -33,11 +37,14 @@ export class DescobrirPageComponent {
   readonly errorMessage = signal('');
   readonly successMessage = signal('');
   readonly minDataFim = signal('');
+  readonly isBancoVeiculo = computed(() => this.selectedVeiculo()?.agentType === 'BANCO');
   readonly isInicioStep = computed(() => this.dialogStep() === 'inicio');
   readonly aluguelForm = this.formBuilder.nonNullable.group({
     dataInicio: ['', [Validators.required]],
     dataFim: ['', [Validators.required]],
+    quantidadeParcelas: ['12', [Validators.required]],
   });
+  readonly quantidadeParcelasOptions = Array.from({ length: 60 }, (_, index) => index + 1);
 
   totalPreview() {
     const veiculo = this.selectedVeiculo();
@@ -58,7 +65,7 @@ export class DescobrirPageComponent {
     const diffInMilliseconds = endDate.getTime() - startDate.getTime();
     const days = Math.ceil(diffInMilliseconds / millisecondsPerDay);
 
-    return days * veiculo.diaria;
+    return days * veiculo.valor;
   }
 
   constructor() {
@@ -77,6 +84,11 @@ export class DescobrirPageComponent {
   }
 
   nextStep() {
+    if (this.isBancoVeiculo()) {
+      this.dialogStep.set('fim');
+      return;
+    }
+
     const dataInicio = this.aluguelForm.controls.dataInicio.value;
 
     if (!dataInicio) {
@@ -93,10 +105,39 @@ export class DescobrirPageComponent {
     const userType = this.authService.userType();
     const token = this.authService.token();
     const veiculo = this.selectedVeiculo();
-    const { dataInicio, dataFim } = this.aluguelForm.getRawValue();
+    const { dataInicio, dataFim, quantidadeParcelas } = this.aluguelForm.getRawValue();
 
     if (!token || userType !== 'cliente' || !veiculo) {
       this.errorMessage.set('Não foi possível identificar o cliente ou o veículo selecionado.');
+      return;
+    }
+
+    if (this.isBancoVeiculo()) {
+      const parcelas = Number(quantidadeParcelas);
+
+      if (!Number.isInteger(parcelas) || parcelas < 1 || parcelas > 60) {
+        this.errorMessage.set('Selecione uma quantidade de parcelas válida.');
+        this.aluguelForm.controls.quantidadeParcelas.markAsTouched();
+        return;
+      }
+
+      this.loading.set(true);
+      this.errorMessage.set('');
+      this.successMessage.set('');
+
+      of(this.pedidoService.createBancoPedido({ parcelas, automovelId: veiculo.id } satisfies BancoPedidoPlaceholder))
+        .pipe(finalize(() => this.loading.set(false)))
+        .subscribe({
+          next: () => {
+            this.successMessage.set('Fluxo de contrato de crédito ainda não está disponível.');
+          },
+          error: (error) => {
+            this.errorMessage.set(
+              error?.error?.mensagem ?? 'Não foi possível iniciar o contrato de crédito.',
+            );
+          },
+        });
+
       return;
     }
 
@@ -158,6 +199,7 @@ export class DescobrirPageComponent {
     this.aluguelForm.reset({
       dataInicio: '',
       dataFim: '',
+      quantidadeParcelas: '12',
     });
   }
 }

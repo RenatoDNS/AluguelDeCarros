@@ -18,7 +18,9 @@
       <div class="dialog-panel w-full max-w-md rounded-[1.75rem] bg-white p-6 shadow-2xl">
         <div class="flex items-start justify-between gap-4">
           <div>
-            <p class="text-sm font-semibold uppercase tracking-[0.28em] text-primary-600">Alugar</p>
+            <p class="text-sm font-semibold uppercase tracking-[0.28em] text-primary-600">
+              {{ veiculo.agentType === 'BANCO' ? 'Comprar' : 'Alugar' }}
+            </p>
             <h2 class="mt-2 text-2xl font-semibold text-slate-950">
               {{ veiculo.marca }} {{ veiculo.modelo }}
             </h2>
@@ -33,7 +35,37 @@
         </div>
 
         <form class="mt-6 space-y-4" [formGroup]="aluguelForm" novalidate>
-          @if (isInicioStep()) {
+          @if (isBancoVeiculo()) {
+            <div
+              class="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800"
+            >
+              Custo do veículo: {{ veiculo.valor | currency: 'BRL' : 'symbol' : '1.2-2' : 'pt-BR' }}
+            </div>
+
+            <div class="space-y-2">
+              <label class="text-sm font-semibold text-slate-800" for="quantidade-parcelas">
+                Quantidade de Parcelas
+              </label>
+              <select
+                id="quantidade-parcelas"
+                formControlName="quantidadeParcelas"
+                class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-base text-slate-950 outline-none transition focus:border-primary-500 focus:ring-4 focus:ring-primary-100"
+              >
+                @for (parcela of quantidadeParcelasOptions; track parcela) {
+                  <option [value]="parcela">{{ parcela }}</option>
+                }
+              </select>
+            </div>
+
+            <button
+              type="button"
+              class="login-submit inline-flex w-full items-center justify-center rounded-2xl px-4 py-3 text-sm font-semibold text-white transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-60"
+              (click)="submitPedido()"
+              [disabled]="loading()"
+            >
+              {{ loading() ? 'Enviando...' : 'Fazer de Contrato de Cédito' }}
+            </button>
+          } @else if (isInicioStep()) {
             <div class="space-y-2">
               <label class="text-sm font-semibold text-slate-800" for="data-inicio">
                 Selecione a data de início

@@ -39,6 +39,7 @@ export class PedidosPageComponent {
 
   setSection(section: PedidoSection) {
     this.selectedSection.set(section);
+    this.loadPedidos();
   }
 
   openDialog(pedido: PedidoResponse, action: DialogAction) {
@@ -102,7 +103,12 @@ export class PedidosPageComponent {
     this.loading.set(true);
     this.errorMessage.set('');
 
-    this.pedidoService.listAgentPending().subscribe({
+    const request$ =
+      this.selectedSection() === 'finalizados'
+        ? this.pedidoService.listAgentFinished()
+        : this.pedidoService.listAgentPending();
+
+    request$.subscribe({
       next: (pedidos) => {
         this.pedidos.set(pedidos);
         this.loading.set(false);

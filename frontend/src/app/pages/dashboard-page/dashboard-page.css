@@ -6,6 +6,10 @@
   box-shadow: 0 24px 80px -36px color-mix(in srgb, var(--color-primary-900) 24%, transparent);
 }
 
+.dashboard-logo {
+  box-shadow: 0 18px 40px -24px color-mix(in srgb, var(--color-primary-900) 28%, transparent);
+}
+
 .nav-link-active {
   background: color-mix(in srgb, var(--color-primary-100) 88%, white);
   color: var(--color-primary-700);

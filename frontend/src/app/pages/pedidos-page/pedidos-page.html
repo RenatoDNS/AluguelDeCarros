@@ -30,11 +30,7 @@
     </p>
   </div>
 
-  @if (selectedSection() === 'finalizados') {
-    <div class="rounded-[1.75rem] border border-white/70 bg-white/90 p-6 text-sm text-slate-600">
-      Não há pedidos finalizados para exibir no momento.
-    </div>
-  } @else if (loading()) {
+  @if (loading()) {
     <div class="rounded-[1.75rem] border border-white/70 bg-white/90 p-6 text-sm text-slate-600">
       Carregando pedidos...
     </div>
@@ -46,7 +42,11 @@
     </div>
   } @else if (!pedidos().length) {
     <div class="rounded-[1.75rem] border border-white/70 bg-white/90 p-6 text-sm text-slate-600">
-      Não há pedidos em análise para os seus veículos.
+      {{
+        selectedSection() === 'finalizados'
+          ? 'Não há pedidos finalizados para exibir no momento.'
+          : 'Não há pedidos em análise para os seus veículos.'
+      }}
     </div>
   } @else {
     <div class="grid gap-5 lg:grid-cols-3">
@@ -63,7 +63,16 @@
             </div>
 
             <span
-              class="inline-flex items-center rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-amber-800"
+              class="inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em]"
+              [class.border-amber-200]="pedido.status === 'EM_ANALISE'"
+              [class.bg-amber-50]="pedido.status === 'EM_ANALISE'"
+              [class.text-amber-800]="pedido.status === 'EM_ANALISE'"
+              [class.border-emerald-200]="pedido.status === 'APROVADO'"
+              [class.bg-emerald-50]="pedido.status === 'APROVADO'"
+              [class.text-emerald-800]="pedido.status === 'APROVADO'"
+              [class.border-rose-200]="pedido.status === 'REJEITADO'"
+              [class.bg-rose-50]="pedido.status === 'REJEITADO'"
+              [class.text-rose-800]="pedido.status === 'REJEITADO'"
             >
               {{ pedido.status }}
             </span>
@@ -88,22 +97,31 @@
             </div>
           </dl>
 
-          <div class="mt-6 flex flex-col gap-3 sm:flex-row">
+          @if (selectedSection() === 'em-analise') {
+            <div class="mt-6 flex flex-col gap-3 sm:flex-row">
+              <button
+                type="button"
+                class="inline-flex w-full items-center justify-center rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-800 transition hover:bg-rose-100"
+                (click)="openDialog(pedido, 'REJEITADO')"
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                class="inline-flex w-full items-center justify-center rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-800 transition hover:bg-emerald-100"
+                (click)="openDialog(pedido, 'APROVADO')"
+              >
+                Aprovar
+              </button>
+            </div>
+          } @else if (pedido.status === 'APROVADO') {
             <button
               type="button"
-              class="inline-flex w-full items-center justify-center rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-800 transition hover:bg-rose-100"
-              (click)="openDialog(pedido, 'REJEITADO')"
+              class="mt-6 inline-flex w-full items-center justify-center rounded-2xl border border-primary-200 bg-primary-50 px-4 py-3 text-sm font-semibold text-primary-800 transition hover:bg-primary-100"
             >
-              Cancelar
+              Ver Contrato
             </button>
-            <button
-              type="button"
-              class="inline-flex w-full items-center justify-center rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-800 transition hover:bg-emerald-100"
-              (click)="openDialog(pedido, 'APROVADO')"
-            >
-              Aprovar
-            </button>
-          </div>
+          }
         </article>
       }
     </div>

@@ -8,7 +8,8 @@ export type Veiculo = {
   modelo: string;
   ano: number;
   status: VeiculoStatus;
-  diaria: number;
+  valor: number;
+  taxaJuros?: number;
   agentId?: number;
   agentType?: 'BANCO' | 'EMPRESA';
 };
@@ -20,7 +21,8 @@ export type VeiculoCreatePayload = {
   modelo: string;
   ano: number;
   status: VeiculoStatus;
-  diaria: number;
+  valor: number;
+  taxaJuros?: number;
 };
 
 export type VeiculoUpdatePayload = VeiculoCreatePayload;

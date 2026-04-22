@@ -24,16 +24,30 @@
       <dd class="mt-1">{{ veiculo().ano }}</dd>
     </div>
     <div>
-      <dt class="font-semibold text-slate-800">Diária</dt>
-      <dd class="mt-1">{{ veiculo().diaria | currency: 'BRL' : 'symbol' : '1.2-2' : 'pt-BR' }}</dd>
+      <dt class="font-semibold text-slate-800">
+        {{ veiculo().agentType === 'BANCO' ? 'Valor de Compra' : 'Diária' }}
+      </dt>
+      <dd class="mt-1">{{ veiculo().valor | currency: 'BRL' : 'symbol' : '1.2-2' : 'pt-BR' }}</dd>
     </div>
+    @if (veiculo().agentType === 'BANCO' && veiculo().taxaJuros !== undefined) {
+      <div>
+        <dt class="font-semibold text-slate-800">Taxa de Juros</dt>
+        <dd class="mt-1">{{ veiculo().taxaJuros }}%</dd>
+      </div>
+    }
   </dl>
 
   <button
     type="button"
-    class="mt-6 inline-flex w-full items-center justify-center rounded-2xl bg-primary-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-primary-700 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary-200"
+    class="mt-6 inline-flex w-full items-center justify-center rounded-2xl px-4 py-3 text-sm font-semibold text-white transition focus-visible:outline-none focus-visible:ring-4"
+    [class.bg-primary-600]="veiculo().agentType !== 'BANCO'"
+    [class.hover:bg-primary-700]="veiculo().agentType !== 'BANCO'"
+    [class.focus-visible:ring-primary-200]="veiculo().agentType !== 'BANCO'"
+    [class.bg-secondary-500]="veiculo().agentType === 'BANCO'"
+    [class.hover:bg-secondary-600]="veiculo().agentType === 'BANCO'"
+    [class.focus-visible:ring-secondary-200]="veiculo().agentType === 'BANCO'"
     (click)="requestAluguel()"
   >
-    Alugar
+    {{ veiculo().agentType === 'BANCO' ? 'Criar Contrato de Crédito' : 'Alugar' }}
   </button>
 </article>
