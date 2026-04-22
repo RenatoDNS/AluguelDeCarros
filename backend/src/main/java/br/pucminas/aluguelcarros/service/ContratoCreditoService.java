@@ -21,6 +21,7 @@ import jakarta.inject.Singleton;
 import jakarta.transaction.Transactional;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 
@@ -120,9 +121,11 @@ public class ContratoCreditoService {
 
         int parcelas = prazoMeses == null || prazoMeses <= 0 ? 1 : prazoMeses;
         BigDecimal valorBase = BigDecimal.valueOf(valorFinanciado == null ? 0D : valorFinanciado);
-        BigDecimal juros = BigDecimal.valueOf(taxaJuros == null ? 0D : taxaJuros);
+        BigDecimal jurosMensais = BigDecimal.valueOf(taxaJuros == null ? 0D : taxaJuros)
+                .divide(BigDecimal.valueOf(100), 10, RoundingMode.HALF_UP);
 
-        BigDecimal total = valorBase.multiply(BigDecimal.ONE.add(juros)).setScale(2, RoundingMode.HALF_UP);
+        BigDecimal fatorAcumulado = BigDecimal.ONE.add(jurosMensais).pow(parcelas, MathContext.DECIMAL64);
+        BigDecimal total = valorBase.multiply(fatorAcumulado).setScale(2, RoundingMode.HALF_UP);
         BigDecimal valorParcela = total.divide(BigDecimal.valueOf(parcelas), 2, RoundingMode.HALF_UP);
 
         ContratoCredito contratoCredito = new ContratoCredito();

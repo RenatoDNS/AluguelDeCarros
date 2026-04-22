@@ -31,9 +31,11 @@
       Você ainda não possui veículos cadastrados.
     </div>
   } @else {
-    <div class="grid gap-5 lg:grid-cols-3">
+    <div class="grid gap-5 lg:grid-cols-2">
       @for (veiculo of veiculos(); track veiculo.id) {
-        <article class="vehicle-card rounded-[1.75rem] border border-white/70 bg-white/90 p-6">
+        <article
+          class="vehicle-card flex flex-col rounded-[1.75rem] border border-white/70 bg-white/90 p-6"
+        >
           <div class="vehicle-media mb-4">
             @if (veiculo.linkImagem) {
               <img
@@ -63,7 +65,7 @@
             </span>
           </div>
 
-          <dl class="mt-5 grid gap-4 text-sm text-slate-600 sm:grid-cols-2">
+          <dl class="mt-5 mb-3 grid gap-4 text-sm text-slate-600 sm:grid-cols-2">
             <div>
               <dt class="font-semibold text-slate-800">Placa</dt>
               <dd class="mt-1">{{ veiculo.placa }}</dd>
@@ -84,7 +86,7 @@
             }
           </dl>
 
-          <div class="mt-6 grid gap-3 sm:grid-cols-2">
+          <div class="mt-auto grid gap-3 sm:grid-cols-2">
             <button
               type="button"
               class="login-submit inline-flex w-full items-center justify-center rounded-2xl px-4 py-3 text-sm font-semibold text-white transition hover:brightness-105"
@@ -201,7 +203,9 @@
           </div>
 
           <div class="space-y-2">
-            <label class="text-sm font-semibold text-slate-800" for="valor">{{ valorLabel() }}</label>
+            <label class="text-sm font-semibold text-slate-800" for="valor">{{
+              valorLabel()
+            }}</label>
             <input
               id="valor"
               type="text"

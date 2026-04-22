@@ -1,0 +1,39 @@
+
+> aluguel-de-carros@0.0.0 build
+> ng build
+
+❯ Building...
+✔ Building...
+Initial chunk files | Names               |  Raw size | Estimated transfer size
+chunk-NVBNBFVD.js   | -                   | 144.53 kB |                42.90 kB
+chunk-KI5RWMXI.js   | -                   |  87.48 kB |                22.13 kB
+chunk-VODYJONN.js   | -                   |  49.99 kB |                11.57 kB
+chunk-OJMI6ZPS.js   | -                   |  40.71 kB |                11.89 kB
+chunk-7QG5YDRO.js   | -                   |  39.33 kB |                 8.42 kB
+styles-6BKOXMGQ.css | styles              |  30.21 kB |                 4.98 kB
+main-4JFN67D3.js    | main                |   3.81 kB |                 1.57 kB
+chunk-NFURZRJL.js   | -                   |   1.78 kB |               690 bytes
+
+                    | Initial total       | 397.83 kB |               104.15 kB
+
+Lazy chunk files    | Names               |  Raw size | Estimated transfer size
+chunk-FRWGP5ZQ.js   | meus-pedidos-page   | 997.10 kB |               235.56 kB
+chunk-CGMPNAOZ.js   | auth-page           |  31.82 kB |                 6.26 kB
+chunk-O2CANTJQ.js   | meus-veiculos-page  |  13.97 kB |                 3.64 kB
+chunk-UADQSE22.js   | descobrir-page      |  12.73 kB |                 3.69 kB
+chunk-ANMQA4DC.js   | pedidos-page        |  11.45 kB |                 3.23 kB
+chunk-CFZNMSKU.js   | dashboard-home-page |   5.16 kB |                 1.82 kB
+chunk-JJHEEWGX.js   | dashboard-page      |   4.35 kB |                 1.38 kB
+chunk-BUZQQMEZ.js   | -                   | 831 bytes |               831 bytes
+chunk-7EUBXKPA.js   | -                   | 612 bytes |               612 bytes
+
+Application bundle generation complete. [9.303 seconds] - 2026-04-22T15:17:12.458Z
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mModule 'html2pdf.js' used by 'src/app/pages/meus-pedidos-page/meus-pedidos-page.ts' is not ESM[0m
+
+  CommonJS or AMD dependencies can cause optimization bailouts.
+  For more information see: [4mhttps://angular.dev/tools/cli/build#configuring-commonjs-dependencies[0m
+
+
+Output location: /Users/vicenzofms/Projetos/AluguelCarrosLab/frontend/dist/AluguelDeCarros
+
