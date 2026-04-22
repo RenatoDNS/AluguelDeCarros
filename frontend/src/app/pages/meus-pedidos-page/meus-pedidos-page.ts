@@ -1,7 +1,17 @@
-import { DatePipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { CurrencyPipe, DatePipe } from '@angular/common';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  ViewChild,
+  inject,
+  signal,
+} from '@angular/core';
+import html2pdf from 'html2pdf.js';
 
+import { type ContratoCreditoResponse, type ContratoResponse } from '../../models/contrato';
 import { type PedidoResponse, type PedidoStatus } from '../../models/pedido';
+import { ContratoService } from '../../services/contrato.service';
 import { PedidoService } from '../../services/pedido.service';
 
 type StatusMeta = {
@@ -13,17 +23,31 @@ type StatusMeta = {
 @Component({
   selector: 'app-meus-pedidos-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [DatePipe],
+  imports: [DatePipe, CurrencyPipe],
   templateUrl: './meus-pedidos-page.html',
   styleUrl: './meus-pedidos-page.css',
 })
 export class MeusPedidosPageComponent {
   private readonly pedidoService = inject(PedidoService);
+  private readonly contratoService = inject(ContratoService);
+
+  @ViewChild('contractInfo') private contractInfoRef?: ElementRef<HTMLElement>;
 
   readonly pedidos = signal<PedidoResponse[]>([]);
   readonly loading = signal(true);
   readonly cancelingPedidoId = signal<number | null>(null);
   readonly errorMessage = signal('');
+
+  readonly dialogOpen = signal(false);
+  readonly selectedPedido = signal<PedidoResponse | null>(null);
+  readonly loadingContrato = signal(false);
+  readonly contratoFetchErrorMessage = signal('');
+  readonly signErrorMessage = signal('');
+  readonly pdfErrorMessage = signal('');
+  readonly contratoAluguel = signal<ContratoResponse | null>(null);
+  readonly contratoCredito = signal<ContratoCreditoResponse | null>(null);
+  readonly downloadingPdf = signal(false);
+  readonly signingContrato = signal(false);
 
   private readonly statusMetaMap: Record<PedidoStatus, StatusMeta> = {
     EM_ANALISE: {
@@ -56,6 +80,32 @@ export class MeusPedidosPageComponent {
     return pedido.status === 'EM_ANALISE';
   }
 
+  canViewContrato(pedido: PedidoResponse) {
+    return pedido.status === 'APROVADO';
+  }
+
+  hasContratoLoaded() {
+    return Boolean(this.contratoAluguel() || this.contratoCredito());
+  }
+
+  assinaturaLabel(assinou: boolean) {
+    return assinou ? 'Assinado' : 'Pendente';
+  }
+
+  canSignContrato() {
+    const pedido = this.selectedPedido();
+
+    if (!pedido) {
+      return false;
+    }
+
+    if (pedido.tipoPedido === 'ALUGUEL') {
+      return this.contratoAluguel()?.clienteAssinou === false;
+    }
+
+    return this.contratoCredito()?.clienteAssinou === false;
+  }
+
   cancelPedido(pedidoId: number) {
     this.cancelingPedidoId.set(pedidoId);
     this.errorMessage.set('');
@@ -72,6 +122,104 @@ export class MeusPedidosPageComponent {
         this.cancelingPedidoId.set(null);
       },
     });
+  }
+
+  openContratoDialog(pedido: PedidoResponse) {
+    this.selectedPedido.set(pedido);
+    this.dialogOpen.set(true);
+    this.loadingContrato.set(true);
+    this.contratoFetchErrorMessage.set('');
+    this.signErrorMessage.set('');
+    this.pdfErrorMessage.set('');
+    this.signingContrato.set(false);
+    this.contratoAluguel.set(null);
+    this.contratoCredito.set(null);
+
+    this.contratoService.getByPedido(pedido.id, pedido.tipoPedido).subscribe({
+      next: (contrato) => {
+        if (pedido.tipoPedido === 'ALUGUEL') {
+          this.contratoAluguel.set(contrato as ContratoResponse);
+        } else {
+          this.contratoCredito.set(contrato as ContratoCreditoResponse);
+        }
+        this.loadingContrato.set(false);
+      },
+      error: (error) => {
+        this.contratoFetchErrorMessage.set(
+          error?.error?.mensagem ?? 'Não foi possível carregar as informações do contrato.',
+        );
+        this.loadingContrato.set(false);
+      },
+    });
+  }
+
+  closeContratoDialog() {
+    this.dialogOpen.set(false);
+    this.selectedPedido.set(null);
+    this.loadingContrato.set(false);
+    this.contratoFetchErrorMessage.set('');
+    this.signErrorMessage.set('');
+    this.pdfErrorMessage.set('');
+    this.contratoAluguel.set(null);
+    this.contratoCredito.set(null);
+    this.downloadingPdf.set(false);
+    this.signingContrato.set(false);
+  }
+
+  signContrato() {
+    const pedido = this.selectedPedido();
+    const contrato = pedido?.tipoPedido === 'ALUGUEL' ? this.contratoAluguel() : this.contratoCredito();
+
+    if (!pedido || !contrato || this.signingContrato()) {
+      return;
+    }
+
+    this.signingContrato.set(true);
+    this.signErrorMessage.set('');
+
+    this.contratoService.sign(contrato.id, pedido.tipoPedido).subscribe({
+      next: (contratoAtualizado) => {
+        if (pedido.tipoPedido === 'ALUGUEL') {
+          this.contratoAluguel.set(contratoAtualizado as ContratoResponse);
+        } else {
+          this.contratoCredito.set(contratoAtualizado as ContratoCreditoResponse);
+        }
+        this.signingContrato.set(false);
+      },
+      error: (error) => {
+        this.signErrorMessage.set(error?.error?.mensagem ?? 'Não foi possível assinar o contrato.');
+        this.signingContrato.set(false);
+      },
+    });
+  }
+
+  async downloadContratoPdf() {
+    const element = this.contractInfoRef?.nativeElement;
+    const pedido = this.selectedPedido();
+
+    if (!element || !pedido) {
+      return;
+    }
+
+    this.downloadingPdf.set(true);
+    this.pdfErrorMessage.set('');
+
+    try {
+      await html2pdf()
+        .set({
+          filename: `contrato-${pedido.numeroProtocolo}.pdf`,
+          margin: 10,
+          image: { type: 'jpeg', quality: 0.98 },
+          html2canvas: { scale: 2 },
+          jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+        })
+        .from(element)
+        .save();
+    } catch {
+      this.pdfErrorMessage.set('Não foi possível gerar o PDF do contrato.');
+    } finally {
+      this.downloadingPdf.set(false);
+    }
   }
 
   statusMeta(status: PedidoStatus) {

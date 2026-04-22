@@ -23,8 +23,8 @@ public class ContratoCreditoFacade {
         this.contratoCreditoService = contratoCreditoService;
     }
 
-    public ContratoCreditoResponseDTO buscar(Long id) {
-        return toResponse(contratoCreditoService.buscarPorId(id));
+    public ContratoCreditoResponseDTO buscarPorPedidoId(Long pedidoId) {
+        return toResponse(contratoCreditoService.buscarPorPedidoId(pedidoId));
     }
 
     public ContratoCreditoResponseDTO assinar(Long id, Long usuarioId, UserType userType) {

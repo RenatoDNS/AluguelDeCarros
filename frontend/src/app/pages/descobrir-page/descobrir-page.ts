@@ -2,7 +2,7 @@ import { CurrencyPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 
-import { finalize, of, switchMap } from 'rxjs';
+import { finalize, switchMap } from 'rxjs';
 
 import { VeiculoCardComponent } from '../../components/veiculo-card/veiculo-card';
 import { Veiculo } from '../../models/veiculo';
@@ -11,10 +11,6 @@ import { PedidoService } from '../../services/pedido.service';
 import { VeiculoService } from '../../services/veiculo.service';
 
 type DialogStep = 'inicio' | 'fim';
-type BancoPedidoPlaceholder = {
-  parcelas: number;
-  automovelId: number;
-};
 
 @Component({
   selector: 'app-descobrir-page',
@@ -125,11 +121,22 @@ export class DescobrirPageComponent {
       this.errorMessage.set('');
       this.successMessage.set('');
 
-      of(this.pedidoService.createBancoPedido({ parcelas, automovelId: veiculo.id } satisfies BancoPedidoPlaceholder))
-        .pipe(finalize(() => this.loading.set(false)))
+      this.authService
+        .me()
+        .pipe(
+          switchMap((profile) =>
+            this.pedidoService.createBancoPedido({
+              clienteId: profile.id,
+              automovelId: veiculo.id,
+              qntdParcelas: parcelas,
+            }),
+          ),
+          finalize(() => this.loading.set(false)),
+        )
         .subscribe({
           next: () => {
-            this.successMessage.set('Fluxo de contrato de crédito ainda não está disponível.');
+            this.successMessage.set('Pedido realizado com sucesso.');
+            setTimeout(() => this.closeAluguelDialog(), 1200);
           },
           error: (error) => {
             this.errorMessage.set(

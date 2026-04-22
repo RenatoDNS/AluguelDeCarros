@@ -48,6 +48,7 @@ export class MeusVeiculosPageComponent {
     ano: ['', [Validators.required, Validators.pattern(/^\d+$/)]],
     marca: ['', [Validators.required]],
     modelo: ['', [Validators.required]],
+    linkImagem: [''],
     valor: ['', [Validators.required]],
     taxaJuros: [''],
   });
@@ -70,6 +71,7 @@ export class MeusVeiculosPageComponent {
       ano: String(veiculo.ano),
       marca: veiculo.marca,
       modelo: veiculo.modelo,
+      linkImagem: veiculo.linkImagem ?? '',
       valor: this.formatCurrencyValue(veiculo.valor),
       taxaJuros: veiculo.taxaJuros === undefined ? '' : formatPercentValue(veiculo.taxaJuros),
     });
@@ -104,7 +106,8 @@ export class MeusVeiculosPageComponent {
       return;
     }
 
-    const { matricula, placa, ano, marca, modelo, valor, taxaJuros } = this.veiculoForm.getRawValue();
+    const { matricula, placa, ano, marca, modelo, linkImagem, valor, taxaJuros } =
+      this.veiculoForm.getRawValue();
     const valorValue = this.parseCurrencyValue(valor);
 
     if (!Number.isFinite(valorValue) || valorValue <= 0) {
@@ -139,6 +142,7 @@ export class MeusVeiculosPageComponent {
       ano: Number(ano),
       marca,
       modelo,
+      linkImagem: String(linkImagem ?? '').trim(),
       status: 'DISPONIVEL' as const,
       valor: valorValue,
       ...(this.isBanco() ? { taxaJuros: taxaJurosValue } : {}),
@@ -196,6 +200,7 @@ export class MeusVeiculosPageComponent {
       ano: '',
       marca: '',
       modelo: '',
+      linkImagem: '',
       valor: '',
       taxaJuros: '',
     });

@@ -22,7 +22,9 @@
   } @else {
     <div class="grid gap-5 lg:grid-cols-2">
       @for (pedido of pedidos(); track pedido.id) {
-        <article class="pedido-card rounded-[1.75rem] border border-white/70 bg-white/90 p-6">
+        <article
+          class="pedido-card flex flex-col rounded-[1.75rem] border border-white/70 bg-white/90 p-6"
+        >
           <div class="flex flex-wrap items-start justify-between gap-4">
             <div>
               <p class="text-xs font-semibold uppercase tracking-[0.3em] text-primary-600">
@@ -45,37 +47,232 @@
             {{ statusMeta(pedido.status).description }}
           </p>
 
-          <dl class="mt-6 grid gap-4 text-sm text-slate-600 sm:grid-cols-2">
+          <dl class="mt-6 mb-3 grid gap-4 text-sm text-slate-600 sm:grid-cols-2">
             <div>
               <dt class="font-semibold text-slate-800">ID do pedido</dt>
               <dd class="mt-1">{{ pedido.id }}</dd>
             </div>
             <div>
+              <dt class="font-semibold text-slate-800">Tipo</dt>
+              <dd class="mt-1">{{ pedido.tipoPedido }}</dd>
+            </div>
+            <div>
               <dt class="font-semibold text-slate-800">Automóvel</dt>
               <dd class="mt-1">{{ pedido.automovelId }}</dd>
             </div>
-            <div>
-              <dt class="font-semibold text-slate-800">Data de início</dt>
-              <dd class="mt-1">{{ pedido.dataInicio | date }}</dd>
-            </div>
-            <div>
-              <dt class="font-semibold text-slate-800">Data de fim</dt>
-              <dd class="mt-1">{{ pedido.dataFim | date }}</dd>
-            </div>
+            @if (pedido.dataInicio) {
+              <div>
+                <dt class="font-semibold text-slate-800">Data de início</dt>
+                <dd class="mt-1">{{ pedido.dataInicio | date }}</dd>
+              </div>
+            }
+            @if (pedido.dataFim) {
+              <div>
+                <dt class="font-semibold text-slate-800">Data de fim</dt>
+                <dd class="mt-1">{{ pedido.dataFim | date }}</dd>
+              </div>
+            }
+            @if (pedido.qntdParcelas) {
+              <div>
+                <dt class="font-semibold text-slate-800">Parcelas</dt>
+                <dd class="mt-1">{{ pedido.qntdParcelas }}</dd>
+              </div>
+            }
           </dl>
 
           @if (canCancel(pedido)) {
             <button
               type="button"
-              class="mt-6 inline-flex w-full items-center justify-center rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-700 transition hover:bg-rose-100 disabled:cursor-not-allowed disabled:opacity-60"
+              class="mt-auto inline-flex w-full items-center justify-center rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-700 transition hover:bg-rose-100 disabled:cursor-not-allowed disabled:opacity-60"
               (click)="cancelPedido(pedido.id)"
               [disabled]="cancelingPedidoId() === pedido.id"
             >
               {{ cancelingPedidoId() === pedido.id ? 'Cancelando...' : 'Cancelar Pedido' }}
             </button>
           }
+
+          @if (canViewContrato(pedido)) {
+            <button
+              type="button"
+              class="mt-auto inline-flex w-full items-center justify-center rounded-2xl border border-primary-200 bg-primary-50 px-4 py-3 text-sm font-semibold text-primary-800 transition hover:bg-primary-100"
+              (click)="openContratoDialog(pedido)"
+            >
+              Ver Contrato
+            </button>
+          }
         </article>
       }
+    </div>
+  }
+
+  @if (dialogOpen()) {
+    <div class="dialog-backdrop fixed inset-0 z-50 flex items-center justify-center px-4 py-6">
+      <div class="dialog-panel w-full max-w-3xl rounded-[1.75rem] bg-white p-6 shadow-2xl">
+        <div class="flex items-start justify-between gap-4">
+          <div>
+            <p class="text-sm font-semibold uppercase tracking-[0.28em] text-primary-600">
+              Contrato
+            </p>
+            <h2 class="mt-2 text-2xl font-semibold text-slate-950">Detalhes do Contrato</h2>
+            @if (selectedPedido(); as pedidoSelecionado) {
+              <p class="mt-2 text-sm text-slate-600">
+                Protocolo {{ pedidoSelecionado.numeroProtocolo }}
+              </p>
+            }
+          </div>
+          <button
+            type="button"
+            class="rounded-full px-3 py-1 text-sm font-semibold text-slate-500 transition hover:bg-slate-100 hover:text-slate-800"
+            (click)="closeContratoDialog()"
+          >
+            Fechar
+          </button>
+        </div>
+
+        @if (loadingContrato()) {
+          <div
+            class="mt-6 rounded-2xl border border-white/70 bg-white/90 p-4 text-sm text-slate-600"
+          >
+            Carregando informações do contrato...
+          </div>
+        } @else if (contratoFetchErrorMessage()) {
+          <div class="mt-6 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-800">
+            {{ contratoFetchErrorMessage() }}
+          </div>
+        } @else if (hasContratoLoaded()) {
+          <div #contractInfo class="contract-info mt-6 space-y-5 rounded-2xl p-5">
+            @if (contratoAluguel(); as contrato) {
+              <dl class="contract-info-grid grid gap-4 text-sm sm:grid-cols-2">
+                <div>
+                  <dt class="contract-info-label font-semibold">Empresa</dt>
+                  <dd class="mt-1">{{ contrato.empresa.razaoSocial }}</dd>
+                </div>
+                <div>
+                  <dt class="contract-info-label font-semibold">Cliente</dt>
+                  <dd class="mt-1">{{ contrato.cliente.nome }}</dd>
+                </div>
+                <div>
+                  <dt class="contract-info-label font-semibold">Veículo</dt>
+                  <dd class="mt-1">{{ contrato.veiculo.marca }} {{ contrato.veiculo.modelo }}</dd>
+                </div>
+                <div>
+                  <dt class="contract-info-label font-semibold">Placa</dt>
+                  <dd class="mt-1">{{ contrato.veiculo.placa }}</dd>
+                </div>
+                <div>
+                  <dt class="contract-info-label font-semibold">Início do aluguel</dt>
+                  <dd class="mt-1">{{ contrato.dataInicioAluguel | date }}</dd>
+                </div>
+                <div>
+                  <dt class="contract-info-label font-semibold">Fim do aluguel</dt>
+                  <dd class="mt-1">{{ contrato.dataFimAluguel | date }}</dd>
+                </div>
+                <div>
+                  <dt class="contract-info-label font-semibold">Valor diária</dt>
+                  <dd class="mt-1">{{ contrato.valorDiaria | currency: 'BRL' }}</dd>
+                </div>
+                <div>
+                  <dt class="contract-info-label font-semibold">Valor total</dt>
+                  <dd class="mt-1">{{ contrato.valorTotal | currency: 'BRL' }}</dd>
+                </div>
+                <div>
+                  <dt class="contract-info-label font-semibold">Assinatura empresa</dt>
+                  <dd class="mt-1">{{ assinaturaLabel(contrato.empresaAssinou) }}</dd>
+                </div>
+                <div>
+                  <dt class="contract-info-label font-semibold">Assinatura cliente</dt>
+                  <dd class="mt-1">{{ assinaturaLabel(contrato.clienteAssinou) }}</dd>
+                </div>
+              </dl>
+            }
+
+            @if (contratoCredito(); as contrato) {
+              <dl class="contract-info-grid grid gap-4 text-sm sm:grid-cols-2">
+                <div>
+                  <dt class="contract-info-label font-semibold">Banco</dt>
+                  <dd class="mt-1">{{ contrato.banco.razaoSocial }}</dd>
+                </div>
+                <div>
+                  <dt class="contract-info-label font-semibold">Cliente</dt>
+                  <dd class="mt-1">{{ contrato.cliente.nome }}</dd>
+                </div>
+                <div>
+                  <dt class="contract-info-label font-semibold">Veículo</dt>
+                  <dd class="mt-1">{{ contrato.veiculo.marca }} {{ contrato.veiculo.modelo }}</dd>
+                </div>
+                <div>
+                  <dt class="contract-info-label font-semibold">Placa</dt>
+                  <dd class="mt-1">{{ contrato.veiculo.placa }}</dd>
+                </div>
+                <div>
+                  <dt class="contract-info-label font-semibold">Quantidade de parcelas</dt>
+                  <dd class="mt-1">{{ contrato.quantidadeParcelas }}</dd>
+                </div>
+                <div>
+                  <dt class="contract-info-label font-semibold">Valor parcela</dt>
+                  <dd class="mt-1">{{ contrato.valorParcela | currency: 'BRL' }}</dd>
+                </div>
+                <div>
+                  <dt class="contract-info-label font-semibold">Valor total</dt>
+                  <dd class="mt-1">{{ contrato.valorTotal | currency: 'BRL' }}</dd>
+                </div>
+                <div>
+                  <dt class="contract-info-label font-semibold">Assinatura banco</dt>
+                  <dd class="mt-1">{{ assinaturaLabel(contrato.bancoAssinou) }}</dd>
+                </div>
+                <div>
+                  <dt class="contract-info-label font-semibold">Assinatura cliente</dt>
+                  <dd class="mt-1">{{ assinaturaLabel(contrato.clienteAssinou) }}</dd>
+                </div>
+              </dl>
+            }
+          </div>
+
+          @if (signErrorMessage()) {
+            <div
+              class="mt-4 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800"
+            >
+              {{ signErrorMessage() }}
+            </div>
+          }
+
+          @if (pdfErrorMessage()) {
+            <div
+              class="mt-4 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800"
+            >
+              {{ pdfErrorMessage() }}
+            </div>
+          }
+
+          <div class="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-end">
+            <button
+              type="button"
+              class="inline-flex items-center justify-center rounded-2xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+              (click)="closeContratoDialog()"
+            >
+              Fechar
+            </button>
+            @if (canSignContrato()) {
+              <button
+                type="button"
+                class="sign-contract-button inline-flex items-center justify-center rounded-2xl px-4 py-3 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60"
+                [disabled]="signingContrato()"
+                (click)="signContrato()"
+              >
+                {{ signingContrato() ? 'Assinando...' : 'Assinar' }}
+              </button>
+            }
+            <button
+              type="button"
+              class="inline-flex items-center justify-center rounded-2xl border border-primary-200 bg-primary-50 px-4 py-3 text-sm font-semibold text-primary-800 transition hover:bg-primary-100 disabled:cursor-not-allowed disabled:opacity-60"
+              [disabled]="downloadingPdf()"
+              (click)="downloadContratoPdf()"
+            >
+              {{ downloadingPdf() ? 'Gerando PDF...' : 'Baixar PDF' }}
+            </button>
+          </div>
+        }
+      </div>
     </div>
   }
 </section>

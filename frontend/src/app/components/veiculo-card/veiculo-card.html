@@ -1,4 +1,16 @@
 <article class="vehicle-card rounded-[1.75rem] border border-white/70 bg-white/90 p-6">
+  <div class="vehicle-media mb-4">
+    @if (veiculo().linkImagem) {
+      <img
+        [src]="veiculo().linkImagem"
+        [alt]="veiculo().marca + ' ' + veiculo().modelo"
+        class="vehicle-image"
+      />
+    } @else {
+      <div class="vehicle-image-fallback" aria-hidden="true">🚗</div>
+    }
+  </div>
+
   <p class="text-xs font-semibold uppercase tracking-[0.3em] text-primary-600">
     {{ veiculo().matricula }}
   </p>

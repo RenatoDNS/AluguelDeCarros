@@ -23,8 +23,8 @@ public class ContratoFacade {
         this.contratoService = contratoService;
     }
 
-    public ContratoResponseDTO buscar(Long id) {
-        return toResponse(contratoService.buscarPorId(id));
+    public ContratoResponseDTO buscarPorPedidoId(Long pedidoId) {
+        return toResponse(contratoService.buscarPorPedidoId(pedidoId));
     }
 
     public ContratoResponseDTO assinar(Long id, Long usuarioId, br.pucminas.aluguelcarros.enums.UserType userType) {

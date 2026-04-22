@@ -1,11 +1,12 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 
-import { forkJoin, map, of } from 'rxjs';
+import { forkJoin, map } from 'rxjs';
 
 import { environment } from '../../environments/environment';
 import {
   type PedidoAvaliacaoRequest,
+  type PedidoCreditoRequest,
   type PedidoRequest,
   type PedidoResponse,
 } from '../models/pedido';
@@ -18,8 +19,8 @@ export class PedidoService {
     return this.http.post(`${environment.apiUrl}/pedidos/aluguel`, payload);
   }
 
-  createBancoPedido(_payload: { parcelas: number; automovelId: number }) {
-    return of(void 0);
+  createBancoPedido(payload: PedidoCreditoRequest) {
+    return this.http.post<PedidoResponse>(`${environment.apiUrl}/pedidos/credito`, payload);
   }
 
   listMine() {

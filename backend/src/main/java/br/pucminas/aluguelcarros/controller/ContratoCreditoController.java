@@ -24,9 +24,9 @@ public class ContratoCreditoController {
         this.authService = authService;
     }
 
-    @Get("/{id}")
-    public ContratoCreditoResponseDTO buscar(@PathVariable Long id) {
-        return contratoCreditoFacade.buscar(id);
+    @Get("/{pedidoId}")
+    public ContratoCreditoResponseDTO buscarPorPedidoId(@PathVariable Long pedidoId) {
+        return contratoCreditoFacade.buscarPorPedidoId(pedidoId);
     }
 
     @Post("/{id}/assinar")

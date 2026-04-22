@@ -1,4 +1,5 @@
 export type PedidoStatus = 'EM_ANALISE' | 'APROVADO' | 'REJEITADO' | 'CANCELADO';
+export type PedidoTipo = 'ALUGUEL' | 'COMPRA';
 export type PedidoAvaliacaoResultado = 'APROVADO' | 'REJEITADO';
 
 export type PedidoRequest = {
@@ -9,14 +10,23 @@ export type PedidoRequest = {
   status: PedidoStatus;
 };
 
+export type PedidoCreditoRequest = {
+  clienteId: number;
+  automovelId: number;
+  qntdParcelas: number;
+};
+
 export type PedidoResponse = {
   id: number;
   numeroProtocolo: string;
   clienteId: number;
   automovelId: number;
-  dataInicio: string;
-  dataFim: string;
+  tipoPedido: PedidoTipo;
+  dataInicio: string | null;
+  dataFim: string | null;
+  qntdParcelas: number | null;
   status: PedidoStatus;
+  justificativa: string | null;
 };
 
 export type PedidoAvaliacaoRequest = {

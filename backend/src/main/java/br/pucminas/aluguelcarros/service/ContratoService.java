@@ -56,6 +56,30 @@ public class ContratoService {
     }
 
     @Transactional
+    public Contrato buscarPorPedidoId(Long pedidoId) {
+        Pedido pedido = buscarPedido(pedidoId);
+
+        if (pedido.getTipoPedido() != PedidoTipo.ALUGUEL) {
+            throw new RegraDeNegocioException("Pedido informado não é do tipo aluguel.");
+        }
+
+        LocalDate dataInicio = pedido.getDataInicio();
+        LocalDate dataFim = pedido.getDataFim();
+        if (dataInicio == null || dataFim == null) {
+            throw new EntidadeNaoEncontradaException("Contrato não encontrado para o pedido informado.");
+        }
+
+        return contratoRepository
+                .findByClienteIdAndVeiculoIdAndDataInicioAluguelAndDataFimAluguel(
+                        pedido.getCliente().getId(),
+                        pedido.getAutomovel().getId(),
+                        dataInicio,
+                        dataFim
+                )
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Contrato não encontrado para o pedido informado."));
+    }
+
+    @Transactional
     public Contrato assinar(Long contratoId, Long usuarioId, UserType userType) {
         Contrato contrato = buscarPorId(contratoId);
 

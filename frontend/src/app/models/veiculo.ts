@@ -9,6 +9,7 @@ export type Veiculo = {
   ano: number;
   status: VeiculoStatus;
   valor: number;
+  linkImagem?: string;
   taxaJuros?: number;
   agentId?: number;
   agentType?: 'BANCO' | 'EMPRESA';
@@ -22,6 +23,7 @@ export type VeiculoCreatePayload = {
   ano: number;
   status: VeiculoStatus;
   valor: number;
+  linkImagem?: string;
   taxaJuros?: number;
 };
 

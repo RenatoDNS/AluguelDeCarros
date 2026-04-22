@@ -5,3 +5,37 @@
 .pedido-card {
   box-shadow: 0 24px 80px -36px color-mix(in srgb, var(--color-primary-900) 20%, transparent);
 }
+
+.dialog-backdrop {
+  background: color-mix(in srgb, var(--color-primary-950) 34%, transparent);
+  backdrop-filter: blur(6px);
+}
+
+.dialog-panel {
+  border: 1px solid color-mix(in srgb, var(--color-primary-100) 88%, white);
+}
+
+.contract-info {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  color: #334155;
+}
+
+.contract-info-grid {
+  color: #334155;
+}
+
+.contract-info-label {
+  color: #0f172a;
+}
+
+.sign-contract-button {
+  border: 1px solid #16a34a;
+  background-color: #16a34a;
+  color: #ffffff;
+}
+
+.sign-contract-button:hover {
+  background-color: #15803d;
+  border-color: #15803d;
+}

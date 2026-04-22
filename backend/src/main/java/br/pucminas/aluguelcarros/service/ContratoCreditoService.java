@@ -53,6 +53,19 @@ public class ContratoCreditoService {
     }
 
     @Transactional
+    public ContratoCredito buscarPorPedidoId(Long pedidoId) {
+        Pedido pedido = buscarPedido(pedidoId);
+
+        if (pedido.getTipoPedido() != PedidoTipo.COMPRA) {
+            throw new RegraDeNegocioException("Pedido informado não é do tipo compra.");
+        }
+
+        return contratoCreditoRepository
+                .findByClienteIdAndVeiculoId(pedido.getCliente().getId(), pedido.getAutomovel().getId())
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Contrato de crédito não encontrado para o pedido informado."));
+    }
+
+    @Transactional
     public ContratoCredito assinar(Long contratoId, Long usuarioId, UserType userType) {
         ContratoCredito contratoCredito = buscarPorId(contratoId);
 
