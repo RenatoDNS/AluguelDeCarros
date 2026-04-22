@@ -29,17 +29,17 @@ tags:
   - name: Empresas
     description: Cadastro de empresas
   - name: Automóveis
-    description: Cadastro e Gestão de automóveis
+    description: Cadastro e gestão de automóveis
   - name: Pedidos
-    description: Fluxos de pedidos
+    description: Criação de pedidos de aluguel e compra a crédito
   - name: Contratos
-    description: Gestão de contratos
+    description: Consulta e assinatura de contratos de aluguel
   - name: Contratos de Crédito
-    description: Gestão de contratos de crédito
+    description: Consulta e assinatura de contratos de compra a crédito
+  - name: Fluxos de Negócio
+    description: Ações por perfil — listagem e avaliação de pedidos pelo agente, cancelamento pelo cliente
   - name: Swagger
     description: Endpoints da documentação OpenAPI e UI
-  - name: Fluxos de Negócio
-    description: Endpoints de fluxo por perfil
 
 paths:
   /swagger-ui:
@@ -212,7 +212,7 @@ paths:
     post:
       tags: [Automóveis]
       summary: Cadastrar automóvel
-      description: Disponivel apenas para perfis `empresa` e `banco`.
+      description: Disponível apenas para perfis `empresa` e `banco`.
       operationId: cadastrarAutomovel
       security:
         - bearerAuth: []
@@ -224,7 +224,7 @@ paths:
               $ref: '#/components/schemas/AutomovelRequest'
       responses:
         '200':
-          description: Automovel criado
+          description: Automóvel criado
           content:
             application/json:
               schema:
@@ -245,7 +245,7 @@ paths:
                 $ref: '#/components/schemas/MensagemErro'
     get:
       tags: [Automóveis]
-      summary: Listar automóveis
+      summary: Listar todos os automóveis
       operationId: listarAutomoveis
       security:
         - bearerAuth: []
@@ -297,7 +297,7 @@ paths:
         - bearerAuth: []
       responses:
         '200':
-          description: Automovel encontrado
+          description: Automóvel encontrado
           content:
             application/json:
               schema:
@@ -305,7 +305,7 @@ paths:
         '401':
           description: Não autorizado
         '404':
-          description: Automovel não encontrado
+          description: Automóvel não encontrado
           content:
             application/json:
               schema:
@@ -324,7 +324,7 @@ paths:
               $ref: '#/components/schemas/AutomovelRequest'
       responses:
         '200':
-          description: Automovel atualizado
+          description: Automóvel atualizado
           content:
             application/json:
               schema:
@@ -338,7 +338,7 @@ paths:
         '401':
           description: Não autorizado
         '404':
-          description: Automovel não encontrado
+          description: Automóvel não encontrado
           content:
             application/json:
               schema:
@@ -357,11 +357,11 @@ paths:
         - bearerAuth: []
       responses:
         '204':
-          description: Automovel removido
+          description: Automóvel removido
         '401':
           description: Não autorizado
         '404':
-          description: Automovel não encontrado
+          description: Automóvel não encontrado
           content:
             application/json:
               schema:
@@ -532,13 +532,16 @@ paths:
     get:
       tags: [Fluxos de Negócio]
       summary: Listar pedidos por status para agente
-      description: Quando `status` for `APROVADO`, o contrato correspondente é gerado automaticamente, se ainda não existir.
+      description: |
+        Lista pedidos vinculados aos automóveis do agente autenticado (`empresa` ou `banco`),
+        filtrados pelo `status` informado. Quando `status` for `APROVADO`, o contrato
+        correspondente é gerado automaticamente se ainda não existir.
       operationId: listarPedidosPorStatusParaAgente
       security:
         - bearerAuth: []
       responses:
         '200':
-          description: Lista de pedidos por status vinculados aos automóveis do agente
+          description: Lista de pedidos por status vinculados ao agente
           content:
             application/json:
               schema:
@@ -597,71 +600,20 @@ paths:
               schema:
                 $ref: '#/components/schemas/MensagemErro'
 
-  /contratos:
-    post:
-      tags: [Contratos]
-      summary: Cadastrar contrato
-      operationId: cadastrarContrato
-      security:
-        - bearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ContratoRequest'
-      responses:
-        '200':
-          description: Contrato criado
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ContratoResponse'
-        '400':
-          description: Erro de validação
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/MensagemErro'
-        '401':
-          description: Não autorizado
-        '404':
-          description: Entidade relacionada não encontrada
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/MensagemErro'
-        '422':
-          description: Regra de negócio violada
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/MensagemErro'
-    get:
-      tags: [Contratos]
-      summary: Listar contratos
-      operationId: listarContratos
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: Lista de contratos
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/ContratoResponse'
-        '401':
-          description: Não autorizado
-
-  /contratos/{id}:
+  /contratos/{pedidoId}:
     parameters:
-      - $ref: '#/components/parameters/IdPath'
+      - name: pedidoId
+        in: path
+        required: true
+        description: ID do pedido de aluguel vinculado ao contrato
+        schema:
+          type: integer
+          format: int64
     get:
       tags: [Contratos]
-      summary: Buscar contrato por id
-      operationId: buscarContratoPorId
+      summary: Buscar contrato pelo id do pedido
+      description: Retorna o contrato de aluguel gerado automaticamente quando o pedido foi aprovado.
+      operationId: buscarContratoPorPedidoId
       security:
         - bearerAuth: []
       responses:
@@ -679,75 +631,23 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/MensagemErro'
-    put:
-      tags: [Contratos]
-      summary: Atualizar contrato
-      operationId: atualizarContrato
-      security:
-        - bearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ContratoRequest'
-      responses:
-        '200':
-          description: Contrato atualizado
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ContratoResponse'
-        '400':
-          description: Erro de validação
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/MensagemErro'
-        '401':
-          description: Não autorizado
-        '404':
-          description: Contrato não encontrado
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/MensagemErro'
-        '422':
-          description: Regra de negócio violada
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/MensagemErro'
-    delete:
-      tags: [Contratos]
-      summary: Remover contrato
-      operationId: removerContrato
-      security:
-        - bearerAuth: []
-      responses:
-        '204':
-          description: Contrato removido
-        '401':
-          description: Não autorizado
-        '404':
-          description: Contrato não encontrado
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/MensagemErro'
 
-  /contratos/{id}/executar:
+  /contratos/{id}/assinar:
     parameters:
       - $ref: '#/components/parameters/IdPath'
     post:
       tags: [Contratos]
-      summary: Executar contrato
-      operationId: executarContrato
+      summary: Assinar contrato
+      description: |
+        Registra a assinatura do usuário autenticado no contrato. Cada parte
+        (empresa e cliente) precisa assinar separadamente. O contrato é
+        considerado executado quando ambos assinam.
+      operationId: assinarContrato
       security:
         - bearerAuth: []
       responses:
         '200':
-          description: Contrato executado
+          description: Contrato assinado
           content:
             application/json:
               schema:
@@ -761,77 +661,26 @@ paths:
               schema:
                 $ref: '#/components/schemas/MensagemErro'
         '422':
-          description: Regra de negócio violada
+          description: Regra de negócio violada (ex.: usuário sem permissão ou já assinou)
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/MensagemErro'
 
-  /contratos-credito:
-    post:
-      tags: [Contratos de Crédito]
-      summary: Cadastrar contrato de crédito
-      operationId: cadastrarContratoCredito
-      security:
-        - bearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ContratoCreditoRequest'
-      responses:
-        '200':
-          description: Contrato de crédito criado
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ContratoCreditoResponse'
-        '400':
-          description: Erro de validação
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/MensagemErro'
-        '401':
-          description: Não autorizado
-        '404':
-          description: Entidade relacionada não encontrada
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/MensagemErro'
-        '422':
-          description: Regra de negócio violada
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/MensagemErro'
-    get:
-      tags: [Contratos de Crédito]
-      summary: Listar contratos de crédito
-      operationId: listarContratosCredito
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: Lista de contratos de crédito
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/ContratoCreditoResponse'
-        '401':
-          description: Não autorizado
-
-  /contratos-credito/{id}:
+  /contratos-credito/{pedidoId}:
     parameters:
-      - $ref: '#/components/parameters/IdPath'
+      - name: pedidoId
+        in: path
+        required: true
+        description: ID do pedido de compra a crédito vinculado ao contrato
+        schema:
+          type: integer
+          format: int64
     get:
       tags: [Contratos de Crédito]
-      summary: Buscar contrato de crédito por id
-      operationId: buscarContratoCreditoPorId
+      summary: Buscar contrato de crédito pelo id do pedido
+      description: Retorna o contrato de crédito gerado automaticamente quando o pedido foi aprovado.
+      operationId: buscarContratoCreditoPorPedidoId
       security:
         - bearerAuth: []
       responses:
@@ -849,31 +698,27 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/MensagemErro'
-    put:
+
+  /contratos-credito/{id}/assinar:
+    parameters:
+      - $ref: '#/components/parameters/IdPath'
+    post:
       tags: [Contratos de Crédito]
-      summary: Atualizar contrato de crédito
-      operationId: atualizarContratoCredito
+      summary: Assinar contrato de crédito
+      description: |
+        Registra a assinatura do usuário autenticado no contrato de crédito. Banco
+        e cliente assinam separadamente. O contrato é considerado executado quando
+        ambos assinam.
+      operationId: assinarContratoCredito
       security:
         - bearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ContratoCreditoRequest'
       responses:
         '200':
-          description: Contrato de crédito atualizado
+          description: Contrato de crédito assinado
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ContratoCreditoResponse'
-        '400':
-          description: Erro de validação
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/MensagemErro'
         '401':
           description: Não autorizado
         '404':
@@ -883,24 +728,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/MensagemErro'
         '422':
-          description: Regra de negócio violada
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/MensagemErro'
-    delete:
-      tags: [Contratos de Crédito]
-      summary: Remover contrato de crédito
-      operationId: removerContratoCredito
-      security:
-        - bearerAuth: []
-      responses:
-        '204':
-          description: Contrato de crédito removido
-        '401':
-          description: Não autorizado
-        '404':
-          description: Contrato de crédito não encontrado
+          description: Regra de negócio violada (ex.: usuário sem permissão ou já assinou)
           content:
             application/json:
               schema:
@@ -951,7 +779,7 @@ components:
         expiresIn:
           type: integer
           format: int64
-          description: Tempo de expiracao do token em milissegundos
+          description: Tempo de expiração do token em milissegundos
         userType:
           $ref: '#/components/schemas/UserType'
 
@@ -1252,82 +1080,148 @@ components:
         justificativa:
           type: string
 
-    TipoPropriedade:
-      type: string
-      enum: [CLIENTE, EMPRESA, BANCO]
+    # ── Resumos embutidos nas respostas de contrato ──────────────────────────
 
-    ContratoRequest:
+    EmpresaResumo:
       type: object
-      required: [pedidoId, tipoPropriedade, dataAssinatura]
       properties:
-        pedidoId:
+        id:
           type: integer
           format: int64
-        tipoPropriedade:
-          $ref: '#/components/schemas/TipoPropriedade'
-        dataAssinatura:
+        razaoSocial:
           type: string
-          format: date
+        cnpj:
+          type: string
+        ramoDeAtividade:
+          type: string
+
+    BancoResumo:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        razaoSocial:
+          type: string
+        cnpj:
+          type: string
+        codigoBancario:
+          type: string
+
+    ClienteResumo:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        nome:
+          type: string
+        cpf:
+          type: string
+        rg:
+          type: string
+        endereco:
+          type: string
+        profissao:
+          type: string
+
+    VeiculoResumo:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        matricula:
+          type: string
+        placa:
+          type: string
+        ano:
+          type: integer
+          format: int32
+        marca:
+          type: string
+        modelo:
+          type: string
+        valor:
+          type: number
+          format: double
+        linkImagem:
+          type: string
+
+    # ── Contratos ────────────────────────────────────────────────────────────
 
     ContratoResponse:
       type: object
+      description: Contrato de aluguel gerado automaticamente ao aprovar um pedido de aluguel.
       properties:
         id:
           type: integer
           format: int64
-        pedidoId:
-          type: integer
-          format: int64
-        automovelId:
-          type: integer
-          format: int64
-        tipoPropriedade:
-          $ref: '#/components/schemas/TipoPropriedade'
-        dataAssinatura:
+        empresa:
+          $ref: '#/components/schemas/EmpresaResumo'
+        cliente:
+          $ref: '#/components/schemas/ClienteResumo'
+        veiculo:
+          $ref: '#/components/schemas/VeiculoResumo'
+        dataInicioAluguel:
           type: string
           format: date
-
-    ContratoCreditoRequest:
-      type: object
-      required: [contratoId, valorFinanciado, taxaJuros, prazoMeses]
-      properties:
-        contratoId:
-          type: integer
-          format: int64
-        valorFinanciado:
+        dataFimAluguel:
+          type: string
+          format: date
+        valorTotal:
           type: number
           format: double
-          minimum: 0.01
-        taxaJuros:
+        valorDiaria:
           type: number
           format: double
-          minimum: 0.01
-        prazoMeses:
-          type: integer
-          format: int32
-          minimum: 1
+        dataAssinaturaEmpresa:
+          type: string
+          format: date
+          nullable: true
+        dataAssinaturaCliente:
+          type: string
+          format: date
+          nullable: true
+        empresaAssinou:
+          type: boolean
+        clienteAssinou:
+          type: boolean
 
     ContratoCreditoResponse:
       type: object
+      description: Contrato de crédito gerado automaticamente ao aprovar um pedido de compra.
       properties:
         id:
           type: integer
           format: int64
-        contratoId:
-          type: integer
-          format: int64
-        bancoId:
-          type: integer
-          format: int64
-        valorFinanciado:
-          type: number
-          format: double
-        taxaJuros:
-          type: number
-          format: double
-        prazoMeses:
+        banco:
+          $ref: '#/components/schemas/BancoResumo'
+        cliente:
+          $ref: '#/components/schemas/ClienteResumo'
+        veiculo:
+          $ref: '#/components/schemas/VeiculoResumo'
+        quantidadeParcelas:
           type: integer
           format: int32
+        valorParcela:
+          type: number
+          format: double
+        valorTotal:
+          type: number
+          format: double
+        dataAssinaturaBanco:
+          type: string
+          format: date
+          nullable: true
+        dataAssinaturaCliente:
+          type: string
+          format: date
+          nullable: true
+        bancoAssinou:
+          type: boolean
+        clienteAssinou:
+          type: boolean
 
     MensagemErro:
       type: object

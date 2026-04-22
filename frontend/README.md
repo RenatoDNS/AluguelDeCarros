@@ -1,12 +1,12 @@
 # 🚗 Aluguel de Carros — Frontend (Web)
 
-> Aplicação Web em **Angular** para gestão de clientes, autenticação e integração com a API **Micronaut** de aluguel de carros.
+> Aplicação Web em **Angular** para autenticação, descoberta de veículos, gestão de pedidos e assinatura de contratos, integrada à API **Micronaut** de aluguel de carros.
 
 <table>
   <tr>
     <td width="800px">
       <div align="justify">
-        Este <b>README.md</b> descreve o <b>Frontend</b> do projeto <b>Aluguel de Carros</b>, uma aplicação web moderna desenvolvida com <b>Angular</b> que oferece interface amigável para cadastro, autenticação e gestão de clientes. Integra-se com a API REST backend via serviços HTTP, com autenticação JWT e proteção de rotas via guards.
+        Este <b>README.md</b> descreve o <b>Frontend</b> do projeto <b>Aluguel de Carros</b>, uma aplicação web moderna desenvolvida com <b>Angular</b> que oferece interface amigável para cadastro, autenticação e gestão de pedidos e contratos. Integra-se com a API REST backend via serviços HTTP, com autenticação JWT armazenada em <b>sessionStorage</b> e proteção de rotas via guards de autenticação e perfil.
       </div>
     </td>
     <td>
@@ -63,11 +63,12 @@
 O **Frontend do Aluguel de Carros** é uma aplicação web desenvolvida com **Angular** que fornece:
 
 - **Interface responsiva** — acesso via desktop e dispositivos móveis
-- **Autenticação JWT** — login seguro com CPF/login e armazenamento de token
-- **Gestão de clientes** — cadastro, visualização, edição e exclusão
-- **Proteção de rotas** — guards que validam autenticação antes de acesso
-- **Integração com API REST** — consumo dos endpoints do backend Micronaut
-- **Design moderno** — experiência de usuário clara e intuitiva
+- **Autenticação JWT** — login e cadastro com armazenamento de token em sessionStorage
+- **Descoberta de veículos** — catálogo de automóveis disponíveis para aluguel ou compra a crédito
+- **Gestão de pedidos** — criação, acompanhamento e cancelamento para clientes; avaliação para agentes
+- **Assinatura de contratos** — fluxo de assinatura de contratos de aluguel e crédito
+- **Painel por perfil** — dashboards diferenciados para clientes e agentes (empresa/banco)
+- **Proteção de rotas** — guards que validam autenticação e tipo de perfil antes do acesso
 
 **Por que existe:** oferecer uma interface amigável e segura para interação com o sistema de aluguel de carros.
 
@@ -79,14 +80,14 @@ O **Frontend do Aluguel de Carros** é uma aplicação web desenvolvida com **An
 
 ## ✨ Funcionalidades Principais
 
-- 🔐 **Login Seguro** — autenticação via CPF ou login com validação JWT
-- 📋 **Cadastro de Clientes** — formulário com validação de dados pessoais e entidades empregadoras
-- 👁️ **Visualização de Clientes** — listagem e detalhes de clientes cadastrados
-- ✏️ **Edição de Clientes** — atualização de dados pessoais (com autenticação)
-- 🗑️ **Exclusão de Clientes** — remoção segura com confirmação
-- 🔒 **Proteção de Rotas** — acesso restrito a usuários autenticados via guards
-- 💾 **Persistência de Sessão** — armazenamento seguro de token JWT no localStorage
-- 📱 **Design Responsivo** — interface adaptável para desktop, tablet e mobile
+- 🔐 **Autenticação** — login e cadastro (cliente, empresa ou banco) com validação JWT
+- 🚗 **Descobrir Veículos** — catálogo de automóveis disponíveis com filtros (somente perfil `cliente`)
+- 📋 **Meus Pedidos** — listagem, acompanhamento de status e cancelamento de pedidos (somente `cliente`)
+- 📄 **Assinatura de Contratos** — visualização e assinatura de contratos de aluguel e crédito diretamente nos pedidos aprovados
+- 🏢 **Meus Veículos** — cadastro, edição e remoção de automóveis pelo agente autenticado (`empresa` ou `banco`)
+- 📥 **Pedidos do Agente** — listagem de pedidos em análise e histórico de aprovados/rejeitados, com avaliação inline
+- 🔒 **Proteção de Rotas** — `AuthGuard` impede acesso sem autenticação; `RoleGuard` restringe páginas por tipo de perfil
+- 💾 **Persistência de Sessão** — token JWT armazenado em `sessionStorage` (limpo ao fechar o navegador)
 
 ---
 
@@ -98,7 +99,7 @@ O **Frontend do Aluguel de Carros** é uma aplicação web desenvolvida com **An
 |------------|--------|-----|
 | **Angular** | 21.2.6 | Framework web e componentes |
 | **TypeScript** | 5.x | Linguagem tipada |
-| **Angular Router** | 21.x | Roteamento entre páginas |
+| **Angular Router** | 21.x | Roteamento entre páginas e lazy loading |
 | **Angular Forms** | 21.x | Formulários reativos |
 | **RxJS** | 7.x | Programação reativa com observables |
 | **HttpClient** | 21.x | Requisições HTTP para a API |
@@ -127,18 +128,26 @@ A aplicação segue a **arquitetura em componentes com serviços**:
 
 ### Componentes Principais
 
-1. **Pages** (`pages/`) — Componentes de páginas: login, dashboard, cadastro de clientes
-2. **Services** (`services/`) — `AuthService` (autenticação), `ClienteService` (CRUD)
-3. **Guards** (`guards/`) — `AuthGuard` (proteção de rotas autenticadas)
-4. **Routes** (`app.routes.ts`) — Definição de rotas e lazy loading
-5. **Components** — Componentes reutilizáveis (headers, forms, etc.)
+1. **Pages** (`pages/`) — Componentes de páginas com lazy loading:
+   - `auth-page` — Login e cadastro (cliente, empresa ou banco)
+   - `dashboard-page` — Shell com menu lateral e roteamento interno
+   - `dashboard-home-page` — Tela inicial do dashboard
+   - `descobrir-page` — Catálogo de veículos para clientes
+   - `meus-pedidos-page` — Pedidos e contratos do cliente
+   - `meus-veiculos-page` — Gestão de veículos pelo agente
+   - `pedidos-page` — Avaliação de pedidos pelo agente
+2. **Services** (`services/`) — `AuthService` (autenticação e sessão), `VeiculoService` (CRUD de automóveis), `PedidoService` (pedidos e avaliações), `ContratoService` (busca e assinatura de contratos)
+3. **Guards** (`guards/`) — `authGuard` (exige autenticação), `roleGuard` (restringe por `userType`)
+4. **Components** (`components/`) — `veiculo-card` (card reutilizável de exibição de veículo)
+5. **Models** (`models/`) — Tipos TypeScript: `auth`, `veiculo`, `pedido`, `contrato`
+6. **Routes** (`app.routes.ts`) — Definição de rotas com lazy loading e guards
 
 **Padrões aplicados:**
 - **Smart/Presentational Components** — separação de lógica e apresentação
 - **Reactive Programming (RxJS)** — observables para estado e eventos
 - **HttpClient** — consumo da API REST
-- **Route Guards** — proteção de rotas autenticadas
-- **State Management** — gerenciamento simples via serviços injetáveis
+- **Route Guards** — proteção de rotas por autenticação e perfil
+- **State Management** — gerenciamento simples via serviços injetáveis e Angular Signals
 
 ---
 
@@ -154,14 +163,15 @@ A aplicação segue a **arquitetura em componentes com serviços**:
 
 ### 🔑 Variáveis de Ambiente
 
-Crie um arquivo **`.env`** na raiz da pasta `frontend/`:
+A URL da API é configurada diretamente em `src/environments/environment.ts`:
 
-```env
-# URL da API Backend (desenvolvimento local)
-VITE_API_URL=http://localhost:8080/api/aluguelcarros/v1
+```typescript
+export const environment = {
+  apiUrl: 'http://localhost:8080/api/aluguelcarros/v1'
+};
 ```
 
-**Para produção**, configure a variável no seu provedor (Vercel, Netlify, etc.).
+**Para produção**, crie o arquivo `src/environments/environment.prod.ts` com a URL do servidor de produção e configure o build no `angular.json`.
 
 ---
 
@@ -208,12 +218,17 @@ frontend/
 ├── tsconfig.spec.json                  # 🧪 TypeScript para testes
 │
 ├── public/
-│   └── favicon.ico                     # 🎨 Ícone da aplicação
+│   ├── favicon.ico                     # 🎨 Ícone da aplicação
+│   ├── logo_lab.jpeg                   # 🖼️ Logo do laboratório
+│   └── red-sedan.png                   # 🚗 Imagem padrão de veículo
 │
 ├── src/
 │   ├── index.html                      # 📄 Arquivo HTML principal
 │   ├── main.ts                         # 🚀 Entry point da aplicação
 │   ├── styles.css                      # 🎨 Estilos globais
+│   │
+│   ├── environments/
+│   │   └── environment.ts              # 🌍 Configuração de ambiente (apiUrl)
 │   │
 │   └── app/
 │       ├── app.ts                      # 🎯 Componente raiz
@@ -223,28 +238,71 @@ frontend/
 │       ├── app.config.ts               # ⚙️ Configuração da aplicação
 │       │
 │       ├── guards/                     # 🔒 Proteção de rotas
-│       │   └── auth.guard.ts           # Valida autenticação
+│       │   ├── auth.guard.ts           # Exige autenticação
+│       │   └── role.guard.ts           # Restringe por userType
+│       │
+│       ├── interceptors/               # 🔗 Interceptores HTTP
+│       │   ├── auth.interceptor.ts     # Injeta Bearer token nas requisições
+│       │   └── auth-error.interceptor.ts # Trata erros 401
 │       │
 │       ├── pages/                      # 📄 Páginas da aplicação
-│       │   ├── dashboard-page/
-│       │   ├── login-page/
-│       │   ├── cliente-form-page/
-│       │   └── cliente-list-page/
+│       │   ├── auth-page/              # Login e cadastro
+│       │   ├── dashboard-page/         # Shell do dashboard
+│       │   ├── dashboard-home-page/    # Tela inicial
+│       │   ├── descobrir-page/         # Catálogo de veículos (cliente)
+│       │   ├── meus-pedidos-page/      # Pedidos e contratos (cliente)
+│       │   ├── meus-veiculos-page/     # Gestão de veículos (agente)
+│       │   └── pedidos-page/           # Avaliação de pedidos (agente)
 │       │
 │       ├── services/                   # 🔌 Serviços HTTP
-│       │   ├── auth.service.ts         # Autenticação e JWT
-│       │   └── cliente.service.ts      # CRUD de clientes
+│       │   ├── auth.service.ts         # Autenticação e sessão JWT
+│       │   ├── veiculo.service.ts      # CRUD de automóveis
+│       │   ├── pedido.service.ts       # Pedidos e avaliações
+│       │   └── contrato.service.ts     # Busca e assinatura de contratos
+│       │
+│       ├── models/                     # 📐 Tipos TypeScript
+│       │   ├── auth.ts                 # Login, registro, userType
+│       │   ├── veiculo.ts              # Veículo e payloads
+│       │   ├── pedido.ts               # Pedido e payloads
+│       │   └── contrato.ts             # Contrato e contrato de crédito
 │       │
 │       └── components/                 # 🧱 Componentes reutilizáveis
-│           ├── header/
-│           ├── footer/
-│           └── shared/
-│
-├── environments/
-│   └── environment.ts                  # 🌍 Configuração de ambiente
+│           └── veiculo-card/           # Card de exibição de veículo
 │
 └── .editorconfig                       # ✍️ Padronização de código
 ```
+
+---
+
+## 🧪 Testes
+
+```bash
+cd frontend
+npm test
+```
+
+ou
+
+```bash
+ng test
+```
+
+---
+
+## 🏗️ Build para Produção
+
+```bash
+cd frontend
+npm run build
+```
+
+ou
+
+```bash
+ng build
+```
+
+Os artefatos serão gerados em `dist/`.
 
 ---
 

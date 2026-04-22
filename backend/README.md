@@ -6,7 +6,7 @@
   <tr>
     <td width="800px">
       <div align="justify">
-        Este <b>README.md</b> descreve o <b>Backend</b> do projeto <b>Aluguel de Carros</b>, uma API REST que implementa autenticação via JWT, CRUD completo de clientes, empresas, bancos, automóveis, pedidos, pareceres, contratos e contratos de crédito, além de fluxos de negócio por perfil. Segue uma arquitetura em camadas (controller, facade, service, repository) com persistência via JPA/Hibernate. A documentação interativa fica disponível via <b>Swagger UI</b> em <code>src/main/resources/swagger.yml</code>.
+        Este <b>README.md</b> descreve o <b>Backend</b> do projeto <b>Aluguel de Carros</b>, uma API REST que implementa autenticação via JWT, CRUD completo de clientes, empresas, bancos, automóveis, pedidos e pareceres de agente, além de contratos de aluguel e contratos de crédito gerados automaticamente pelo fluxo de aprovação. Segue uma arquitetura em camadas (controller, facade, service, repository) com persistência via JPA/Hibernate. A documentação interativa fica disponível via <b>Swagger UI</b> em <code>src/main/resources/swagger.yml</code>.
       </div>
     </td>
     <td>
@@ -36,7 +36,7 @@
 - [Arquitetura](#-arquitetura)
 - [Instalação e Execução](#-instalação-e-execução)
   - [Pré-requisitos](#pré-requisitos)
-  - [Banco de Dados (PostgreSQL)](#-banco-de-dados-postgresql)
+  - [Variáveis de Ambiente](#-variáveis-de-ambiente)
   - [Como Executar a Aplicação](#-como-executar-a-aplicação)
 - [Estrutura de Pastas](#-estrutura-de-pastas)
 - [Testes](#-testes)
@@ -60,7 +60,7 @@
 
 O **Backend do Aluguel de Carros** é uma API HTTP desenvolvida com **Micronaut** que oferece:
 
-- **Gestão das entidades de domínio** — clientes, empresas, bancos, automóveis, pedidos, pareceres, contratos e contratos de crédito.
+- **Gestão das entidades de domínio** — clientes, empresas, bancos, automóveis, pedidos, contratos e contratos de crédito.
 - **Autenticação JWT** — emissão e validação de tokens para proteção de rotas sensíveis.
 - **API REST bem definida** — endpoints documentados via OpenAPI/Swagger com tratamento padronizado de erros.
 - **Persistência com JPA/Hibernate** — usando PostgreSQL como banco padrão.
@@ -78,8 +78,11 @@ O **Backend do Aluguel de Carros** é uma API HTTP desenvolvida com **Micronaut*
 - 🔐 **Cadastro Público de Cliente** — `POST /clientes` (sem autenticação); inclui lista de 1 a 3 entidades empregadoras.
 - 🔑 **Autenticação JWT por Perfil** — `POST /auth/login` por CPF (cliente) ou CNPJ (empresa/banco), com retorno de `userType`.
 - 👤 **Perfil Autenticado** — `GET /auth/me` retorna `id`, `login` e `userType` a partir do token.
-- 📋 **CRUDs completos** — `clientes`, `bancos`, `empresas`, `automoveis`, `pedidos`, `pareceres`, `contratos` e `contratos-credito`.
-- 🔄 **Fluxos de Negócio por Perfil** — cancelamento de pedido, avaliação de pedido por agente, associação de crédito por banco, execução de contrato por pedido e listagens por contexto autenticado.
+- 📋 **CRUDs completos** — `clientes`, `bancos`, `empresas`, `automoveis` (com filtro por status e listagem por agente autenticado).
+- 🚗 **Fluxo de Pedidos** — criação de pedidos de aluguel (`POST /pedidos/aluguel`) e de compra a crédito (`POST /pedidos/credito`); listagem pelo cliente autenticado (`GET /pedidos/me`) e cancelamento (`POST /pedidos/{id}/cancelar`).
+- 🏢 **Fluxo do Agente** — listagem de pedidos por status vinculados ao agente (`GET /agente/pedidos/{status}`) e avaliação de pedido com aprovação ou rejeição (`POST /agente/pedidos/{id}/avaliar`).
+- 📄 **Contratos** — gerados automaticamente ao aprovar pedido de aluguel; consulta por id do pedido (`GET /contratos/{pedidoId}`) e assinatura por empresa ou cliente (`POST /contratos/{id}/assinar`).
+- 💳 **Contratos de Crédito** — gerados automaticamente ao aprovar pedido de compra; consulta por id do pedido (`GET /contratos-credito/{pedidoId}`) e assinatura por banco ou cliente (`POST /contratos-credito/{id}/assinar`).
 - ✔️ **Validação de Regras de Negócio** — CPF/CNPJ/placa/matrícula únicos, limites de entidades empregadoras, status e regras de transição de fluxo.
 - 📊 **Tratamento Robusto de Erros** — respostas JSON com mensagens claras para 404 (não encontrado) e 422 (regra de negócio).
 - 🔒 **Segurança em Rotas Protegidas** — 401 quando token inválido ou ausente.
@@ -107,7 +110,7 @@ O **Backend do Aluguel de Carros** é uma API HTTP desenvolvida com **Micronaut*
 | **Java**              | 21     | Linguagem de programação                |
 | **Micronaut**         | 4.10   | Framework HTTP, DI, validação           |
 | **Maven**             | 3.9+   | Build e gerenciador de dependências     |
-| **PostgreSQL**        | 16+    | Banco de dados relacional                |
+| **PostgreSQL**        | 16+    | Banco de dados relacional               |
 | **JPA / Hibernate**   | Latest | Mapeamento objeto-relacional            |
 | **JJWT**              | Latest | Geração e validação de tokens JWT       |
 | **BCrypt (favre)**    | Latest | Hash seguro de senhas                   |
@@ -136,7 +139,7 @@ A aplicação segue um **padrão monolítico em camadas**:
 
 ### Componentes Principais
 
-1. **Controllers** (`controller/`) — Endpoints REST (`/auth`, `/clientes`), validação de entrada.
+1. **Controllers** (`controller/`) — Endpoints REST (`/auth`, `/clientes`, `/bancos`, `/empresas`, `/automoveis`, `/pedidos`, `/agente/pedidos`, `/contratos`, `/contratos-credito`), validação de entrada.
 2. **Facade** (`facade/`) — Conversão DTOs ↔ Entidades, orquestração entre camadas.
 3. **Services** (`service/`) — Regras de autenticação, lógica de negócio, transações.
 4. **Repositories** (`repository/`) — Queries JPA, acesso a dados com Micronaut Data.
@@ -159,65 +162,96 @@ A aplicação segue um **padrão monolítico em camadas**:
 
 ### Pré-requisitos
 
+**Para execução via Docker (recomendado):**
+- **Docker** e **Docker Compose** — toda a stack (API + banco) sobe com um único comando.
+
+**Para execução local (sem Docker):**
 - **JDK 21** — conforme especificado em `pom.xml`
 - **Maven** (opcional) — o projeto inclui **Maven Wrapper** (`mvnw` / `mvnw.bat`)
+- **PostgreSQL 16+** — instância acessível na porta `5432`
 
 ---
 
-### 💾 Banco de Dados (PostgreSQL)
+### 🔑 Variáveis de Ambiente
 
-O projeto utiliza **PostgreSQL** por padrão: o schema é criado/atualizado automaticamente pelo Hibernate na inicialização.
+Todas as configurações da aplicação são injetadas via variáveis de ambiente. O arquivo `.env.example` na pasta `backend/` contém os valores padrão para desenvolvimento local:
 
-Trecho atual em `src/main/resources/application.yml`:
+```env
+DB_URL=jdbc:postgresql://localhost:5432/aluguelcarros
+DB_USERNAME=postgres
+DB_PASSWORD=postgres
 
-```yaml
-datasources:
-  default:
-    url: ${DB_URL:`jdbc:postgresql://localhost:5432/aluguelcarros`}
-    username: ${DB_USERNAME:postgres}
-    password: ${DB_PASSWORD:postgres}
-    driver-class-name: org.postgresql.Driver
+JWT_SECRET=troque-este-valor-por-um-segredo-forte
+JWT_EXPIRATION_MS=3600000
+
+SERVER_CONTEXT_PATH=/api/aluguelcarros/v1
+SERVER_PORT=8080
+
+CORS_ENABLED=true
+CORS_ALLOWED_ORIGIN=http://localhost:4200
+CORS_ALLOW_CREDENTIALS=true
 ```
 
-Para usar **PostgreSQL via Docker**, suba o banco na raiz do repositório (pasta acima de `backend`):
-
-```bash
-docker compose up -d
-```
-
-**Windows (PowerShell):**
-
-```powershell
-$env:DB_URL="jdbc:postgresql://localhost:5432/aluguelcarros"
-$env:DB_USERNAME="postgres"
-$env:DB_PASSWORD="postgres"
-.\mvnw.bat mn:run
-```
-
-**Linux / macOS:**
-
-```bash
-DB_URL=jdbc:postgresql://localhost:5432/aluguelcarros \
-DB_USERNAME=postgres \
-DB_PASSWORD=postgres \
-./mvnw mn:run
-```
+> ⚠️ **Nunca versione segredos reais.** Em produção, substitua `JWT_SECRET` por um valor forte e gerado aleatoriamente.
 
 ---
 
 ### ⚡ Como Executar a Aplicação
 
-**Windows:**
+#### 🐳 Opção 1 — Docker (recomendado)
 
-```powershell
-.\mvnw.bat mn:run
+O `docker-compose.yml` dentro de `backend/` sobe **API + PostgreSQL** juntos, sem nenhuma instalação local de Java ou banco.
+
+```bash
+cd backend
+docker compose up -d --build
 ```
+
+O Docker Compose usa `.env.example` como fonte de variáveis e substitui automaticamente `DB_URL` pelo hostname interno do container (`postgres`). Para encerrar:
+
+```bash
+docker compose down
+```
+
+Para remover também o volume de dados do banco:
+
+```bash
+docker compose down -v
+```
+
+---
+
+#### 💻 Opção 2 — Local (sem Docker)
+
+Requer **JDK 21** e uma instância **PostgreSQL 16+** rodando localmente.
+
+1. Copie o arquivo de variáveis e ajuste se necessário:
+
+```bash
+cp .env.example .env
+```
+
+2. Exporte as variáveis e execute:
 
 **Linux / macOS:**
 
 ```bash
+export $(grep -v '^#' .env | xargs)
 ./mvnw mn:run
 ```
+
+**Windows (PowerShell):**
+
+```powershell
+Get-Content .env.example | ForEach-Object {
+  if ($_ -match "^\s*([^#][^=]*)=(.*)$") {
+    [System.Environment]::SetEnvironmentVariable($matches[1].Trim(), $matches[2].Trim())
+  }
+}
+.\mvnw.bat mn:run
+```
+
+---
 
 ✅ **A API ficará disponível em:**
 
@@ -237,6 +271,9 @@ DB_PASSWORD=postgres \
 backend/
 ├── pom.xml                          # 🛠️ Maven: dependências e build
 ├── mvnw / mvnw.bat                  # ⚙️ Maven Wrapper (Unix / Windows)
+├── Dockerfile                       # 🐳 Imagem Docker multi-stage (build + JRE)
+├── docker-compose.yml               # 🐳 Stack completa: API + PostgreSQL
+├── .env.example                     # 🔑 Variáveis de ambiente (modelo)
 ├── micronaut-cli.yml                # 🔧 Configuração Micronaut CLI
 ├── aot-jar.properties               # ⚙️ Propriedades AOT
 │
@@ -252,31 +289,54 @@ backend/
 │   │   ├── controller/                      # 🎮 REST Endpoints
 │   │   │   ├── AuthController.java
 │   │   │   ├── ClienteController.java
-│   │   │   ├── BancoController.java / EmpresaController.java
-│   │   │   ├── AutomovelController.java / PedidoController.java
-│   │   │   ├── ParecerController.java / ContratoController.java
+│   │   │   ├── BancoController.java
+│   │   │   ├── EmpresaController.java
+│   │   │   ├── AutomovelController.java
+│   │   │   ├── PedidoController.java
+│   │   │   ├── AgentePedidoController.java
+│   │   │   ├── ContratoController.java
 │   │   │   ├── ContratoCreditoController.java
-│   │   │   ├── AgentePedidoController.java / BancoPedidoController.java
 │   │   │   └── SwaggerController.java
 │   │   │
 │   │   ├── facade/                          # 🎭 Conversão DTOs ↔ Entidades
-│   │   │   ├── *Facade.java (Cliente/Banco/Empresa/Automovel/...)
-│   │   │   └── Facades de fluxo por entidade
+│   │   │   ├── AutomovelFacade.java
+│   │   │   ├── BancoFacade.java
+│   │   │   ├── ClienteFacade.java
+│   │   │   ├── ContratoCreditoFacade.java
+│   │   │   ├── ContratoFacade.java
+│   │   │   ├── EmpresaFacade.java
+│   │   │   └── PedidoFacade.java
 │   │   │
 │   │   ├── service/                         # ⚙️ Lógica e Regras de Negócio
 │   │   │   ├── AuthService.java
-│   │   │   ├── *Service.java (CRUD e regras de negócio)
-│   │   │   └── Serviços de fluxo por perfil
+│   │   │   ├── AutomovelService.java
+│   │   │   ├── BancoService.java
+│   │   │   ├── ClienteService.java
+│   │   │   ├── ContratoCreditoService.java
+│   │   │   ├── ContratoService.java
+│   │   │   ├── EmpresaService.java
+│   │   │   └── PedidoService.java
 │   │   │
 │   │   ├── repository/                      # 🗄️ Acesso a Dados (JPA)
-│   │   │   ├── ClienteRepository.java / EmpresaRepository.java / BancoRepository.java
-│   │   │   ├── AutomovelRepository.java / PedidoRepository.java / ParecerRepository.java
-│   │   │   └── ContratoRepository.java / ContratoCreditoRepository.java
+│   │   │   ├── AutomovelRepository.java
+│   │   │   ├── BancoRepository.java
+│   │   │   ├── ClienteRepository.java
+│   │   │   ├── ContratoCreditoRepository.java
+│   │   │   ├── ContratoRepository.java
+│   │   │   ├── EmpresaRepository.java
+│   │   │   └── PedidoRepository.java
 │   │   │
 │   │   ├── model/                           # 🧬 Entidades JPA
-│   │   │   ├── Cliente.java / EntidadeEmpregadora.java / Automovel.java
-│   │   │   ├── Pedido.java / Parecer.java / Contrato.java / ContratoCredito.java
-│   │   │   └── Empresa.java / Banco.java / Usuario.java / Agente.java
+│   │   │   ├── Agente.java
+│   │   │   ├── Automovel.java
+│   │   │   ├── Banco.java
+│   │   │   ├── Cliente.java
+│   │   │   ├── Contrato.java
+│   │   │   ├── ContratoCredito.java
+│   │   │   ├── Empresa.java
+│   │   │   ├── EntidadeEmpregadora.java
+│   │   │   ├── Pedido.java
+│   │   │   └── Usuario.java
 │   │   │
 │   │   ├── dto/                             # ✉️ Data Transfer Objects
 │   │   │   ├── request/                     # DTOs de entrada (*RequestDTO)

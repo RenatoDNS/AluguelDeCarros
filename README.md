@@ -1,12 +1,12 @@
 # 🚗 Aluguel de Carros — Sistema Completo
 
-> Sistema **full-stack** de aluguel de carros com API REST em **Micronaut** (Backend) e interface web em **Angular** (Frontend), incluindo autenticação **JWT**, persistência em **H2/JPA** e documentação **OpenAPI/Swagger**.
+> Sistema **full-stack** de aluguel de carros com API REST em **Micronaut** (Backend) e interface web em **Angular** (Frontend), incluindo autenticação **JWT**, persistência em **PostgreSQL/JPA** e documentação **OpenAPI/Swagger**.
 
 <table>
   <tr>
     <td width="800px">
       <div align="justify">
-        Este <b>README.md</b> descreve o projeto completo <b>Aluguel de Carros</b>, uma aplicação full-stack para gestão de clientes de um sistema de locação de veículos. Composto por dois principais componentes: <b>Backend</b> (Micronaut com API REST documentada) e <b>Frontend</b> (Angular com interface responsiva). O projeto segue boas práticas de engenharia de software e está organizado como um monorepo com documentação, testes e arquitetura bem definidos.
+        Este <b>README.md</b> descreve o projeto completo <b>Aluguel de Carros</b>, uma aplicação full-stack para gestão de um sistema de locação e compra a crédito de veículos. Composto por dois principais componentes: <b>Backend</b> (Micronaut com API REST documentada) e <b>Frontend</b> (Angular com interface responsiva por perfil). O projeto segue boas práticas de engenharia de software e está organizado como um monorepo com documentação, testes e arquitetura bem definidos.
       </div>
     </td>
     <td>
@@ -36,6 +36,7 @@
 - [Estrutura de Pastas](#-estrutura-de-pastas)
 - [Instalação e Execução](#-instalação-e-execução)
   - [Pré-requisitos](#pré-requisitos)
+  - [Banco de Dados (PostgreSQL)](#-banco-de-dados-postgresql)
   - [Instalação de Dependências](#-instalação-de-dependências)
   - [Como Executar a Aplicação](#-como-executar-a-aplicação)
 - [Documentações dos Componentes](#-documentações-dos-componentes)
@@ -61,22 +62,25 @@
 
 ## 📝 Sobre o Projeto
 
-O **Aluguel de Carros** é uma aplicação full-stack de **locação de veículos**, em que o cadastro de **clientes** é central: dados pessoais, senha com hash (**BCrypt**) e até **três entidades empregadoras** por cliente (validação de negócio e persistência).
+O **Aluguel de Carros** é uma aplicação full-stack de **locação e compra a crédito de veículos**, com três perfis distintos de usuário: **cliente**, **empresa** e **banco**.
 
-- **Por que existe:** oferecer um sistema HTTP bem definido e acessível para registrar, consultar e gerenciar clientes, com autenticação segura (**JWT**) e interface amigável.
-- **Problema que resolve:** padroniza integrações via REST com documentação OpenAPI; oferece UI responsiva para acesso web.
+- **Por que existe:** oferecer um sistema HTTP bem definido e acessível para registrar, consultar e gerenciar o ciclo completo de pedidos — da solicitação à assinatura do contrato — com autenticação segura (**JWT**) e interface amigável.
+- **Problema que resolve:** padroniza integrações via REST com documentação OpenAPI; oferece UI responsiva diferenciada por perfil.
 - **Contexto:** projeto acadêmico / laboratorial na linha da Engenharia de Software (**PUC Minas**), com foco em boas práticas de camadas, documentação e arquitetura moderna.
 
 ---
 
 ## ✨ Funcionalidades Principais
 
-- **Cadastro público de cliente** — `POST /clientes` (sem token); inclui lista de entidades empregadoras (1 a 3 itens).
-- **Autenticação JWT** — `POST /auth/login` retorna token e tempo de expiração; `POST /auth/logout` valida o token.
-- **CRUD autenticado** — busca, atualização e exclusão de cliente por `id` com header `Authorization: Bearer <token>`.
-- **Tratamento de erros** — respostas JSON com `mensagem` para não encontrado (404) e regra de negócio (422), além de 401 quando o token é inválido ou ausente nas rotas protegidas.
-- **Documentação interativa** — Swagger UI apontando para o arquivo OpenAPI em YAML.
-- **Interface web responsiva** — acesso via desktop, tablet e mobile com Angular.
+- **Cadastro público** — `POST /clientes`, `POST /empresas`, `POST /bancos` (sem token).
+- **Autenticação JWT** — `POST /auth/login` retorna token com `userType`; `GET /auth/me` retorna o perfil do token.
+- **Gestão de automóveis** — cadastro, atualização, remoção e listagem (global, por agente e por status).
+- **Fluxo de pedidos** — cliente cria pedido de aluguel ou compra a crédito; agente (empresa/banco) avalia com aprovação ou rejeição.
+- **Geração automática de contratos** — ao aprovar um pedido, o contrato correspondente (aluguel ou crédito) é criado automaticamente.
+- **Assinatura de contratos** — empresa/banco e cliente assinam separadamente via `POST /contratos/{id}/assinar` ou `POST /contratos-credito/{id}/assinar`.
+- **Tratamento de erros** — respostas JSON com `mensagem` para 404, 422 e 401.
+- **Documentação interativa** — Swagger UI apontando para o contrato OpenAPI em YAML.
+- **Interface web responsiva** — dashboard diferenciado por perfil com Angular.
 
 ---
 
@@ -89,7 +93,7 @@ O **Aluguel de Carros** é uma aplicação full-stack de **locação de veículo
 | **Java 21**           | Linguagem                                            |
 | **Micronaut 4.10**    | Framework HTTP, injeção de dependências, validação   |
 | **Maven**             | Build e dependências (`pom.xml`)                     |
-| **H2**                | Banco em memória (desenvolvimento); JDBC + Hibernate |
+| **PostgreSQL 16+**    | Banco relacional padrão; H2 em memória para testes   |
 | **JPA / Hibernate**   | Mapeamento objeto-relacional (`ddl-auto: update`)    |
 | **JJWT**              | Geração e validação de tokens JWT                    |
 | **BCrypt** (favre)    | Hash de senhas                                       |
@@ -104,20 +108,28 @@ O **Aluguel de Carros** é uma aplicação full-stack de **locação de veículo
 | **TypeScript 5.x**   | Linguagem tipada                    |
 | **RxJS 7.x**         | Programação reativa com observables |
 | **HttpClient**       | Requisições HTTP para a API         |
-| **Angular Router**   | Roteamento entre páginas            |
+| **Angular Router**   | Roteamento com lazy loading e guards|
 | **Angular Forms**    | Formulários reativos                |
 | **Node.js 20.x LTS** | Runtime para desenvolvimento        |
 | **npm**              | Gerenciador de dependências         |
 
 ## 🏗 Arquitetura
 
-A aplicação segue um **monólito em camadas**:
+A aplicação segue um **monólito em camadas** no backend e uma **arquitetura em componentes** no frontend:
 
-1. **Controllers** (`controller`) — endpoints REST (`/auth`, `/clientes`).
-2. **Facade** (`facade`) — orquestra conversão entre DTOs e entidades para clientes.
-3. **Services** (`service`) — regras de autenticação e persistência de clientes.
+**Backend:**
+
+1. **Controllers** (`controller`) — endpoints REST (`/auth`, `/clientes`, `/bancos`, `/empresas`, `/automoveis`, `/pedidos`, `/agente/pedidos`, `/contratos`, `/contratos-credito`).
+2. **Facade** (`facade`) — orquestra conversão entre DTOs e entidades.
+3. **Services** (`service`) — regras de autenticação e lógica de negócio.
 4. **Repositories** (`repository`) — acesso a dados (Micronaut Data JPA).
-5. **Config** — `JwtConfig`, `SecurityConfig` (rotas públicas), `JwtAuthenticationFilter` (filtro global de Bearer JWT).
+5. **Config** — `JwtConfig`, `SecurityConfig`, `JwtAuthenticationFilter`.
+
+**Frontend:**
+
+1. **Pages** — componentes de página com lazy loading, por perfil.
+2. **Services** — `AuthService`, `VeiculoService`, `PedidoService`, `ContratoService`.
+3. **Guards** — `authGuard` (autenticação) e `roleGuard` (perfil).
 
 **Padrões:** DTOs de entrada/saída, exceções de domínio com handler global, repositório para isolamento de persistência.
 
@@ -127,25 +139,21 @@ Diagramas de apoio (casos de uso e classes/pacotes) estão em [`docs/`](./docs/)
 
 ### Pré-requisitos
 
+**Para rodar o backend via Docker (recomendado):**
+- **Docker** e **Docker Compose**
+- **Node.js 20.x LTS** (para o frontend)
+
+**Para rodar tudo localmente (sem Docker):**
 - **JDK 21**
 - **Node.js 20.x LTS**
+- **PostgreSQL 16+**
 - **Maven** — o repositório inclui **Maven Wrapper** (`mvnw` / `mvnw.bat`); não é obrigatório ter Maven instalado globalmente.
 
 ---
 
-### 💾 Banco de Dados (H2 / PostgreSQL)
+### 💾 Banco de Dados (PostgreSQL)
 
-O perfil padrão usa **H2 em memória**: o schema é criado/atualizado pelo Hibernate na subida da aplicação. Não é necessário subir PostgreSQL nem Docker para desenvolvimento local básico.
-
-Para persistir em arquivo, há exemplo comentado no `backend/src/main/resources/application.yml` (`jdbc:h2:file:./data/...`).
-
-Se preferir usar **PostgreSQL com Docker**, a raiz do projeto possui `docker-compose.yml` pronto:
-
-```bash
-docker compose up -d
-```
-
-Em seguida, execute o backend com o perfil `postgres` (mais detalhes em `backend/README.md`).
+O backend utiliza **PostgreSQL**. A maneira mais rápida de subir o banco é via Docker — e com o novo `docker-compose.yml`, a própria API já sobe junto. Consulte `backend/README.md` para detalhes completos de configuração e variáveis de ambiente.
 
 ---
 
@@ -158,9 +166,7 @@ git clone https://github.com/RenatoDNS/AluguelDeCarros.git
 cd AluguelDeCarros
 ```
 
-2. **Instale as Dependências (Monorepo):**
-
-#### Frontend (Angular)
+2. **Instale as Dependências do Frontend:**
 
 ```bash
 cd frontend
@@ -168,38 +174,17 @@ npm install
 cd ..
 ```
 
-#### Backend (Micronaut/Maven)
-
-```bash
-cd backend
-./mvnw clean install
-cd ..
-```
-
 ---
 
 ### ⚡ Como Executar a Aplicação
 
-Execute a aplicação em **dois terminais separados**.
+#### 🐳 Backend via Docker (recomendado)
 
-**Terminal 1: Backend (Micronaut)**
-
-Na raiz do projeto:
+Sobe a API e o PostgreSQL juntos, sem instalar Java localmente:
 
 ```bash
 cd backend
-```
-
-**Windows:**
-
-```powershell
-.\mvnw.bat mn:run
-```
-
-**Linux / macOS:**
-
-```bash
-./mvnw mn:run
+docker compose up -d --build
 ```
 
 ✅ **A API ficará disponível em:** `http://localhost:8080/api/aluguelcarros/v1`
@@ -207,17 +192,33 @@ cd backend
 
 ---
 
-**Terminal 2: Frontend (Angular)**
+#### 💻 Backend local (sem Docker)
+
+Requer JDK 21 e PostgreSQL rodando. Exporte as variáveis do `.env.example` e execute:
+
+**Windows:**
+
+```powershell
+cd backend
+.\mvnw.bat mn:run
+```
+
+**Linux / macOS:**
+
+```bash
+cd backend
+./mvnw mn:run
+```
+
+✅ **A API ficará disponível em:** `http://localhost:8080/api/aluguelcarros/v1`
+
+---
+
+#### 🌐 Frontend (em qualquer caso)
 
 ```bash
 cd frontend
 npm start
-```
-
-ou
-
-```bash
-ng serve
 ```
 
 ✅ **O frontend estará disponível em:** `http://localhost:4200`
@@ -267,6 +268,8 @@ Visão simplificada do repositório:
 │           ├── app.ts
 │           ├── app.routes.ts
 │           ├── guards/
+│           ├── interceptors/
+│           ├── models/
 │           ├── pages/
 │           ├── services/
 │           └── components/
@@ -274,7 +277,7 @@ Visão simplificada do repositório:
 └── /docs                       # 📚 Documentação e Diagramas
     ├── DiagramaDeCasosDeUso.svg
     ├── DiagramaDeClassesEPacotes.svg
-    └── Historias_de_Usuario.pdf
+    └── HistoriasDeUsuario.pdf
 ```
 
 ---
