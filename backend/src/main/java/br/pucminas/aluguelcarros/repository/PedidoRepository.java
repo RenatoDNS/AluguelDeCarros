@@ -15,13 +15,7 @@ public interface PedidoRepository extends CrudRepository<Pedido, Long> {
 
     Optional<Pedido> findByNumeroProtocolo(String numeroProtocolo);
 
-    List<Pedido> findByStatus(PedidoStatus status);
-
     List<Pedido> findByClienteId(Long clienteId);
-
-    List<Pedido> findByStatusAndAutomovelAgentIdAndAutomovelAgentType(PedidoStatus status,
-                                                                      Long agentId,
-                                                                      AgenteTipo agentType);
 
     List<Pedido> findByStatusAndTipoPedido(PedidoStatus status, PedidoTipo tipoPedido);
 

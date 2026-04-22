@@ -1,7 +1,6 @@
 package br.pucminas.aluguelcarros.service;
 
 import at.favre.lib.crypto.bcrypt.BCrypt;
-import br.pucminas.aluguelcarros.exception.EntidadeNaoEncontradaException;
 import br.pucminas.aluguelcarros.exception.RegraDeNegocioException;
 import br.pucminas.aluguelcarros.model.Empresa;
 import br.pucminas.aluguelcarros.repository.BancoRepository;
@@ -9,9 +8,6 @@ import br.pucminas.aluguelcarros.repository.EmpresaRepository;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import jakarta.transaction.Transactional;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Singleton
 public class EmpresaService {

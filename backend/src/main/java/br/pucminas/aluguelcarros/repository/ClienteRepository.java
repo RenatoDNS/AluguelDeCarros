@@ -12,6 +12,4 @@ public interface ClienteRepository extends CrudRepository<Cliente, Long> {
     Optional<Cliente> findByCpf(String cpf);
 
     Optional<Cliente> findByRg(String rg);
-
-    Optional<Cliente> findByLogin(String login);
 }

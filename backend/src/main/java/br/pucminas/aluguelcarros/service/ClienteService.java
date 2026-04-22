@@ -1,7 +1,6 @@
 package br.pucminas.aluguelcarros.service;
 
 import at.favre.lib.crypto.bcrypt.BCrypt;
-import br.pucminas.aluguelcarros.exception.EntidadeNaoEncontradaException;
 import br.pucminas.aluguelcarros.exception.RegraDeNegocioException;
 import br.pucminas.aluguelcarros.model.Cliente;
 import br.pucminas.aluguelcarros.model.EntidadeEmpregadora;

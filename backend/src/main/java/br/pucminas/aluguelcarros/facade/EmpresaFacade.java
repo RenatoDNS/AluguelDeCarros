@@ -7,8 +7,6 @@ import br.pucminas.aluguelcarros.service.EmpresaService;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 
-import java.util.List;
-
 @Singleton
 public class EmpresaFacade {
 

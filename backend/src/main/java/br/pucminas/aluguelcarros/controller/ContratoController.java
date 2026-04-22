@@ -19,8 +19,6 @@ import java.util.List;
 @Controller("/contratos")
 public class ContratoController {
 
-    //TODO assinar contrato somente
-
     private final ContratoFacade contratoFacade;
 
     @Inject

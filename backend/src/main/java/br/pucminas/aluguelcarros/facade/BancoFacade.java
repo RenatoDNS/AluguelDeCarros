@@ -7,8 +7,6 @@ import br.pucminas.aluguelcarros.service.BancoService;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 
-import java.util.List;
-
 @Singleton
 public class BancoFacade {
 
